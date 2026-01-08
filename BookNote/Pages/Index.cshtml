@@ -10,8 +10,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BookNote - ホーム</title>
-    <link type="text/css" rel="stylesheet" href="css/site.css">
-    <link type="text/css" rel="stylesheet" href="css/home.css">
+    <link type="text/css" rel="stylesheet" href="~/css/site.css">
+    <link type="text/css" rel="stylesheet" href="~/css/home.css">
 </head>
 <body>
     <!-- メインコンテンツ -->
@@ -19,77 +19,24 @@
         <!-- あなたにオススメ（横スクロール） -->
         <h2 class="section-title">人気のレビュー</h2>
         <div class="horizontal-scroll">
-            <!-- レビューカード1 -->
-            <div class="review-card-small">
-                <div class="book-cover-small">書影</div>
-                <div class="review-content-small">
-                    <div>
-                        <div class="review-title">心に響く物語</div>
-                        <div class="book-title">夏目漱石「こころ」</div>
-                    </div>
-                    <div>
-                        <div class="reviewer-info">
-                            <div class="reviewer-icon"></div>
-                            <span class="reviewer-name">山田太郎</span>
+            @foreach (var review in Model.RecommendedBooks) {
+                <div class="review-card-small">
+                    <div class="book-cover-small">書影</div>
+                    <div class="review-content-small">
+                        <div>
+                            <div class="review-title">@review.Title</div>
+                            <div class="book-title">@review.Isbn</div>
                         </div>
-                        <div class="post-time">2時間前</div>
+                        <div>
+                            <div class="reviewer-info">
+                                <div class="reviewer-icon"></div>
+                                <span class="reviewer-name">@review.UserId</span>
+                            </div>
+                            <div class="post-time">@review.PostingTime</div>
+                        </div>
                     </div>
                 </div>
-            </div>
-
-            <!-- レビューカード2 -->
-            <div class="review-card-small">
-                <div class="book-cover-small">書影</div>
-                <div class="review-content-small">
-                    <div>
-                        <div class="review-title">感動的な結末に涙</div>
-                        <div class="book-title">東野圭吾「容疑者Xの献身」</div>
-                    </div>
-                    <div>
-                        <div class="reviewer-info">
-                            <div class="reviewer-icon"></div>
-                            <span class="reviewer-name">佐藤花子</span>
-                        </div>
-                        <div class="post-time">5時間前</div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- レビューカード3 -->
-            <div class="review-card-small">
-                <div class="book-cover-small">書影</div>
-                <div class="review-content-small">
-                    <div>
-                        <div class="review-title">読み応え抜群</div>
-                        <div class="book-title">村上春樹「ノルウェイの森」</div>
-                    </div>
-                    <div>
-                        <div class="reviewer-info">
-                            <div class="reviewer-icon"></div>
-                            <span class="reviewer-name">鈴木一郎</span>
-                        </div>
-                        <div class="post-time">8時間前</div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- レビューカード4 -->
-            <div class="review-card-small">
-                <div class="book-cover-small">書影</div>
-                <div class="review-content-small">
-                    <div>
-                        <div class="review-title">ミステリーの傑作</div>
-                        <div class="book-title">宮部みゆき「模倣犯」</div>
-                    </div>
-                    <div>
-                        <div class="reviewer-info">
-                            <div class="reviewer-icon"></div>
-                            <span class="reviewer-name">田中美咲</span>
-                        </div>
-                        <div class="post-time">12時間前</div>
-                    </div>
-                </div>
-            </div>
+            }
         </div>
 
         <!-- あなたへのオススメ（大きいカード） -->
@@ -151,7 +98,7 @@
         <!-- バナー -->
         <img class="banner" src="image/仮画像/広告（仮）.png" />
     </div>
-    <script type="text/javascript" rel="script" src="js/site.js"></script>
-    <script type="text/javascript" rel="script" src="js/home.js"></script>
+    <script type="text/javascript" rel="script" src="~/js/site.js"></script>
+    <script type="text/javascript" rel="script" src="~/js/home.js"></script>
 </body>
 </html>

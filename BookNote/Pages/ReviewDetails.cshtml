@@ -1,0 +1,62 @@
+﻿@page "{reviewId:int}"
+@model BookNote.Pages.ReviewDetailsModel
+@{
+    ViewData["Title"] = Model.ReviewTitle ?? "レビュー詳細";
+}
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BookNote - @ViewData["Title"]</title>
+    <link type="text/css" rel="stylesheet" href="~/css/site.css">
+    <link type="text/css" rel="stylesheet" href="~/css/review.css">
+</head>
+<body class="review-detail-page">
+    <div class="main-content">
+        @if (Model.Review != null) {
+            <div class="reviews-grid">
+                <div class="review-card-large">
+                    <div class="book-cover-large">
+                        @if (!string.IsNullOrEmpty(Model.BookCoverUrl)) {
+                            <img src="@Model.BookCoverUrl" alt="@Model.BookTitle">
+                        } else {
+                            <span>書影</span>
+                        }
+                    </div>
+                    <div class="review-content-large">
+                        <div class="review-title">@Model.ReviewTitle</div>
+                        <div class="book-title">@Model.BookTitle</div>
+
+                        @if (Model.Evaluation.HasValue) {
+                            <div class="rating">
+                                評価: @Model.Evaluation / 5
+                            </div>
+                        }
+
+                        @if (Model.IsSpoilers) {
+                            <div class="spoiler-warning">
+                                ⚠️ ネタバレ注意
+                            </div>
+                        }
+
+                        <div class="review-text">
+                            @Html.Raw(Model.ReviewHtml)
+                        </div>
+
+                        <div class="reviewer-info">
+                            <div class="reviewer-icon"></div>
+                            <span class="reviewer-name">@Model.UserName</span>
+                            <span class="post-time">@Model.PostingTimeDisplay</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        } else {
+            <p class="empty-message">レビューが見つかりませんでした。</p>
+        }
+    </div>
+
+    <script type="text/javascript" src="~/js/site.js"></script>
+</body>
+</html>

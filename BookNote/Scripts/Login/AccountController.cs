@@ -6,7 +6,7 @@ using System.Net.Http;
 using System.Text.Json;
 using System.Threading.Tasks;
 
-namespace BookCommunityApp.Scripts.Login {
+namespace BookNote.Scripts.Login {
     public class AccountController : Controller {
         private readonly IConfiguration _configuration;
         private readonly HttpClient _httpClient;

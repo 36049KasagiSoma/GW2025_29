@@ -4,7 +4,7 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 
-namespace BookCommunityApp.Pages {
+namespace BookNote.Pages {
 
     public class LoginModel : PageModel {
         private readonly IConfiguration _configuration;

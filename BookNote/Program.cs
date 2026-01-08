@@ -5,7 +5,7 @@ using Amazon.CognitoIdentityProvider;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 
-namespace BookCommunityApp {
+namespace BookNote {
     public class Program {
         public static void Main(string[] args) {
 

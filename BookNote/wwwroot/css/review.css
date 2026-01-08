@@ -1,0 +1,205 @@
+﻿/* レビュー詳細ページ専用スタイル */
+
+/* ロゴとアップバーの固定位置用 */
+.review-detail-page .appbar {
+    height: 60px;
+}
+
+.review-detail-page .logo-link {
+    left: 80px;
+    transform: translateX(0);
+    height: 35px;
+}
+
+.review-detail-page .logo {
+    height: 35px;
+}
+
+.review-detail-page .main-content {
+    padding-top: 35px;
+}
+
+.review-title {
+    font-size: 28px;
+    font-weight: 600;
+    color: #654321;
+    margin-bottom: 8px;
+    border-bottom: 4px solid #d2b48c;
+    display: inline-block;
+}
+
+/* スクロール時の変更を無効化 */
+.review-detail-page .appbar.scrolled {
+    height: 60px;
+}
+
+    .review-detail-page .appbar.scrolled .logo-link {
+        left: 80px;
+        transform: translateX(0);
+        height: 35px;
+    }
+
+    .review-detail-page .appbar.scrolled .logo {
+        height: 35px;
+    }
+
+.review-detail-page .hamburger.scrolled {
+    top: 10px;
+}
+
+/* ページタイトル */
+.page-title {
+    font-size: 36px;
+    font-weight: 600;
+    color: #654321;
+    margin-bottom: 30px;
+    text-align: left;
+}
+
+/* レビューグリッド */
+.reviews-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* レビューカード - ホバーアニメーション無効 */
+.review-detail-page .review-card-large {
+    transition: none;
+}
+
+    .review-detail-page .review-card-large:hover {
+        transform: none;
+        box-shadow: 0 4px 12px rgba(101, 67, 33, 0.1);
+    }
+
+/* 評価表示 */
+.rating {
+    font-size: 16px;
+    font-weight: 600;
+    color: #A0826D;
+    margin-bottom: 8px;
+}
+
+/* ネタバレ警告 */
+.spoiler-warning {
+    display: inline-block;
+    padding: 8px 16px;
+    background: #FFF3CD;
+    border: 2px solid #FFC107;
+    border-radius: 8px;
+    color: #856404;
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 12px;
+}
+
+/* レビュー本文 */
+.review-text {
+    font-size: 15px;
+    color: #5C4033;
+    line-height: 1.8;
+}
+
+    /* マークダウンスタイル */
+    .review-text h1,
+    .review-text h2,
+    .review-text h3 {
+        color: #654321;
+        margin-top: 20px;
+        margin-bottom: 12px;
+    }
+
+    .review-text h1 {
+        font-size: 24px;
+        border-bottom: 2px solid #E8D4C0;
+        padding-bottom: 8px;
+    }
+
+    .review-text h2 {
+        font-size: 20px;
+    }
+
+    .review-text h3 {
+        font-size: 18px;
+    }
+
+    .review-text p {
+        margin-bottom: 12px;
+    }
+
+    .review-text ul,
+    .review-text ol {
+        margin-left: 24px;
+        margin-bottom: 12px;
+    }
+
+    .review-text li {
+        margin-bottom: 6px;
+    }
+
+    .review-text blockquote {
+        border-left: 4px solid #D2B48C;
+        padding-left: 16px;
+        margin: 16px 0;
+        color: #8B6F47;
+        font-style: italic;
+    }
+
+    .review-text code {
+        background: #F5E6D3;
+        padding: 2px 6px;
+        border-radius: 4px;
+        font-family: 'Courier New', monospace;
+        font-size: 14px;
+    }
+
+    .review-text pre {
+        background: #F5E6D3;
+        padding: 16px;
+        border-radius: 8px;
+        overflow-x: auto;
+        margin: 16px 0;
+    }
+
+        .review-text pre code {
+            background: none;
+            padding: 0;
+        }
+
+    .review-text a {
+        color: #A0826D;
+        text-decoration: underline;
+    }
+
+        .review-text a:hover {
+            color: #8B6F47;
+        }
+
+/* 空メッセージ */
+.empty-message {
+    text-align: center;
+    color: #A0826D;
+    font-size: 16px;
+    padding: 60px 20px;
+}
+
+/* レスポンシブ対応 */
+@media (max-width: 768px) {
+    .page-title {
+        font-size: 24px;
+    }
+
+    .review-card-large {
+        flex-direction: column;
+    }
+
+    .book-cover-large {
+        width: 100%;
+        height: 200px;
+    }
+
+    .review-text {
+        font-size: 14px;
+    }
+}

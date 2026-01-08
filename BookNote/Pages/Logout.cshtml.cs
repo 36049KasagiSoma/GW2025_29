@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace BookCommunityApp.Pages
+namespace BookNote.Pages
 {
     [IgnoreAntiforgeryToken]
     public class LogoutModel : PageModel {

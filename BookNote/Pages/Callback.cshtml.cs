@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.Text.Json;
 
-namespace BookCommunityApp.Pages
+namespace BookNote.Pages
 {
     public class CallbackModel : PageModel {
         private readonly IConfiguration _configuration;
