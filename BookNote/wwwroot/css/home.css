@@ -1,0 +1,19 @@
+﻿/* ハンバーガーメニュー */
+.hamburger {
+    position: fixed;
+    left: 20px;
+    top: 20px;
+    width: 40px;
+    height: 40px;
+    cursor: pointer;
+    z-index: 1001;
+    background: #D2B48C;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 6px;
+    box-shadow: 0 2px 8px rgba(101, 67, 33, 0.15);
+    transition: top 0.3s ease, background 0.3s ease;
+}

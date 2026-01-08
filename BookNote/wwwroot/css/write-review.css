@@ -1,0 +1,333 @@
+﻿/* レビュー記述ページ専用スタイル */
+
+.write-review-page .appbar {
+    height: 60px;
+}
+
+.write-review-page .logo-link {
+    left: 80px;
+    transform: translateX(0);
+    height: 35px;
+}
+
+.write-review-page .logo {
+    height: 35px;
+}
+
+.write-review-page .main-content {
+    padding-top: 100px;
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.page-title {
+    font-size: 28px;
+    font-weight: 600;
+    color: #654321;
+    margin-bottom: 40px;
+}
+
+/* アラートメッセージ */
+.alert-message {
+    padding: 16px 20px;
+    background: #E8F5E9;
+    border: 2px solid #81C784;
+    border-radius: 12px;
+    color: #2E7D32;
+    font-weight: 500;
+    margin-bottom: 24px;
+}
+
+/* バリデーションエラー */
+.text-danger {
+    display: block;
+    color: #D32F2F;
+    font-size: 14px;
+    margin-top: 8px;
+}
+
+/* フォームセクション */
+.review-form {
+    background: white;
+    border-radius: 16px;
+    padding: 40px;
+    box-shadow: 0 4px 20px rgba(101, 67, 33, 0.08);
+}
+
+.form-section {
+    margin-bottom: 32px;
+}
+
+.form-label {
+    display: block;
+    font-size: 16px;
+    font-weight: 600;
+    color: #654321;
+    margin-bottom: 12px;
+}
+
+.required {
+    color: #D32F2F;
+    margin-left: 4px;
+}
+
+.form-input {
+    width: 100%;
+    padding: 14px 20px;
+    border: 2px solid #E8D4C0;
+    border-radius: 12px;
+    font-size: 15px;
+    background: white;
+    color: #654321;
+    transition: all 0.3s ease;
+    box-sizing: border-box;
+}
+
+    .form-input:focus {
+        outline: none;
+        border-color: #A0826D;
+        box-shadow: 0 0 0 3px rgba(160, 130, 109, 0.1);
+    }
+
+/* 書籍検索 */
+.book-search-container {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.search-small-button {
+    padding: 14px 28px;
+    background: linear-gradient(135deg, #A0826D 0%, #8B6F47 100%);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(139, 111, 71, 0.3);
+    font-size: 15px;
+    white-space: nowrap;
+}
+
+    .search-small-button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 16px rgba(139, 111, 71, 0.4);
+    }
+
+/* 選択された書籍 */
+.selected-book {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 16px;
+    border: 2px solid #E8D4C0;
+    border-radius: 12px;
+    background: #FFF9F0;
+    position: relative;
+}
+
+.book-cover-small {
+    width: 80px;
+    height: 120px;
+    background: linear-gradient(135deg, #D2B48C 0%, #BC9F77 100%);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 12px;
+    flex-shrink: 0;
+}
+
+.book-info {
+    flex: 1;
+}
+
+.book-title-display {
+    font-size: 16px;
+    font-weight: 600;
+    color: #654321;
+    margin-bottom: 8px;
+}
+
+.book-author {
+    font-size: 14px;
+    color: #8B6F47;
+}
+
+.remove-button {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 28px;
+    height: 28px;
+    border: none;
+    background: #D32F2F;
+    color: white;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+}
+
+    .remove-button:hover {
+        background: #B71C1C;
+        transform: scale(1.1);
+    }
+
+/* 評価星 */
+.rating-container {
+    display: flex;
+    gap: 8px;
+}
+
+.star {
+    font-size: 32px;
+    color: #E8D4C0;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    user-select: none;
+}
+
+    .star:hover,
+    .star.active {
+        color: #FFD700;
+        transform: scale(1.1);
+    }
+
+/* Quillエディタカスタマイズ */
+#editor-container {
+    height: 400px;
+    background: white;
+    border-radius: 12px;
+}
+
+.ql-toolbar {
+    border: 2px solid #E8D4C0 !important;
+    border-bottom: 1px solid #E8D4C0 !important;
+    border-radius: 12px 12px 0 0 !important;
+    background: #FFF9F0;
+}
+
+.ql-container {
+    border: 2px solid #E8D4C0 !important;
+    border-top: none !important;
+    border-radius: 0 0 12px 12px !important;
+    font-size: 15px;
+    color: #654321;
+}
+
+.ql-editor {
+    min-height: 350px;
+}
+
+    .ql-editor.ql-blank::before {
+        color: #BC9F77;
+        font-style: normal;
+    }
+
+/* ボタン群 */
+.form-actions {
+    display: flex;
+    gap: 16px;
+    justify-content: flex-end;
+    margin-top: 40px;
+}
+
+.btn-primary,
+.btn-secondary {
+    padding: 14px 32px;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    font-size: 15px;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #A0826D 0%, #8B6F47 100%);
+    color: white;
+    box-shadow: 0 4px 12px rgba(139, 111, 71, 0.3);
+}
+
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 16px rgba(139, 111, 71, 0.4);
+    }
+
+.btn-secondary {
+    background: white;
+    color: #8B6F47;
+    border: 2px solid #E8D4C0;
+}
+
+    .btn-secondary:hover {
+        background: #FFF9F0;
+        border-color: #A0826D;
+    }
+
+/* プレビューセクション */
+.preview-section {
+    margin-top: 40px;
+    padding: 40px;
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(101, 67, 33, 0.08);
+}
+
+.preview-title {
+    font-size: 20px;
+    font-weight: 600;
+    color: #654321;
+    margin-bottom: 24px;
+}
+
+#preview-content {
+    color: #654321;
+    line-height: 1.8;
+}
+
+/* レスポンシブ対応 */
+@media (max-width: 768px) {
+    .write-review-page .main-content {
+        padding: 80px 16px 40px;
+    }
+
+    .review-form {
+        padding: 24px;
+    }
+
+    .page-title {
+        font-size: 24px;
+    }
+
+    .book-search-container {
+        flex-direction: column;
+    }
+
+    .search-small-button {
+        width: 100%;
+    }
+
+    .form-actions {
+        flex-direction: column-reverse;
+    }
+
+    .btn-primary,
+    .btn-secondary {
+        width: 100%;
+    }
+
+    #editor-container {
+        height: 300px;
+    }
+
+    .ql-editor {
+        min-height: 250px;
+    }
+}

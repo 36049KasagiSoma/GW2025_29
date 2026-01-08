@@ -1,0 +1,107 @@
+﻿@page
+@model WriteReviewModel
+@{
+    ViewData["Title"] = "レビューを書く";
+}
+
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BookNote - レビューを書く</title>
+    <link type="text/css" rel="stylesheet" href="css/site.css">
+    <link type="text/css" rel="stylesheet" href="css/write-review.css">
+
+    <!-- Quill CSS -->
+    <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+</head>
+<body class="write-review-page">
+    <!-- メインコンテンツ -->
+    <div class="main-content">
+        <h1 class="page-title">レビューを書く</h1>
+
+        @if (TempData["Message"] != null) {
+            <div class="alert-message">@TempData["Message"]</div>
+        }
+
+        <form id="review-form" class="review-form" method="post">
+            <!-- 書籍情報セクション -->
+            <div class="form-section">
+                <label class="form-label">書籍情報<span class="required">*</span></label>
+                <div class="book-search-container">
+                    <input type="text" class="form-input" id="book-search" placeholder="書籍名で検索...">
+                    <button type="button" class="search-small-button">検索</button>
+                </div>
+                <div id="selected-book" class="selected-book" style="display: none;">
+                    <div class="book-cover-small">書影</div>
+                    <div class="book-info">
+                        <div class="book-title-display"></div>
+                        <div class="book-author"></div>
+                    </div>
+                    <button type="button" class="remove-button" onclick="removeBook()">×</button>
+                </div>
+                <input type="hidden" asp-for="ReviewInput.BookTitle" id="hidden-book-title">
+                <input type="hidden" asp-for="ReviewInput.BookAuthor" id="hidden-book-author">
+                <span asp-validation-for="ReviewInput.BookTitle" class="text-danger"></span>
+            </div>
+
+            <!-- レビュータイトル -->
+            <div class="form-section">
+                <label class="form-label" asp-for="ReviewInput.Title">レビュータイトル (20文字以内)<span class="required">*</span></label>
+                <input type="text" class="form-input" asp-for="ReviewInput.Title" placeholder="例: 心に響く物語">
+                <span asp-validation-for="ReviewInput.Title" class="text-danger"></span>
+            </div>
+
+            <!-- 評価 -->
+            <div class="form-section">
+                <label class="form-label">評価<span class="required">*</span></label>
+                <div class="rating-container">
+                    <span class="star" data-rating="1">☆</span>
+                    <span class="star" data-rating="2">☆</span>
+                    <span class="star" data-rating="3">☆</span>
+                    <span class="star" data-rating="4">☆</span>
+                    <span class="star" data-rating="5">☆</span>
+                </div>
+                <input type="hidden" asp-for="ReviewInput.Rating" id="rating-value">
+                <span asp-validation-for="ReviewInput.Rating" class="text-danger"></span>
+            </div>
+
+            <!-- ネタバレ選択 -->
+            <div class="form-section">
+                <label class="form-label">ネタバレの有無</label>
+                <label class="spoiler-checkbox">
+                    <input type="checkbox" asp-for="ReviewInput.ContainsSpoiler">
+                    ネタバレあり
+                </label>
+            </div>
+
+
+            <!-- レビュー本文 -->
+            <div class="form-section">
+                <label class="form-label">レビュー本文<span class="required">*</span></label>
+                <div id="editor-container"></div>
+                <textarea asp-for="ReviewInput.ContentHtml" id="review-content-html" style="display: none;"></textarea>
+                <span asp-validation-for="ReviewInput.ContentHtml" class="text-danger"></span>
+            </div>
+
+            <!-- ボタン群 -->
+            <div class="form-actions">
+                <button type="submit" class="btn-secondary" asp-page-handler="SaveDraft" onclick="return prepareFormSubmit()">下書き保存</button>
+                <button type="submit" class="btn-primary" asp-page-handler="Publish" onclick="return prepareFormSubmit()">投稿する</button>
+            </div>
+        </form>
+
+        <!-- プレビューエリア（オプション） -->
+        <div class="preview-section" style="display: none;">
+            <h2 class="preview-title">プレビュー</h2>
+            <div id="preview-content"></div>
+        </div>
+    </div>
+
+    <!-- Quill JS -->
+    <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
+    <script type="text/javascript" src="js/site.js"></script>
+    <script type="text/javascript" src="js/write-review.js"></script>
+</body>
+</html>

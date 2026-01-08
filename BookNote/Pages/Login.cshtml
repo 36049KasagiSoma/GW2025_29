@@ -1,0 +1,20 @@
+﻿@page
+@model LoginModel
+@{
+    ViewData["Title"] = "ログイン";
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>@ViewData["Title"]</title>
+    <script type="text/javascript">
+        window.location.href = '@Html.Raw(Model.LoginUrl)';
+    </script>
+</head>
+<body>
+    <p>AWS Cognitoのログイン画面にリダイレクトしています...</p>
+    <p>自動的にリダイレクトされない場合は、<a href="@Model.LoginUrl">こちら</a>をクリックしてください。</p>
+</body>
+</html>

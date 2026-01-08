@@ -1,0 +1,27 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.36811.4
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ソリューション項目", "ソリューション項目", "{2022CB0F-8BAF-F49E-0C48-8EF4C96EC109}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BookNote", "BookNote\BookNote.csproj", "{515A5AE2-71C1-42C3-83E2-30ED550A4C0A}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{515A5AE2-71C1-42C3-83E2-30ED550A4C0A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{515A5AE2-71C1-42C3-83E2-30ED550A4C0A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{515A5AE2-71C1-42C3-83E2-30ED550A4C0A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{515A5AE2-71C1-42C3-83E2-30ED550A4C0A}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {6C144702-BCCB-4C36-A7F0-0F401A0968AF}
+	EndGlobalSection
+EndGlobal

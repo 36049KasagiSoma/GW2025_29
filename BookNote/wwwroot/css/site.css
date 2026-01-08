@@ -1,0 +1,442 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: #FAF0E6;
+    min-height: 100vh;
+}
+
+/* ナビゲーションドロワー */
+.drawer {
+    position: fixed;
+    left: -280px;
+    top: 0;
+    width: 280px;
+    height: 100vh;
+    background: linear-gradient(180deg, #F5E6D3 0%, #EDD9C3 100%);
+    transition: left 0.3s ease;
+    z-index: 1000;
+    box-shadow: 2px 0 10px rgba(101, 67, 33, 0.1);
+}
+
+    .drawer.open {
+        left: 0;
+    }
+
+.drawer-content {
+    padding: 80px 20px 20px;
+}
+
+.drawer-item {
+    padding: 16px 20px;
+    margin: 8px 0;
+    background: #FFF8F0;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    color: #654321;
+    font-weight: 500;
+    border: 2px solid transparent;
+    text-decoration: none;
+    display: block;
+}
+
+    .drawer-item:hover {
+        background: #F5E6D3;
+        border-color: #D2B48C;
+        transform: translateX(5px);
+    }
+a.drawer-item {
+    padding: 16px 20px;
+    margin: 8px 0;
+    background: #FFF8F0;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    color: #654321;
+    font-weight: 500;
+    border: 2px solid transparent;
+    text-decoration: none;
+    display: block;
+}
+
+    a.drawer-item:hover {
+        background: #F5E6D3;
+        border-color: #D2B48C;
+        transform: translateX(5px);
+    }
+
+/* ハンバーガーメニュー */
+.hamburger {
+    position: fixed;
+    left: 20px;
+    top: 10px;
+    width: 40px;
+    height: 40px;
+    cursor: pointer;
+    z-index: 1001;
+    background: #D2B48C;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 6px;
+    box-shadow: 0 2px 8px rgba(101, 67, 33, 0.15);
+    transition: top 0.3s ease, background 0.3s ease;
+}
+
+    .hamburger:hover {
+        background: #BC9F77;
+    }
+
+    .hamburger.scrolled {
+        top: 10px;
+    }
+
+    .hamburger span {
+        width: 24px;
+        height: 3px;
+        background: #654321;
+        border-radius: 2px;
+        transition: all 0.3s ease;
+    }
+
+    .hamburger.open span:nth-child(1) {
+        transform: rotate(45deg) translate(7px, 7px);
+    }
+
+    .hamburger.open span:nth-child(2) {
+        opacity: 0;
+    }
+
+    .hamburger.open span:nth-child(3) {
+        transform: rotate(-45deg) translate(7px, -7px);
+    }
+
+/* オーバーレイ */
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    background: rgba(101, 67, 33, 0.3);
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+    z-index: 999;
+}
+
+    .overlay.active {
+        opacity: 1;
+        visibility: visible;
+    }
+
+/* アップバー */
+.appbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 80px;
+    background: rgba(250, 240, 230, 0.95);
+    backdrop-filter: blur(10px);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px;
+    z-index: 998;
+    box-shadow: 0 2px 10px rgba(101, 67, 33, 0.1);
+    transition: all 0.3s ease;
+}
+
+    .appbar.scrolled {
+        height: 60px;
+    }
+
+/* ロゴ */
+.logo-link {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    height: 50px;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+}
+
+.logo {
+    height: 50px;
+    filter: drop-shadow(2px 2px 4px rgba(101, 67, 33, 0.1));
+    cursor: pointer;
+}
+
+.appbar.scrolled .logo-link {
+    height: 35px;
+    left: 80px;
+    transform: translateX(0);
+}
+
+.appbar.scrolled .logo {
+    height: 35px;
+}
+
+/* ログインボタン */
+.auth-button {
+    padding: 12px 24px;
+    background: linear-gradient(135deg, #A0826D 0%, #8B6F47 100%);
+    color: white;
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(139, 111, 71, 0.3);
+    font-size: 14px;
+    margin-left: auto;
+}
+
+    .auth-button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 16px rgba(139, 111, 71, 0.4);
+    }
+/* 認証セクション */
+.auth-section {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.username-display {
+    color: #333;
+    font-weight: 500;
+}
+
+.auth-button-logout {
+    background-color: #dc3545;
+}
+
+    .auth-button-logout:hover {
+        background-color: #c82333;
+    }
+
+/* メインコンテンツ */
+.main-content {
+    padding-top: 120px;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding-left: 20px;
+    padding-right: 20px;
+}
+
+/* セクションタイトル */
+.section-title {
+    font-size: 24px;
+    font-weight: 600;
+    color: #654321;
+    margin-bottom: 20px;
+    text-align: left;
+}
+
+/* 横スクロールコンテナ */
+.horizontal-scroll {
+    display: flex;
+    overflow-x: auto;
+    gap: 20px;
+    padding-bottom: 20px;
+    margin-bottom: 40px;
+    user-select: none;
+}
+
+    .horizontal-scroll.dragging {
+        cursor: grabbing;
+    }
+
+        .horizontal-scroll.dragging * {
+            pointer-events: none;
+        }
+
+    .horizontal-scroll::-webkit-scrollbar {
+        height: 8px;
+    }
+
+    .horizontal-scroll::-webkit-scrollbar-track {
+        background: #E8D4C0;
+        border-radius: 4px;
+    }
+
+    .horizontal-scroll::-webkit-scrollbar-thumb {
+        background: #A0826D;
+        border-radius: 4px;
+    }
+
+/* 小さいレビューカード */
+.review-card-small {
+    min-width: 320px;
+    background: white;
+    border-radius: 16px;
+    padding: 16px;
+    display: flex;
+    gap: 16px;
+    box-shadow: 0 4px 12px rgba(101, 67, 33, 0.1);
+    transition: all 0.3s ease;
+    flex-shrink: 0;
+    cursor: pointer;
+}
+
+    .review-card-small:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 20px rgba(101, 67, 33, 0.15);
+    }
+
+.horizontal-scroll.dragging .review-card-small {
+    cursor: grabbing;
+}
+
+.book-cover-small {
+    width: 80px;
+    height: 120px;
+    background: linear-gradient(135deg, #BC9F77 0%, #A0826D 100%);
+    border-radius: 8px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 12px;
+    text-align: center;
+    padding: 8px;
+}
+
+.review-content-small {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.review-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: #654321;
+    margin-bottom: 8px;
+}
+
+.book-title {
+    font-size: 14px;
+    color: #8B6F47;
+    margin-bottom: 12px;
+}
+
+.reviewer-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: auto;
+}
+
+.reviewer-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #D2B48C 0%, #BC9F77 100%);
+    flex-shrink: 0;
+}
+
+.reviewer-name {
+    font-size: 13px;
+    color: #654321;
+    flex: 1;
+}
+
+.post-time {
+    font-size: 12px;
+    color: #A0826D;
+}
+
+/* 大きいレビューカード */
+.review-card-large {
+    width: 100%;
+    background: white;
+    border-radius: 16px;
+    padding: 24px;
+    display: flex;
+    gap: 24px;
+    box-shadow: 0 4px 12px rgba(101, 67, 33, 0.1);
+    transition: all 0.3s ease;
+    margin-bottom: 20px;
+}
+
+    .review-card-large:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 20px rgba(101, 67, 33, 0.15);
+    }
+
+.book-cover-large {
+    width: 120px;
+    height: 180px;
+    background: linear-gradient(135deg, #BC9F77 0%, #A0826D 100%);
+    border-radius: 12px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 14px;
+    text-align: center;
+    padding: 12px;
+}
+
+.review-content-large {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.review-text {
+    font-size: 14px;
+    color: #5C4033;
+    line-height: 1.6;
+}
+
+.large-section {
+    margin-bottom: 60px;
+}
+
+.spoiler-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 16px;
+    color: #654321;
+    margin-top: 8px;
+}
+
+    .spoiler-checkbox input[type="checkbox"] {
+        transform: scale(1.2);
+        cursor: pointer;
+    }
+
+/* バナー */
+.banner {
+    width: 728px;
+    height: 90px;
+    background: linear-gradient(135deg, #A0826D 0%, #654321 100%);
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 40px;
+    margin-right: auto;
+    margin-left: auto;
+    box-shadow: 0 4px 12px rgba(101, 67, 33, 0.2);
+}

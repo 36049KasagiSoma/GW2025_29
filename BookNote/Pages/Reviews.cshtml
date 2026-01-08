@@ -1,0 +1,210 @@
+﻿@page
+@model ReviewsModel
+@{
+    ViewData["Title"] = "レビュー一覧";
+}
+
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BookNote - レビュー一覧</title>
+    <link type="text/css" rel="stylesheet" href="css/site.css">
+    <link type="text/css" rel="stylesheet" href="css/reviews.css">
+</head>
+<body class="reviews-page">
+    <!-- メインコンテンツ -->
+    <div class="main-content">
+        <h1 class="page-title">レビュー一覧</h1>
+
+        <!-- タブナビゲーション -->
+        <div class="tab-container">
+            <div class="tab active" data-tab="search">検索</div>
+            <div class="tab" data-tab="latest">最新</div>
+            <div class="tab" data-tab="popular">人気</div>
+            <div class="tab" data-tab="following">フォロー新着</div>
+        </div>
+
+        <!-- 検索タブコンテンツ -->
+        <div class="tab-content active" id="search-content">
+            <div class="search-container">
+                <input type="text" class="search-input" placeholder="書籍名、著者名、レビュータイトルで検索...">
+                <button class="search-button">検索</button>
+            </div>
+            <div class="filter-container">
+                <select class="filter-select">
+                    <option value="date">投稿日時</option>
+                    <option value="rating">評価順</option>
+                </select>
+            </div>
+            <div class="reviews-grid" id="search-results">
+                <p class="empty-message">検索キーワードを入力してください</p>
+            </div>
+        </div>
+
+        <!-- 最新タブコンテンツ -->
+        <div class="tab-content" id="latest-content">
+            <div class="reviews-grid">
+                <!-- 大きいレビューカード -->
+                <div class="review-card-large">
+                    <div class="book-cover-large">書影</div>
+                    <div class="review-content-large">
+                        <div class="review-title">心に響く物語</div>
+                        <div class="book-title">夏目漱石「こころ」</div>
+                        <div class="review-text">
+                            明治時代の人間の内面を描いた傑作。先生とKの関係性、そして「私」への告白という形式が独特で、読み進めるほどに深い人間心理に触れることができます...
+                        </div>
+                        <div class="reviewer-info">
+                            <div class="reviewer-icon"></div>
+                            <span class="reviewer-name">山田太郎</span>
+                            <span class="post-time">2時間前</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="review-card-large">
+                    <div class="book-cover-large">書影</div>
+                    <div class="review-content-large">
+                        <div class="review-title">感動的な結末に涙</div>
+                        <div class="book-title">東野圭吾「容疑者Xの献身」</div>
+                        <div class="review-text">
+                            ミステリーとしての完成度の高さはもちろん、石神の献身的な愛に胸を打たれました。トリックの美しさと切なさが見事に融合した作品です...
+                        </div>
+                        <div class="reviewer-info">
+                            <div class="reviewer-icon"></div>
+                            <span class="reviewer-name">佐藤花子</span>
+                            <span class="post-time">5時間前</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="review-card-large">
+                    <div class="book-cover-large">書影</div>
+                    <div class="review-content-large">
+                        <div class="review-title">読み応え抜群</div>
+                        <div class="book-title">村上春樹「ノルウェイの森」</div>
+                        <div class="review-text">
+                            青春の喪失と再生を描いた作品。登場人物たちの心の傷と向き合い方が丁寧に描かれており、読後に深い余韻が残ります...
+                        </div>
+                        <div class="reviewer-info">
+                            <div class="reviewer-icon"></div>
+                            <span class="reviewer-name">鈴木一郎</span>
+                            <span class="post-time">8時間前</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="review-card-large">
+                    <div class="book-cover-large">書影</div>
+                    <div class="review-content-large">
+                        <div class="review-title">ミステリーの傑作</div>
+                        <div class="book-title">宮部みゆき「模倣犯」</div>
+                        <div class="review-text">
+                            上下巻合わせて2000ページ超の大作ですが、一気に読ませる筆力に圧倒されました。犯人の心理描写が秀逸で、人間の闇を深く掘り下げています...
+                        </div>
+                        <div class="reviewer-info">
+                            <div class="reviewer-icon"></div>
+                            <span class="reviewer-name">田中美咲</span>
+                            <span class="post-time">12時間前</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 人気タブコンテンツ -->
+        <div class="tab-content" id="popular-content">
+            <div class="reviews-grid">
+                <div class="review-card-large">
+                    <div class="book-cover-large">書影</div>
+                    <div class="review-content-large">
+                        <div class="review-title">人生観が変わる一冊</div>
+                        <div class="book-title">三浦綾子「氷点」</div>
+                        <div class="review-text">
+                            この作品は罪と赦しをテーマにした深い物語です。登場人物たちの心の葛藤が丁寧に描かれており、読み進めるうちに自分自身の内面と向き合うことになります...
+                        </div>
+                        <div class="reviewer-info">
+                            <div class="reviewer-icon"></div>
+                            <span class="reviewer-name">高橋恵子</span>
+                            <span class="post-time">1日前</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="review-card-large">
+                    <div class="book-cover-large">書影</div>
+                    <div class="review-content-large">
+                        <div class="review-title">壮大なファンタジー世界</div>
+                        <div class="book-title">上橋菜穂子「精霊の守り人」</div>
+                        <div class="review-text">
+                            圧倒的な世界観と緻密な設定に引き込まれます。バルサという強く優しい女性主人公の生き様が素晴らしく、物語の展開も予測不可能で最後まで目が離せません...
+                        </div>
+                        <div class="reviewer-info">
+                            <div class="reviewer-icon"></div>
+                            <span class="reviewer-name">伊藤健太</span>
+                            <span class="post-time">2日前</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="review-card-large">
+                    <div class="book-cover-large">書影</div>
+                    <div class="review-content-large">
+                        <div class="review-title">心温まる青春小説</div>
+                        <div class="book-title">住野よる「君の膵臓をたべたい」</div>
+                        <div class="review-text">
+                            タイトルから想像できない感動的な物語でした。生と死、そして人との繋がりについて深く考えさせられます。涙なしでは読めない場面が多く、読後は温かい気持ちに...
+                        </div>
+                        <div class="reviewer-info">
+                            <div class="reviewer-icon"></div>
+                            <span class="reviewer-name">小林優子</span>
+                            <span class="post-time">3日前</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- フォロー新着タブコンテンツ -->
+        <div class="tab-content" id="following-content">
+            <div class="reviews-grid">
+                <div class="review-card-large">
+                    <div class="book-cover-large">書影</div>
+                    <div class="review-content-large">
+                        <div class="review-title">久しぶりに泣いた</div>
+                        <div class="book-title">重松清「きよしこ」</div>
+                        <div class="review-text">
+                            吃音に悩む少年の成長物語。著者自身の体験が元になっているだけあって、主人公の心情が痛いほど伝わってきます。読後感が素晴らしい作品です...
+                        </div>
+                        <div class="reviewer-info">
+                            <div class="reviewer-icon"></div>
+                            <span class="reviewer-name">高橋恵子</span>
+                            <span class="post-time">3時間前</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="review-card-large">
+                    <div class="book-cover-large">書影</div>
+                    <div class="review-content-large">
+                        <div class="review-title">ページをめくる手が止まらない</div>
+                        <div class="book-title">湊かなえ「告白」</div>
+                        <div class="review-text">
+                            衝撃的なストーリー展開に最初から最後まで引き込まれました。各章で語り手が変わる構成が秀逸で、真相が明らかになっていく過程がスリリングです...
+                        </div>
+                        <div class="reviewer-info">
+                            <div class="reviewer-icon"></div>
+                            <span class="reviewer-name">伊藤健太</span>
+                            <span class="post-time">6時間前</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="text/javascript" rel="script" src="js/site.js"></script>
+    <script type="text/javascript" src="js/reviews.js"></script>
+</body>
+</html>
