@@ -16,13 +16,9 @@
     <div class="main-content">
         @if (Model.Review != null) {
             <div class="reviews-grid">
-                <div class="review-card-large">
+                <div class="review-card-large" data-isbn="@Model.Isbn">
                     <div class="book-cover-large">
-                        @if (!string.IsNullOrEmpty(Model.BookCoverUrl)) {
-                            <img src="@Model.BookCoverUrl" alt="@Model.BookTitle">
-                        } else {
-                            <span>書影</span>
-                        }
+                        <span>NoImage</span>
                     </div>
                     <div class="review-content-large">
                         <div class="review-title">@Model.ReviewTitle</div>
@@ -58,5 +54,6 @@
     </div>
 
     <script type="text/javascript" src="~/js/site.js"></script>
+    <script type="text/javascript" src="~/js/review_details.js"></script>
 </body>
 </html>

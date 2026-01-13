@@ -16,19 +16,18 @@ window.addEventListener('scroll', () => {
 
 // 横スクロールのドラッグ機能
 const scrollContainers = document.querySelectorAll('.horizontal-scroll');
-
 scrollContainers.forEach(container => {
     let isDown = false;
     let startX;
     let scrollLeft;
     let hasMoved = false;
+    const dragThreshold = 5; // ドラッグと判定する最小移動距離(px)
 
     container.addEventListener('mousedown', (e) => {
         isDown = true;
         hasMoved = false;
         startX = e.pageX - container.offsetLeft;
         scrollLeft = container.scrollLeft;
-        container.classList.add('dragging');
     });
 
     container.addEventListener('mouseleave', () => {
@@ -43,10 +42,27 @@ scrollContainers.forEach(container => {
 
     container.addEventListener('mousemove', (e) => {
         if (!isDown) return;
-        e.preventDefault();
-        hasMoved = true;
         const x = e.pageX - container.offsetLeft;
-        const walk = (x - startX) * 2;
-        container.scrollLeft = scrollLeft - walk;
+        const distance = Math.abs(x - startX);
+
+        // 閾値を超えた場合のみドラッグと判定
+        if (distance > dragThreshold) {
+            e.preventDefault();
+            hasMoved = true;
+            container.classList.add('dragging');
+            const walk = (x - startX) * 2;
+            container.scrollLeft = scrollLeft - walk;
+        }
+    });
+
+    // カードのクリックイベント
+    const cards = container.querySelectorAll('.review-card-small');
+    cards.forEach(card => {
+        card.addEventListener('click', (e) => {
+            if (!hasMoved) {
+                const reviewId = card.getAttribute('data-review-id');
+                window.location.href = `/ReviewDetails/${reviewId}`;
+            }
+        });
     });
 });

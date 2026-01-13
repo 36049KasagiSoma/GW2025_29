@@ -2,6 +2,6 @@
 
 namespace BookNote.Scripts.SelectBook {
     public interface ISelectBookReview {
-        public List<BookReview> GetReview();
+        public Task<List<BookReview>> GetReview();
     }
 }

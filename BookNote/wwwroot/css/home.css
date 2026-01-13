@@ -17,3 +17,18 @@
     box-shadow: 0 2px 8px rgba(101, 67, 33, 0.15);
     transition: top 0.3s ease, background 0.3s ease;
 }
+.book-cover-small img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 8px;
+    display: block;
+}
+
+.book-cover-large img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 12px;
+    display: block;
+}

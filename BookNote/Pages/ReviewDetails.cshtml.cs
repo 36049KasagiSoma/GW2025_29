@@ -1,4 +1,5 @@
 using BookNote.Scripts;
+using BookNote.Scripts.BookImage;
 using Markdig;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -9,6 +10,7 @@ namespace BookNote.Pages {
         private readonly IConfiguration _configuration;
 
         public int ReviewId { get; set; }
+        public string? Isbn { get; set; }
         public string? ReviewTitle { get; set; }
         public string? BookTitle { get; set; }
         public string? BookCoverUrl { get; set; }
@@ -36,6 +38,7 @@ namespace BookNote.Pages {
                     br.Title,
                     br.Review,
                     br.Rating,
+                    br.ISBN,
                     br.IsSpoilers,
                     br.PostingTime,
                     b.Title AS BookTitle,
@@ -53,6 +56,7 @@ namespace BookNote.Pages {
                         if (await reader.ReadAsync()) {
                             ReviewTitle = reader["Title"] as string;
                             BookTitle = reader["BookTitle"] as string;
+                            Isbn = reader["Isbn"] as string;
                             UserName = reader["User_Name"] as string;
 
                             if (!reader.IsDBNull(reader.GetOrdinal("Rating"))) {
@@ -103,5 +107,13 @@ namespace BookNote.Pages {
 
         public class ReviewData { }
 
+        public async Task<IActionResult> OnGetImageAsync(string isbn) {
+            byte[]? imageData = await new BookImageController().GetBookImageData(isbn);
+            if (imageData != null && imageData.Length > 0) {
+                return File(imageData, "image/jpeg"); // ‚Ü‚½‚Í "image/png"
+            }
+
+            return NotFound();
+        }
     }
 }

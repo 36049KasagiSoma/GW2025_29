@@ -176,6 +176,14 @@
             color: #8B6F47;
         }
 
+.book-cover-large img,
+.book-cover-small img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    border-radius: inherit;
+}
+
 /* 空メッセージ */
 .empty-message {
     text-align: center;

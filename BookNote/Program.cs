@@ -34,6 +34,7 @@ namespace BookNote {
             }
 
             app.UseHttpsRedirection();
+
             app.UseStaticFiles();
 
             app.UseRouting();

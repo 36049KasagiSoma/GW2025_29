@@ -39,7 +39,7 @@ namespace BookNote.Scripts.Models {
         [Column("REVIEW")]
         public string Review { get; set; }
 
-        /* --- Navigation Properties --- */
+        /* ---  オプション --- */
 
         [ForeignKey(nameof(UserId))]
         public virtual User User { get; set; }

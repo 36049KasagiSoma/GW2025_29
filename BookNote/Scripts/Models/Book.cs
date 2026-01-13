@@ -21,6 +21,8 @@ namespace BookNote.Scripts.Models {
         [Column("PUBLISHER")]
         public string Publisher { get; set; }
 
+        public string? ImageUrl = null;
+
         /* Navigation */
         public virtual ICollection<BookReview> BookReviews { get; set; }
     }

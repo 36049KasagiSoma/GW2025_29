@@ -60,7 +60,7 @@ namespace BookNote.Pages
             try {
                 using (var connection = new OracleConnection(Keywords.GetDbConnectionString(_configuration))) {
                     await connection.OpenAsync();
-
+                    // TODO ユーザ処理・書籍検索処理
                     // 仮ユーザーID（実際はセッションから取得）
                     var userId = "550e8400-e29b-41d4-a716-446655440000";
 

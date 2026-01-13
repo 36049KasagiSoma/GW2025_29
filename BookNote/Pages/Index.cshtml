@@ -19,18 +19,24 @@
         <!-- あなたにオススメ（横スクロール） -->
         <h2 class="section-title">人気のレビュー</h2>
         <div class="horizontal-scroll">
-            @foreach (var review in Model.RecommendedBooks) {
-                <div class="review-card-small">
-                    <div class="book-cover-small">書影</div>
+            @foreach (var review in Model.PopularityReviews) {
+                <div class="review-card-small" data-review-id="@review.ReviewId" data-isbn="@review.Isbn">
+                    <div class="book-cover-small">
+                        @if (!string.IsNullOrEmpty(review.Book.ImageUrl)) {
+                            <img src="@review.Book.ImageUrl" alt="@review.Book.Title" draggable="false" />
+                        } else {
+                            <span>書影</span>
+                        }
+                    </div>
                     <div class="review-content-small">
                         <div>
                             <div class="review-title">@review.Title</div>
-                            <div class="book-title">@review.Isbn</div>
+                            <div class="book-title">@review.Book.Title</div>
                         </div>
                         <div>
                             <div class="reviewer-info">
                                 <div class="reviewer-icon"></div>
-                                <span class="reviewer-name">@review.UserId</span>
+                                <span class="reviewer-name">@review.User.UserName</span>
                             </div>
                             <div class="post-time">@review.PostingTime</div>
                         </div>
@@ -43,56 +49,29 @@
         <div class="large-section">
             <h2 class="section-title">あなたへのオススメ</h2>
 
-            <!-- 大きいレビューカード1 -->
-            <div class="review-card-large">
-                <div class="book-cover-large">書影</div>
-                <div class="review-content-large">
-                    <div class="review-title">人生観が変わる一冊</div>
-                    <div class="book-title">三浦綾子「氷点」</div>
-                    <div class="review-text">
-                        この作品は罪と赦しをテーマにした深い物語です。登場人物たちの心の葛藤が丁寧に描かれており、読み進めるうちに自分自身の内面と向き合うことになります。特にラストの展開は…
+            @foreach (var review in Model.RecommentedReviews) {
+                <div class="review-card-large" data-review-id="@review.ReviewId" data-isbn="@review.Isbn">
+                    <div class="book-cover-large">
+                        @if (!string.IsNullOrEmpty(review.Book.ImageUrl)) {
+                            <img src="@review.Book.ImageUrl" alt="@review.Book.Title" />
+                        } else {
+                            <span>書影</span>
+                        }
                     </div>
-                    <div class="reviewer-info">
-                        <div class="reviewer-icon"></div>
-                        <span class="reviewer-name">高橋恵子</span>
-                        <span class="post-time">1日前</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 大きいレビューカード2 -->
-            <div class="review-card-large">
-                <div class="book-cover-large">書影</div>
-                <div class="review-content-large">
-                    <div class="review-title">壮大なファンタジー世界</div>
-                    <div class="book-title">上橋菜穂子「精霊の守り人」</div>
-                    <div class="review-text">
-                        圧倒的な世界観と緻密な設定に引き込まれます。バルサという強く優しい女性主人公の生き様が素晴らしく、物語の展開も予測不可能で最後まで目が離せません。ファンタジー好きには…
-                    </div>
-                    <div class="reviewer-info">
-                        <div class="reviewer-icon"></div>
-                        <span class="reviewer-name">伊藤健太</span>
-                        <span class="post-time">2日前</span>
+                    <div class="review-content-large">
+                        <div class="review-title">@review.Title</div>
+                        <div class="book-title">@review.Book.Title</div>
+                        <div class="review-text">
+                            @Scripts.StaticEvent.TrimReview(review.Review,80)
+                        </div>
+                        <div class="reviewer-info">
+                            <div class="reviewer-icon"></div>
+                            <span class="reviewer-name">@review.User.UserName</span>
+                            <span class="post-time">@review.PostingTime</span>
+                        </div>
                     </div>
                 </div>
-            </div>
-
-            <!-- 大きいレビューカード3 -->
-            <div class="review-card-large">
-                <div class="book-cover-large">書影</div>
-                <div class="review-content-large">
-                    <div class="review-title">心温まる青春小説</div>
-                    <div class="book-title">住野よる「君の膵臓をたべたい」</div>
-                    <div class="review-text">
-                        タイトルから想像できない感動的な物語でした。生と死、そして人との繋がりについて深く考えさせられます。涙なしでは読めない場面が多く、読後は温かい気持ちに…
-                    </div>
-                    <div class="reviewer-info">
-                        <div class="reviewer-icon"></div>
-                        <span class="reviewer-name">小林優子</span>
-                        <span class="post-time">3日前</span>
-                    </div>
-                </div>
-            </div>
+            }
         </div>
 
         <!-- バナー -->
@@ -100,5 +79,7 @@
     </div>
     <script type="text/javascript" rel="script" src="~/js/site.js"></script>
     <script type="text/javascript" rel="script" src="~/js/home.js"></script>
+    <script type="text/javascript" src="~/js/load_image.js"></script>
+
 </body>
 </html>
