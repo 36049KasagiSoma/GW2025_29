@@ -8,7 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace BookNote.Pages {
+namespace BookNote.Pages.Users {
     public class UserAllReviewsModel : PageModel {
         private const int PageSize = 20;
 
@@ -86,7 +86,7 @@ namespace BookNote.Pages {
             // すべてのレビュー用のページネーション
             var totalAll = allReviewsData.Count;
             TotalPages = (int)Math.Ceiling(totalAll / (double)PageSize);
-            CurrentPage = (currentTab == "all") ? currentPage : 1;
+            CurrentPage = currentTab == "all" ? currentPage : 1;
 
             if (CurrentPage > TotalPages && TotalPages > 0) {
                 CurrentPage = TotalPages;
@@ -101,7 +101,7 @@ namespace BookNote.Pages {
             if (IsHighRatedReviewsPublic) {
                 var totalHighRated = highRatedReviewsData.Count;
                 HighRatedTotalPages = (int)Math.Ceiling(totalHighRated / (double)PageSize);
-                HighRatedCurrentPage = (currentTab == "high-rated") ? currentPage : 1;
+                HighRatedCurrentPage = currentTab == "high-rated" ? currentPage : 1;
 
                 if (HighRatedCurrentPage > HighRatedTotalPages && HighRatedTotalPages > 0) {
                     HighRatedCurrentPage = HighRatedTotalPages;
@@ -127,7 +127,7 @@ namespace BookNote.Pages {
                         Isbn = $"978{i:D10}",
                     },
                     Isbn = $"978{i:D10}",
-                    Rating = (i % 5) + 1,
+                    Rating = i % 5 + 1,
                     IsSpoilers = i % 3 == 0 ? 1:0,
                     Review = $"これは{i}番目のレビューです。内容のプレビューがここに表示されます...",
                     PostingTime = DateTime.Now,

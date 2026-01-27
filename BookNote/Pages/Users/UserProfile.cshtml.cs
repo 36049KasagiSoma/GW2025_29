@@ -9,7 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace BookNote.Pages {
+namespace BookNote.Pages.Users {
     public class UserProfileModel : PageModel {
         public bool UserExists { get; set; }
         public string UserName { get; set; }

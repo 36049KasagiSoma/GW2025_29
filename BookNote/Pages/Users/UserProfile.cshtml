@@ -1,5 +1,5 @@
 ﻿@page "{userId}"
-@model BookNote.Pages.UserProfileModel
+@model BookNote.Pages.Users.UserProfileModel
 @{
     ViewData["Title"] = Model.UserName ?? "ユーザプロフィール";
 }
@@ -114,7 +114,7 @@
             <div class="profile-section">
                 <div class="section-header">
                     <h2 class="section-title">すべてのレビュー</h2>
-                    <a href="/UserAllReviews/@Model.UserId" class="view-all-link">すべて表示 →</a>
+                    <a href="/Users/UserAllReviews/@Model.UserId" class="view-all-link">すべて表示 →</a>
                 </div>
                 <p class="empty-message">@Model.TotalReviewCount 件のレビュー</p>
             </div>
