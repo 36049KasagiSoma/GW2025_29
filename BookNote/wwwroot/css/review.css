@@ -192,6 +192,63 @@
     padding: 60px 20px;
 }
 
+/* いいねボタン */
+.like-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 0;
+    background: none;
+    border: none;
+    color: #654321;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 12px;
+    width: fit-content;
+}
+
+    .like-button:hover {
+        opacity: 0.7;
+    }
+
+    .like-button .heart-icon {
+        width: 24px;
+        height: 24px;
+        background-image: url('/image/Hart.png');
+        background-size: 200% 100%;
+        background-repeat: no-repeat;
+        background-position: left center;
+        transition: transform 0.3s ease;
+        flex-shrink: 0;
+    }
+
+    .like-button.liked .heart-icon {
+        background-position: right center;
+    }
+
+    .like-button .heart-icon.animate {
+        animation: heartBeat 0.3s ease;
+    }
+
+
+@keyframes heartBeat {
+    0%, 100% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.3);
+    }
+}
+
+.like-count {
+    font-weight: 600;
+    font-size: 14px;
+    flex-shrink: 0;
+}
+
 /* レスポンシブ対応 */
 @media (max-width: 768px) {
     .page-title {
