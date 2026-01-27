@@ -28,6 +28,7 @@ namespace BookNote.Scripts.SelectBookReview {
                     FROM UserFollow F
                     WHERE F.To_User_Id = :userId
                 )
+                AND R.POSTINGTIME IS NOT NULL
                 ORDER BY R.POSTINGTIME DESC";
 
             using var cmd = new OracleCommand(sql, _connection);

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace BookNote.Scripts.BookImage {
+namespace BookNote.Scripts.BooksAPI.BookImage {
     public class BookImageController {
         public async Task<string?> GetBookImageUrl(string isbn) {
             var fecList = BookCoverFetcherFactory.CreateList();

@@ -1,5 +1,7 @@
 using BookNote.Scripts;
-using BookNote.Scripts.BookImage;
+using BookNote.Scripts.BooksAPI.BookImage;
+using BookNote.Scripts.BooksAPI.BookSearch;
+using BookNote.Scripts.BooksAPI.BookSearch.Fetcher;
 using BookNote.Scripts.Models;
 using BookNote.Scripts.SelectBookReview;
 using Microsoft.AspNetCore.Mvc;
@@ -24,16 +26,22 @@ namespace BookNote.Pages {
         public IndexModel(ILogger<IndexModel> logger, IConfiguration configuration) {
             _logger = logger;
             _configuration = configuration;
-            _bookImageController= new BookImageController();
+            _bookImageController = new BookImageController();
         }
 
         public async Task OnGetAsync() {
-            using (var connection = new OracleConnection(Keywords.GetDbConnectionString(_configuration))) {
-                await connection.OpenAsync();
-                PopularityBook pb = new PopularityBook(connection);
-                RecommentedBook rb = new RecommentedBook(connection);
-                PopularityReviews = await pb.GetReview();
-                RecommentedReviews = await rb.GetReview();
+            try {
+                using (var connection = new OracleConnection(Keywords.GetDbConnectionString(_configuration))) {
+                    await connection.OpenAsync();
+                    PopularityBook pb = new PopularityBook(connection);
+                    RecommentedBook rb = new RecommentedBook(connection);
+                    PopularityReviews = await pb.GetReview();
+                    RecommentedReviews = await rb.GetReview();
+                }
+            } catch (Exception ex) {
+                _logger.LogError(ex,"オススメ取得エラー");
+                PopularityReviews = [];
+                RecommentedReviews = [];
             }
         }
 

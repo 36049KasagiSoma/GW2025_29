@@ -1,4 +1,5 @@
 ﻿using BookNote.Scripts;
+using Markdig;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Oracle.ManagedDataAccess.Client;
@@ -7,99 +8,241 @@ using System;
 using System.ComponentModel.DataAnnotations;
 using System.Text;
 
-namespace BookNote.Pages
-{
+namespace BookNote.Pages {
     public class WriteReviewModel : PageModel {
         private readonly ILogger<WriteReviewModel> _logger;
         private readonly IConfiguration _configuration;
+
+        // TODO ユーザID取得処理
+        private const string DEFAULT_USER_ID = "550e8400-e29b-41d4-a716-446655440000";
 
         public WriteReviewModel(ILogger<WriteReviewModel> logger, IConfiguration configuration) {
             _logger = logger;
             _configuration = configuration;
         }
 
+        [BindProperty(SupportsGet = true)]
+        public int? ReviewId { get; set; }
         [BindProperty]
-        public ReviewInputModel ReviewInput { get; set; } = new();
+        public ReviewInputModel? ReviewInput { get; set; } = new();
 
-        public void OnGet() {
-            // ページ初期表示
+        public async Task<IActionResult> OnGetAsync() {
+            if (ReviewId.HasValue) {
+                await LoadReviewAsync(ReviewId.Value);
+                if (ReviewInput == null) {
+                    Response.Redirect("/WriteReview");
+                }
+            }
+            return Page();
         }
 
-        public IActionResult OnPostSaveDraft() {
-            if (!ModelState.IsValid) {
-                return Page();
+        private async Task LoadReviewAsync(int reviewId) {
+            try {
+                using (var connection = new OracleConnection(Keywords.GetDbConnectionString(_configuration))) {
+                    await connection.OpenAsync();
+
+                    var userId = DEFAULT_USER_ID;
+
+                    var sql = @"SELECT R.REVIEW_ID, R.USER_ID, R.ISBN, B.TITLE, B.AUTHOR, B.PUBLISHER,
+                               R.RATING, R.ISSPOILERS, R.TITLE AS REVIEW_TITLE, R.REVIEW
+                        FROM BOOKREVIEW R
+                        LEFT JOIN BOOKS B ON R.ISBN = B.ISBN
+                        WHERE R.REVIEW_ID = :ReviewId";
+
+                    using (var command = new OracleCommand(sql, connection)) {
+                        command.BindByName = true;
+
+                        command.Parameters.Add(":ReviewId", OracleDbType.Int32).Value = reviewId;
+                        using (var reader = await command.ExecuteReaderAsync()) {
+                            if (await reader.ReadAsync()) {
+                                if (reader.GetString(reader.GetOrdinal("USER_ID")) != userId) {
+                                    ReviewInput = null;
+                                    return;
+                                }
+                                ReviewInput.BookIsbn = reader.GetString(reader.GetOrdinal("ISBN")).Trim();
+                                ReviewInput.BookTitle = reader.IsDBNull(reader.GetOrdinal("TITLE"))
+                                    ? ""
+                                    : reader.GetString(reader.GetOrdinal("TITLE")).Trim();
+                                ReviewInput.BookAuthor = reader.IsDBNull(reader.GetOrdinal("AUTHOR"))
+                                    ? ""
+                                    : reader.GetString(reader.GetOrdinal("AUTHOR")).Trim();
+                                ReviewInput.BookPublisher = reader.IsDBNull(reader.GetOrdinal("PUBLISHER"))
+                                    ? ""
+                                    : reader.GetString(reader.GetOrdinal("PUBLISHER")).Trim();
+                                ReviewInput.Title = reader.IsDBNull(reader.GetOrdinal("REVIEW_TITLE"))
+                                    ? ""
+                                    : reader.GetString(reader.GetOrdinal("REVIEW_TITLE")).Trim();
+                                ReviewInput.Rating = reader.IsDBNull(reader.GetOrdinal("RATING"))
+                                    ? 0
+                                    : reader.GetInt32(reader.GetOrdinal("RATING"));
+                                ReviewInput.ContainsSpoiler = reader.IsDBNull(reader.GetOrdinal("ISSPOILERS"))
+                                    ? false
+                                    : reader.GetInt32(reader.GetOrdinal("ISSPOILERS")) == 1;
+                                ReviewInput.ContentMarkdown = reader.IsDBNull(reader.GetOrdinal("REVIEW"))
+                                     ? ""
+                                     : reader.GetString(reader.GetOrdinal("REVIEW")).Trim();
+
+                                // Markdown → HTML変換（Quill編集用）
+                                ReviewInput.ContentHtml = ConvertMarkdownToQuillHtml(ReviewInput.ContentMarkdown);
+
+                                ReviewInput.ContentHtml = Markdig.Markdown.ToHtml(ReviewInput.ContentMarkdown);
+                                _logger.LogInformation(ReviewInput.ContentHtml);
+                            }
+                        }
+                    }
+                }
+            } catch (Exception ex) {
+                _logger.LogError(ex, "レビュー読み込みエラー");
             }
-
-            // HTML → Markdown変換
-            var converter = new Converter();
-            ReviewInput.ContentMarkdown = converter.Convert(ReviewInput.ContentHtml);
-
-            // Markdownをログ出力
-            _logger.LogInformation("=== 下書き保存 ===");
-            _logger.LogInformation("ContentHtml: {ContentHtml}", ReviewInput.ContentHtml);
-            _logger.LogInformation("ContentMarkdown: {ContentMarkdown}", ReviewInput.ContentMarkdown);
-            _logger.LogInformation("==================");
-
-            // 下書き保存処理
-            // TODO: データベースに下書きとして保存
-            // 例: _reviewService.SaveDraft(ReviewInput);
-
-            TempData["Message"] = "下書きを保存しました";
-            return RedirectToPage();
         }
 
-        public async Task<IActionResult> OnPostPublish() {
-            if (!ModelState.IsValid) {
-                return Page();
+        private string ConvertMarkdownToQuillHtml(string markdown) {
+            if (string.IsNullOrWhiteSpace(markdown)) {
+                return "";
             }
 
-            // HTML → Markdown変換
-            var converter = new Converter();
+            // Markdigのパイプライン設定
+            var pipeline = new Markdig.MarkdownPipelineBuilder()
+                .UseAdvancedExtensions()
+                .Build();
+
+            var html = Markdig.Markdown.ToHtml(markdown, pipeline);
+            return html;
+        }
+
+        private async Task EnsureBookExistsAsync(OracleConnection connection, string isbn) {
+            var checkSql = "SELECT COUNT(*) FROM Books WHERE Isbn = :ISBN";
+            try {
+                using (var checkCommand = new OracleCommand(checkSql, connection)) {
+                    checkCommand.Parameters.Add(":ISBN", OracleDbType.Char).Value = isbn;
+                    var count = Convert.ToInt32(await checkCommand.ExecuteScalarAsync());
+
+                    if (count == 0) {
+                        var insertBookSql = @"INSERT INTO Books (Isbn, Title, Author, Publisher) 
+                              VALUES (:ISBN, :Title, :Author, :Publisher)";
+                        using (var insertBookCommand = new OracleCommand(insertBookSql, connection)) {
+                            insertBookCommand.Parameters.Add(":ISBN", OracleDbType.Char).Value = isbn;
+                            insertBookCommand.Parameters.Add(":Title", OracleDbType.Varchar2).Value = ReviewInput.BookTitle;
+                            insertBookCommand.Parameters.Add(":Author", OracleDbType.Varchar2).Value = ReviewInput.BookAuthor ?? "";
+                            insertBookCommand.Parameters.Add(":Publisher", OracleDbType.Varchar2).Value = ReviewInput.BookPublisher ?? "";
+                            await insertBookCommand.ExecuteNonQueryAsync();
+                        }
+                        _logger.LogInformation("書籍を新規登録: {ISBN}", isbn);
+                    }
+                }
+            } catch (Exception ex) {
+                _logger.LogError(ex, "書籍登録エラー");
+            }
+        }
+
+        private async Task<bool> SaveReviewAsync(bool isDraft) {
+            if (!ModelState.IsValid) {
+                return false;
+            }
+
+            var converter = new Converter(new ReverseMarkdown.Config {
+                UnknownTags = ReverseMarkdown.Config.UnknownTagsOption.PassThrough,
+                GithubFlavored = true,
+                SmartHrefHandling = true
+            });
             ReviewInput.ContentMarkdown = converter.Convert(ReviewInput.ContentHtml);
+
+            if (isDraft) {
+                _logger.LogInformation("=== 下書き保存 ===");
+                _logger.LogInformation("ContentHtml: {ContentHtml}", ReviewInput.ContentHtml);
+                _logger.LogInformation("ContentMarkdown: {ContentMarkdown}", ReviewInput.ContentMarkdown);
+                _logger.LogInformation("==================");
+            }
 
             try {
                 using (var connection = new OracleConnection(Keywords.GetDbConnectionString(_configuration))) {
                     await connection.OpenAsync();
-                    // TODO ユーザ処理・書籍検索処理
-                    // 仮ユーザーID（実際はセッションから取得）
-                    var userId = "550e8400-e29b-41d4-a716-446655440000";
+                    await EnsureBookExistsAsync(connection, ReviewInput.BookIsbn);
 
-                    // 仮ISBN（実際は書籍選択から取得）
-                    var isbn = "9784000000000";
-
-                    var sql = @"INSERT INTO BookReview 
-                       (User_Id, ISBN, Rating, IsSpoilers, Title, Review) 
-                       VALUES 
-                       (:UserId, :ISBN, :Rating, :IsSpoiler, :Title, :Review)";
+                    string sql;
+                    if (ReviewId.HasValue) {
+                        // 既存レビューの更新
+                        if (isDraft) {
+                            sql = @"UPDATE BookReview 
+                               SET Rating = :Rating, ISSPOILERS = :IsSpoilers, Title = :Title, Review = :Review, PostingTime = NULL
+                               WHERE Review_Id = :ReviewId";
+                        } else {
+                            sql = @"UPDATE BookReview 
+                               SET Rating = :Rating, ISSPOILERS = :IsSpoilers, Title = :Title, Review = :Review, PostingTime = SYSTIMESTAMP
+                               WHERE Review_Id = :ReviewId";
+                        }
+                    } else {
+                        // 新規レビューの作成
+                        if (isDraft) {
+                            sql = @"INSERT INTO BookReview 
+                               (USER_ID, ISBN, RATING, ISSPOILERS, TITLE, REVIEW, POSTINGTIME) 
+                               VALUES 
+                               (:UserId, :ISBN, :Rating, :IsSpoilers, :Title, :Review, NULL)";
+                        } else {
+                            sql = @"INSERT INTO BookReview 
+                               (USER_ID, ISBN, RATING, ISSPOILERS, TITLE, REVIEW, POSTINGTIME) 
+                               VALUES 
+                               (:UserId, :ISBN, :Rating, :IsSpoilers, :Title, :Review, SYSTIMESTAMP)";
+                        }
+                    }
 
                     using (var command = new OracleCommand(sql, connection)) {
-                        command.Parameters.Add(":UserId", OracleDbType.Char).Value = userId;
-                        command.Parameters.Add(":ISBN", OracleDbType.Char).Value = isbn;
+                        command.BindByName = true;
+                        // 先にUPDATE/INSERT共通のパラメータを設定
                         command.Parameters.Add(":Rating", OracleDbType.Int32).Value = ReviewInput.Rating;
                         command.Parameters.Add(":IsSpoilers", OracleDbType.Int32).Value = ReviewInput.ContainsSpoiler ? 1 : 0;
-                        command.Parameters.Add(":Title", OracleDbType.Varchar2).Value = ReviewInput.Title;
-                        command.Parameters.Add(":Review", OracleDbType.NClob).Value = ReviewInput.ContentMarkdown;
+                        command.Parameters.Add(":Title", OracleDbType.Varchar2).Value =
+                            string.IsNullOrEmpty(ReviewInput.Title) ? (object)DBNull.Value : ReviewInput.Title;
+                        command.Parameters.Add(":Review", OracleDbType.Clob).Value =
+                            string.IsNullOrEmpty(ReviewInput.ContentMarkdown) ? (object)DBNull.Value : ReviewInput.ContentMarkdown;
+                        if (ReviewId.HasValue) {
+                            command.Parameters.Add(":ReviewId", OracleDbType.Int32).Value = ReviewId.Value;
+                        } else {
+                            command.Parameters.Add(":UserId", OracleDbType.Char).Value = DEFAULT_USER_ID;
+                            command.Parameters.Add(":ISBN", OracleDbType.Char).Value = ReviewInput.BookIsbn;
+                        }
 
                         await command.ExecuteNonQueryAsync();
                     }
 
                     _logger.LogInformation("レビュー登録成功");
                 }
-
-                return RedirectToPage("/Reviews");
+                return true;
             } catch (Exception ex) {
                 _logger.LogError(ex, "レビュー登録エラー");
                 ModelState.AddModelError(string.Empty, "レビューの投稿に失敗しました");
-                return Page();
+                return false;
             }
+        }
+
+        public async Task<IActionResult> OnPostSaveDraftAsync() {
+            _logger.LogInformation("下書き保存処理開始 - ReviewId: {ReviewId}", ReviewId);
+
+            if (await SaveReviewAsync(isDraft: true)) {
+                return RedirectToPage("/ReviewCreate");
+            }
+            return Page();
+        }
+
+        public async Task<IActionResult> OnPostPublish() {
+            _logger.LogInformation("投稿処理開始 - ReviewId: {ReviewId}", ReviewId);
+
+            if (await SaveReviewAsync(isDraft: false)) {
+                return RedirectToPage("/Reviews");
+            }
+            return Page();
         }
     }
 
+
     public class ReviewInputModel {
+        [Required(ErrorMessage = "書籍を選択してください")]
+        public string BookIsbn { get; set; } = string.Empty;
         [Required(ErrorMessage = "書籍を選択してください")]
         public string BookTitle { get; set; } = string.Empty;
 
         public string BookAuthor { get; set; } = string.Empty;
+        public string BookPublisher { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "レビュータイトルを入力してください")]
         [StringLength(20, ErrorMessage = "レビュータイトルは20文字以内で入力してください")]
@@ -112,10 +255,22 @@ namespace BookNote.Pages
         [Required(ErrorMessage = "レビュー本文を入力してください")]
         public string ContentHtml { get; set; } = string.Empty;
 
-        // Markdownはサーバー側で生成するのでRequiredを外す
         public string ContentMarkdown { get; set; } = string.Empty;
 
         public bool ContainsSpoiler { get; set; }
 
+        public override string ToString() {
+            return $@"ReviewInputModel {{
+              BookIsbn = ""{BookIsbn}"",
+              BookTitle = ""{BookTitle}"",
+              BookAuthor = ""{BookAuthor}"",
+              BookPublisher = ""{BookPublisher}"",
+              Title = ""{Title}"",
+              Rating = {Rating},
+              ContentHtml = ""{(ContentHtml.Length > 50 ? ContentHtml.Substring(0, 50) + "..." : ContentHtml)}"",
+              ContentMarkdown = ""{(ContentMarkdown.Length > 50 ? ContentMarkdown.Substring(0, 50) + "..." : ContentMarkdown)}"",
+              ContainsSpoiler = {ContainsSpoiler}
+            }}";
+        }
     }
 }

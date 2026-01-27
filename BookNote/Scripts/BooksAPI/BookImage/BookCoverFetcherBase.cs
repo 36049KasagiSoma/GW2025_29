@@ -1,6 +1,6 @@
-﻿using BookNote.Scripts.BookImage.Fetcher;
+﻿using BookNote.Scripts.BooksAPI.BookImage.Fetcher;
 
-namespace BookNote.Scripts.BookImage {
+namespace BookNote.Scripts.BooksAPI.BookImage {
     /// <summary>
     /// 書影取得の基底クラス
     /// </summary>

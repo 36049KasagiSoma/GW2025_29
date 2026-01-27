@@ -1,5 +1,5 @@
 using BookNote.Scripts;
-using BookNote.Scripts.BookImage;
+using BookNote.Scripts.BooksAPI.BookImage;
 using Markdig;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -10,6 +10,7 @@ namespace BookNote.Pages {
         private readonly IConfiguration _configuration;
 
         public int ReviewId { get; set; }
+        public string? UserPublicId { get; set; }
         public string? Isbn { get; set; }
         public string? ReviewTitle { get; set; }
         public string? BookTitle { get; set; }
@@ -21,6 +22,7 @@ namespace BookNote.Pages {
         public string? PostingTimeDisplay { get; set; }
         public string? ReviewHtml { get; set; }
         public ReviewData? Review { get; set; }
+        public bool IsDraft { get; set; } = false;
 
         public ReviewDetailsModel(IConfiguration configuration) {
             _configuration = configuration;
@@ -43,7 +45,8 @@ namespace BookNote.Pages {
                     br.PostingTime,
                     b.Title AS BookTitle,
                     b.Author,
-                    u.User_Name
+                    u.User_Name,
+                    u.User_PublicId
                 FROM BookReview br
                 INNER JOIN Books b ON br.ISBN = b.ISBN
                 INNER JOIN Users u ON br.User_Id = u.User_Id
@@ -54,22 +57,29 @@ namespace BookNote.Pages {
 
                     using (var reader = await command.ExecuteReaderAsync()) {
                         if (await reader.ReadAsync()) {
+                            if (!reader.IsDBNull(reader.GetOrdinal("PostingTime"))) {
+                                PostingTime = reader.GetDateTime(reader.GetOrdinal("PostingTime"));
+                                if (PostingTime == null) {
+                                    IsDraft = true;
+                                    return Page();
+                                }
+                                PostingTimeDisplay = StaticEvent.FormatPostingTime(PostingTime.Value);
+                            } else {
+                                IsDraft = true;
+                                return Page();
+                            }
+
                             ReviewTitle = reader["Title"] as string;
                             BookTitle = reader["BookTitle"] as string;
                             Isbn = reader["Isbn"] as string;
                             UserName = reader["User_Name"] as string;
-
+                            UserPublicId = reader["User_PublicId"] as string;
                             if (!reader.IsDBNull(reader.GetOrdinal("Rating"))) {
                                 Evaluation = Convert.ToInt32(reader["Rating"]);
                             }
 
                             if (!reader.IsDBNull(reader.GetOrdinal("IsSpoilers"))) {
                                 IsSpoilers = Convert.ToInt32(reader["IsSpoilers"]) == 1;
-                            }
-
-                            if (!reader.IsDBNull(reader.GetOrdinal("PostingTime"))) {
-                                PostingTime = reader.GetDateTime(reader.GetOrdinal("PostingTime"));
-                                PostingTimeDisplay = FormatPostingTime(PostingTime.Value);
                             }
 
                             // マークダウンをHTMLに変換
@@ -90,20 +100,6 @@ namespace BookNote.Pages {
             return Page();
         }
 
-        private string FormatPostingTime(DateTime postingTime) {
-            var now = DateTime.Now;
-            var diff = now - postingTime;
-
-            if (diff.TotalMinutes < 60) {
-                return $"{(int)diff.TotalMinutes}分前";
-            } else if (diff.TotalHours < 24) {
-                return $"{(int)diff.TotalHours}時間前";
-            } else if (diff.TotalDays < 30) {
-                return $"{(int)diff.TotalDays}日前";
-            } else {
-                return postingTime.ToString("yyyy/MM/dd");
-            }
-        }
 
         public class ReviewData { }
 

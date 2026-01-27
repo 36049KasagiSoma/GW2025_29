@@ -29,14 +29,17 @@
         <!-- 検索タブコンテンツ -->
         <div class="tab-content active" id="search-content">
             <div class="search-container">
-                <input type="text" class="search-input" placeholder="書籍名、著者名、レビュータイトルで検索...">
-                <button class="search-button">検索</button>
+                <input type="text" class="search-input" id="searchKeyword" placeholder="書籍名、著者名、レビュータイトルで検索...">
+                <button class="search-button" id="btnSearch">検索</button>
             </div>
             <div class="filter-container">
-                <select class="filter-select">
-                    <option value="date">投稿日時</option>
-                    <option value="rating">評価順</option>
-                </select>
+                <div class="filter-container">
+                    <select class="filter-select" id="searchSortOrder">
+                        <option value="match">関連度順</option>
+                        <option value="date">投稿日時</option>
+                        <option value="rating">評価順</option>
+                    </select>
+                </div>
             </div>
             <div class="reviews-grid" id="search-results">
                 <p class="empty-message">検索キーワードを入力してください</p>
@@ -58,7 +61,7 @@
                             <div class="reviewer-info">
                                 <div class="reviewer-icon"></div>
                                 <span class="reviewer-name">@review.User.UserName</span>
-                                <span class="post-time">2時間前</span>
+                                <span class="post-time">@Scripts.StaticEvent.FormatPostingTime(review.PostingTime)</span>
                             </div>
                         </div>
                     </div>
@@ -81,7 +84,7 @@
                             <div class="reviewer-info">
                                 <div class="reviewer-icon"></div>
                                 <span class="reviewer-name">@review.User.UserName</span>
-                                <span class="post-time">2時間前</span>
+                                <span class="post-time">@Scripts.StaticEvent.FormatPostingTime(review.PostingTime)</span>
                             </div>
                         </div>
                     </div>
@@ -104,7 +107,7 @@
                             <div class="reviewer-info">
                                 <div class="reviewer-icon"></div>
                                 <span class="reviewer-name">@review.User.UserName</span>
-                                <span class="post-time">2時間前</span>
+                                <span class="post-time">@Scripts.StaticEvent.FormatPostingTime(review.PostingTime)</span>
                             </div>
                         </div>
                     </div>
@@ -114,8 +117,7 @@
     </div>
 
     <script type="text/javascript" rel="script" src="~/js/site.js"></script>
-    <script type="text/javascript" src="~/js/reviews.js"></script>
     <script type="text/javascript" src="~/js/load_image.js"></script>
-
+    <script type="text/javascript" src="~/js/reviews.js"></script>
 </body>
 </html>

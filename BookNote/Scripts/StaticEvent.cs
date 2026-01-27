@@ -42,12 +42,28 @@ namespace BookNote.Scripts {
             return text.Trim();
         }
 
-        public static string TrimReview(string text, int cnt) {
+        public static string TrimReview(string? text, int cnt) {
+            if (text == null) return string.Empty;
             var pt = ToPlainText(text);
             pt = Regex.Replace(pt, @"[\p{Z}\p{C}]", "");
             if (pt.Length <= cnt) return pt;
 
             return pt.Substring(0, cnt - 1) + "…";
+        }
+
+        public static string FormatPostingTime(DateTime postingTime) {
+            var now = DateTime.Now;
+            var diff = now - postingTime;
+
+            if (diff.TotalMinutes < 60) {
+                return $"{(int)diff.TotalMinutes}分前";
+            } else if (diff.TotalHours < 24) {
+                return $"{(int)diff.TotalHours}時間前";
+            } else if (diff.TotalDays < 30) {
+                return $"{(int)diff.TotalDays}日前";
+            } else {
+                return postingTime.ToString("yyyy/MM/dd");
+            }
         }
     }
 }

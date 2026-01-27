@@ -1,0 +1,22 @@
+﻿<link rel="stylesheet" href="~/css/book-search-dialog.css">
+<script src="~/js/book-search-dialog.js"></script>
+<div id="bookSearchDialog" class="book-search-dialog" style="display: none;">
+    <div class="book-search-overlay"></div>
+    <div class="book-search-content">
+        <div class="book-search-header">
+            <h2>書籍検索</h2>
+            <button class="book-search-close" onclick="BookSearchDialog.close()">&times;</button>
+        </div>
+        <div class="book-search-body">
+            <div class="search-input-area">
+                <input type="text" id="bookSearchInput" placeholder="書籍名、著者名、ISBNで検索" />
+                <button onclick="BookSearchDialog.search()">検索</button>
+            </div>
+            <div id="bookSearchResults" class="search-results"></div>
+            <div id="bookSearchPagination" class="search-pagination" style="display: none;"></div>
+            <div id="bookSearchLoading" class="search-loading" style="display: none;">
+                <img src="~/image/searching.gif" width="120" onselectstart="return false;" onmousedown="return false;" />
+            </div>
+        </div>
+    </div>
+</div>

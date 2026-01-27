@@ -1,0 +1,186 @@
+﻿/* レビュー作成選択ページ専用スタイル */
+
+/* ロゴとアップバーの固定位置用オーバーライド */
+.review-create-page .appbar {
+    height: 60px;
+}
+
+.review-create-page .logo-link {
+    left: 80px;
+    transform: translateX(0);
+    height: 35px;
+}
+
+.review-create-page .logo {
+    height: 35px;
+}
+
+.review-create-page .main-content {
+    padding-top: 100px;
+    max-width: 900px;
+    margin: 0 auto;
+    padding-left: 20px;
+    padding-right: 20px;
+}
+
+.page-title {
+    font-size: 28px;
+    font-weight: 600;
+    color: #654321;
+    margin-bottom: 40px;
+    text-align: center;
+}
+
+/* 新規作成セクション */
+.new-review-section {
+    margin-bottom: 50px;
+}
+
+.option-card {
+    background: white;
+    border: 2px solid #E8D4C0;
+    border-radius: 16px;
+    padding: 40px 30px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+    .option-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 24px rgba(139, 111, 71, 0.2);
+        border-color: #A0826D;
+    }
+
+.option-icon {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto 20px;
+    background: linear-gradient(135deg, #F5E6D3 0%, #E8D4C0 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #8B6F47;
+}
+
+.option-title {
+    font-size: 22px;
+    font-weight: 600;
+    color: #654321;
+    margin-bottom: 12px;
+}
+
+.option-description {
+    font-size: 15px;
+    color: #A0826D;
+    line-height: 1.6;
+}
+
+/* 下書きセクション */
+.drafts-section {
+    margin-top: 50px;
+}
+
+.section-title {
+    font-size: 20px;
+    font-weight: 600;
+    color: #654321;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #E8D4C0;
+}
+
+/* 下書きリスト */
+.drafts-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.draft-item {
+    background: #FAF8F5;
+    border: 2px solid #E8D4C0;
+    border-radius: 12px;
+    padding: 20px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+    .draft-item:hover {
+        background: white;
+        border-color: #A0826D;
+        transform: translateX(4px);
+    }
+
+.draft-info {
+    margin-bottom: 12px;
+}
+
+.draft-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: #654321;
+    margin-bottom: 6px;
+}
+
+.draft-book {
+    font-size: 14px;
+    color: #8B6F47;
+    margin-bottom: 8px;
+}
+
+.draft-preview {
+    font-size: 14px;
+    color: #A0826D;
+    line-height: 1.5;
+}
+
+.draft-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 12px;
+    border-top: 1px solid #E8D4C0;
+}
+
+.draft-date {
+    font-size: 13px;
+    color: #BC9F77;
+}
+
+.delete-draft-btn {
+    padding: 6px 16px;
+    background: transparent;
+    border: 1px solid #DC3545;
+    border-radius: 8px;
+    color: #DC3545;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+    .delete-draft-btn:hover {
+        background: #DC3545;
+        border-color: #DC3545;
+        color: white;
+    }
+
+@media (max-width: 768px) {
+    .page-title {
+        font-size: 24px;
+    }
+
+    .option-card {
+        padding: 30px 20px;
+    }
+
+    .option-icon {
+        width: 60px;
+        height: 60px;
+    }
+
+    .option-title {
+        font-size: 20px;
+    }
+}

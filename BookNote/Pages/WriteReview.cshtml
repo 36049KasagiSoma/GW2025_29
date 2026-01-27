@@ -16,6 +16,7 @@
     <!-- Quill CSS -->
     <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
 </head>
+<partial name="_BookSearchDialog" />
 <body class="write-review-page">
     <!-- メインコンテンツ -->
     <div class="main-content">
@@ -30,19 +31,24 @@
             <div class="form-section">
                 <label class="form-label">書籍情報<span class="required">*</span></label>
                 <div class="book-search-container">
-                    <input type="text" class="form-input" id="book-search" placeholder="書籍名で検索...">
-                    <button type="button" class="search-small-button">検索</button>
+                    <button type="button" class="search-small-button" id="book-search-button">書籍を検索</button>
                 </div>
                 <div id="selected-book" class="selected-book" style="display: none;">
-                    <div class="book-cover-small">書影</div>
+                    <div class="book-cover-small">
+                        <img id="selected-book-image" src="" alt="" style="display: none;">
+                        <span id="selected-book-noimage">NoImage</span>
+                    </div>
                     <div class="book-info">
                         <div class="book-title-display"></div>
                         <div class="book-author"></div>
                     </div>
                     <button type="button" class="remove-button" onclick="removeBook()">×</button>
                 </div>
+                <input type="hidden" asp-for="ReviewId" />
+                <input type="hidden" asp-for="ReviewInput.BookIsbn" id="hidden-book-isbn">
                 <input type="hidden" asp-for="ReviewInput.BookTitle" id="hidden-book-title">
                 <input type="hidden" asp-for="ReviewInput.BookAuthor" id="hidden-book-author">
+                <input type="hidden" asp-for="ReviewInput.BookPublisher" id="hidden-book-publisher">
                 <span asp-validation-for="ReviewInput.BookTitle" class="text-danger"></span>
             </div>
 
@@ -98,6 +104,17 @@
             <div id="preview-content"></div>
         </div>
     </div>
+
+    <script>
+        // 既存レビューデータがあれば初期設定
+        window.existingReview = {
+            bookIsbn: '@Html.Raw(Model.ReviewInput.BookIsbn)',
+            bookTitle: '@Html.Raw(Model.ReviewInput.BookTitle)',
+            bookAuthor: '@Html.Raw(Model.ReviewInput.BookAuthor)',
+            rating: @Model.ReviewInput.Rating,
+            contentHtml: @Html.Raw(Json.Serialize(Model.ReviewInput.ContentHtml))
+        };
+    </script>
 
     <!-- Quill JS -->
     <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>

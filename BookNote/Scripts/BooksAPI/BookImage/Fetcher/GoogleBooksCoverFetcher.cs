@@ -1,4 +1,6 @@
-﻿namespace BookNote.Scripts.BookImage.Fetcher {
+﻿using BookNote.Scripts.BooksAPI.BookImage;
+
+namespace BookNote.Scripts.BooksAPI.BookImage.Fetcher {
     public class GoogleBooksBookCoverFetcher : BookCoverFetcherBase {
         private const string GoogleBooksApiBaseUrl = "https://www.googleapis.com/books/v1/volumes";
 

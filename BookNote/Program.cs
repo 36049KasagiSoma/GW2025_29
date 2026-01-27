@@ -25,6 +25,9 @@ namespace BookNote {
             // Razor Pages
             builder.Services.AddRazorPages();
 
+            // Controller
+            builder.Services.AddControllers();
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
@@ -44,6 +47,8 @@ namespace BookNote {
             app.UseAuthorization();
 
             app.MapRazorPages();
+
+            app.MapControllers();
 
             app.Run();
         }

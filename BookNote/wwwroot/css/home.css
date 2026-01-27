@@ -32,3 +32,8 @@
     border-radius: 12px;
     display: block;
 }
+
+#selected-book-noimage {
+    font-size: 12px;
+    color: #A0826D;
+}

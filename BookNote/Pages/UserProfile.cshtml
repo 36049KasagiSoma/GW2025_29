@@ -1,0 +1,129 @@
+﻿@page "{userId}"
+@model BookNote.Pages.UserProfileModel
+@{
+    ViewData["Title"] = Model.UserName ?? "ユーザプロフィール";
+}
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BookNote - @ViewData["Title"]</title>
+    <link type="text/css" rel="stylesheet" href="~/css/site.css">
+    <link type="text/css" rel="stylesheet" href="~/css/user_profile.css">
+</head>
+<body class="user-profile-page">
+    <div class="main-content">
+        @if (Model.UserExists) {
+            <!-- プロフィールヘッダー -->
+            <div class="profile-header">
+                <div class="profile-icon-large"></div>
+                <div class="profile-info">
+                    <div class="profile-username">@Model.UserName</div>
+                    <div class="profile-userid">@@@Model.UserId</div>
+                    @if (!string.IsNullOrWhiteSpace(Model.ProfileDescription)) {
+                        <div class="profile-description">@Model.ProfileDescription</div>
+                    }
+                </div>
+            </div>
+
+            <!-- 最近のレビュー -->
+            <div class="profile-section">
+                <div class="section-header">
+                    <h2 class="section-title">最近のレビュー</h2>
+                </div>
+                @if (Model.RecentReviews != null && Model.RecentReviews.Any()) {
+                    <div class="reviews-grid">
+                        @foreach (var review in Model.RecentReviews) {
+                            <div class="review-card-large" data-review-id="@review.ReviewId" data-isbn="@review.Isbn">
+                                <div class="book-cover-large">
+                                    <span>NoImage</span>
+                                </div>
+                                <div class="review-content-large">
+                                    <div class="review-title">@review.Title</div>
+                                    <div class="book-title">@review.Book.Title</div>
+                                        <div class="rating">
+                                            評価: @review.Rating / 5
+                                        </div>
+                                    @if (review.IsSpoilers == 1) {
+                                        <div class="spoiler-warning">
+                                            ⚠️ ネタバレ注意
+                                        </div>
+                                    }
+                                    <div class="review-text">
+                                        @Scripts.StaticEvent.TrimReview(review.Review, 80)
+                                    </div>
+                                    <div class="reviewer-info">
+                                        <div class="reviewer-icon"></div>
+                                        <span class="reviewer-name">@Model.UserName</span>
+                                        <span class="post-time">@review.PostingTime</span>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                } else {
+                    <p class="empty-message">まだレビューがありません。</p>
+                }
+            </div>
+
+            <!-- 高評価したレビュー -->
+            @if (Model.IsHighRatedReviewsPublic) {
+                <div class="profile-section">
+                    <div class="section-header">
+                        <h2 class="section-title">高評価したレビュー</h2>
+                    </div>
+
+                    @if (Model.HighRatedReviews != null && Model.HighRatedReviews.Any()) {
+                        <div class="reviews-grid">
+                            @foreach (var review in Model.HighRatedReviews) {
+                                <div class="review-card-large" data-review-id="@review.ReviewId" data-isbn="@review.Isbn">
+                                    <div class="book-cover-large">
+                                        <span>NoImage</span>
+                                    </div>
+                                    <div class="review-content-large">
+                                        <div class="review-title">@review.Title</div>
+                                        <div class="book-title">@review.Book.Title</div>
+                                            <div class="rating">
+                                                評価: @review.Rating / 5
+                                            </div>
+                                        @if (review.IsSpoilers == 1) {
+                                            <div class="spoiler-warning">
+                                                ⚠️ ネタバレ注意
+                                            </div>
+                                        }
+                                        <div class="review-text">
+                                            @Scripts.StaticEvent.TrimReview(review.Review, 80)
+                                        </div>
+                                        <div class="reviewer-info">
+                                            <div class="reviewer-icon"></div>
+                                            <span class="reviewer-name">@Model.UserName</span>
+                                            <span class="post-time">@review.PostingTime</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    } else {
+                        <p class="empty-message">高評価のレビューがありません。</p>
+                    }
+                </div>
+            }
+
+            <!-- すべてのレビューへのリンク -->
+            <div class="profile-section">
+                <div class="section-header">
+                    <h2 class="section-title">すべてのレビュー</h2>
+                    <a href="/UserAllReviews/@Model.UserId" class="view-all-link">すべて表示 →</a>
+                </div>
+                <p class="empty-message">@Model.TotalReviewCount 件のレビュー</p>
+            </div>
+        } else {
+            <p class="empty-message">ユーザが見つかりませんでした。</p>
+        }
+    </div>
+    <script type="text/javascript" src="~/js/site.js"></script>
+    <script type="text/javascript" src="~/js/user_profile.js"></script>
+    <script type="text/javascript" src="~/js/load_image.js"></script>
+</body>
+</html>

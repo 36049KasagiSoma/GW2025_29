@@ -1,0 +1,247 @@
+﻿/* ユーザプロフィールページ専用スタイル */
+
+/* ロゴとアップバーの固定位置用 */
+.user-profile-page .appbar {
+    height: 60px;
+}
+
+.user-profile-page .logo-link {
+    left: 80px;
+    transform: translateX(0);
+    height: 35px;
+}
+
+.user-profile-page .logo {
+    height: 35px;
+}
+
+.user-profile-page .main-content {
+    padding-top: 35px;
+}
+
+/* スクロール時の変更を無効化 */
+.user-profile-page .appbar.scrolled {
+    height: 60px;
+}
+
+    .user-profile-page .appbar.scrolled .logo-link {
+        left: 80px;
+        transform: translateX(0);
+        height: 35px;
+    }
+
+    .user-profile-page .appbar.scrolled .logo {
+        height: 35px;
+    }
+
+.user-profile-page .hamburger.scrolled {
+    top: 10px;
+}
+
+/* プロフィールヘッダー */
+.profile-header {
+    display: flex;
+    gap: 30px;
+    margin-bottom: 40px;
+    padding: 30px;
+    background: #FFF;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(101, 67, 33, 0.1);
+}
+
+.profile-icon-large {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #D2B48C 0%, #C19A6B 100%);
+    flex-shrink: 0;
+}
+
+.profile-info {
+    flex: 1;
+}
+
+.profile-username {
+    font-size: 32px;
+    font-weight: 600;
+    color: #654321;
+    margin-bottom: 8px;
+}
+
+.profile-userid {
+    font-size: 16px;
+    color: #A0826D;
+    margin-bottom: 16px;
+}
+
+.profile-description {
+    font-size: 15px;
+    color: #5C4033;
+    line-height: 1.8;
+    white-space: pre-wrap;
+}
+
+/* セクション */
+.profile-section {
+    margin-bottom: 50px;
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.section-title {
+    font-size: 24px;
+    font-weight: 600;
+    color: #654321;
+    border-bottom: 3px solid #D2B48C;
+    display: inline-block;
+    padding-bottom: 4px;
+}
+
+.view-all-link {
+    font-size: 14px;
+    color: #A0826D;
+    text-decoration: none;
+    padding: 8px 16px;
+    border: 1px solid #D2B48C;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+}
+
+    .view-all-link:hover {
+        background: #F5E6D3;
+        color: #654321;
+    }
+
+/* レビューグリッド */
+.reviews-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* レビューカード - ホバーアニメーション無効 */
+.user-profile-page .review-card-large {
+    transition: none;
+}
+
+    .user-profile-page .review-card-large:hover {
+        transform: none;
+        box-shadow: 0 4px 12px rgba(101, 67, 33, 0.1);
+    }
+
+/* タブ切り替え */
+.review-tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 20px;
+    border-bottom: 2px solid #E8D4C0;
+}
+
+.tab-button {
+    padding: 12px 24px;
+    background: none;
+    border: none;
+    font-size: 16px;
+    font-weight: 500;
+    color: #A0826D;
+    cursor: pointer;
+    border-bottom: 3px solid transparent;
+    margin-bottom: -2px;
+    transition: all 0.3s ease;
+}
+
+    .tab-button:hover {
+        color: #654321;
+    }
+
+    .tab-button.active {
+        color: #654321;
+        border-bottom-color: #D2B48C;
+    }
+
+.tab-content {
+    display: none;
+}
+
+    .tab-content.active {
+        display: block;
+    }
+
+/* ページネーション */
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    margin-top: 40px;
+    padding: 20px;
+}
+
+.page-link {
+    padding: 10px 20px;
+    background: #FFF;
+    border: 2px solid #D2B48C;
+    border-radius: 8px;
+    color: #654321;
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+    .page-link:hover {
+        background: #F5E6D3;
+        border-color: #A0826D;
+    }
+
+.page-info {
+    font-size: 16px;
+    color: #654321;
+    font-weight: 500;
+}
+
+/* 空メッセージ */
+.empty-message {
+    text-align: center;
+    color: #A0826D;
+    font-size: 16px;
+    padding: 60px 20px;
+    background: #FFF;
+    border-radius: 12px;
+}
+
+/* レスポンシブ対応 */
+@media (max-width: 768px) {
+    .profile-header {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+
+    .profile-username {
+        font-size: 24px;
+    }
+
+    .section-title {
+        font-size: 20px;
+    }
+
+    .section-header {
+        flex-direction: column;
+        gap: 12px;
+        align-items: flex-start;
+    }
+
+    .review-tabs {
+        flex-wrap: wrap;
+    }
+
+    .tab-button {
+        font-size: 14px;
+        padding: 10px 16px;
+    }
+}

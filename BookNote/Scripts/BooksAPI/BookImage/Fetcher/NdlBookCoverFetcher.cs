@@ -1,4 +1,6 @@
-﻿namespace BookNote.Scripts.BookImage.Fetcher {
+﻿using BookNote.Scripts.BooksAPI.BookImage;
+
+namespace BookNote.Scripts.BooksAPI.BookImage.Fetcher {
     public class NdlBookCoverFetcher : BookCoverFetcherBase {
         private const string NdlCoverBaseUrl = "https://ndlsearch.ndl.go.jp/thumbnail/";
 

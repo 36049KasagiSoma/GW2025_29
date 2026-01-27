@@ -1,4 +1,6 @@
-﻿namespace BookNote.Scripts.BookImage.Fetcher {
+﻿using BookNote.Scripts.BooksAPI.BookImage;
+
+namespace BookNote.Scripts.BooksAPI.BookImage.Fetcher {
     public class RakutenBooksBookCoverFetcher : BookCoverFetcherBase {
         private const string RakutenBooksApiBaseUrl = "https://app.rakuten.co.jp/services/api/BooksBook/Search/20170404";
         private readonly string _applicationId;

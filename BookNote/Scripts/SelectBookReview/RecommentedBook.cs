@@ -18,7 +18,7 @@ namespace BookNote.Scripts.SelectBookReview {
             const string sql = @"
                 SELECT R.REVIEW_ID, R.USER_ID, U.USER_NAME, R.ISBN, B.TITLE, B.AUTHOR,B.PUBLISHER, R.RATING, R.ISSPOILERS, R.POSTINGTIME, R.TITLE AS REVIEW_TITLE, R.REVIEW
                 FROM BOOKREVIEW R, USERS U, BOOKS B
-                WHERE R.USER_ID = U.USER_ID AND R.ISBN = B.ISBN
+                WHERE R.USER_ID = U.USER_ID AND R.ISBN = B.ISBN AND R.POSTINGTIME IS NOT NULL
                 ORDER BY POSTINGTIME DESC";
             using var cmd = new OracleCommand(sql, _connection);
             using var reader = await cmd.ExecuteReaderAsync();

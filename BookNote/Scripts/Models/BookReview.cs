@@ -17,7 +17,7 @@ namespace BookNote.Scripts.Models {
         [Required]
         [StringLength(13)]
         [Column("ISBN", TypeName = "CHAR")]
-        public string Isbn { get; set; }
+        public string? Isbn { get; set; }
 
         [Range(0, 9)]
         [Column("RATING")]
@@ -34,10 +34,10 @@ namespace BookNote.Scripts.Models {
 
         [StringLength(100)]
         [Column("TITLE")]
-        public string Title { get; set; }
+        public string? Title { get; set; }
 
         [Column("REVIEW")]
-        public string Review { get; set; }
+        public string? Review { get; set; }
 
         /* ---  オプション --- */
 

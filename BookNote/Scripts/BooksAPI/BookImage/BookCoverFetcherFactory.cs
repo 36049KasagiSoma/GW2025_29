@@ -1,6 +1,6 @@
-﻿using BookNote.Scripts.BookImage.Fetcher;
+﻿using BookNote.Scripts.BooksAPI.BookImage.Fetcher;
 
-namespace BookNote.Scripts.BookImage {
+namespace BookNote.Scripts.BooksAPI.BookImage {
     public class BookCoverFetcherFactory {
         /// <summary>
         /// 指定されたソースの書影取得クラスを作成します

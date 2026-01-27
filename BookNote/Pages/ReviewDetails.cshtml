@@ -14,7 +14,7 @@
 </head>
 <body class="review-detail-page">
     <div class="main-content">
-        @if (Model.Review != null) {
+        @if (Model.Review != null && !Model.IsDraft) {
             <div class="reviews-grid">
                 <div class="review-card-large" data-isbn="@Model.Isbn">
                     <div class="book-cover-large">
@@ -42,7 +42,7 @@
 
                         <div class="reviewer-info">
                             <div class="reviewer-icon"></div>
-                            <span class="reviewer-name">@Model.UserName</span>
+                            <a href="/UserProfile/@Model.UserPublicId" class="reviewer-name">@Model.UserName</a>
                             <span class="post-time">@Model.PostingTimeDisplay</span>
                         </div>
                     </div>

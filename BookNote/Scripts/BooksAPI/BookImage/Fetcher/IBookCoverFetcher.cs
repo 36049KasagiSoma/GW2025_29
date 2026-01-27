@@ -1,4 +1,4 @@
-﻿namespace BookNote.Scripts.BookImage.Fetcher {
+﻿namespace BookNote.Scripts.BooksAPI.BookImage.Fetcher {
     /// <summary>
     /// 書影を取得するためのインターフェイス
     /// </summary>

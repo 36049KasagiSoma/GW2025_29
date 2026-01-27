@@ -19,63 +19,71 @@
         <!-- あなたにオススメ（横スクロール） -->
         <h2 class="section-title">人気のレビュー</h2>
         <div class="horizontal-scroll">
-            @foreach (var review in Model.PopularityReviews) {
-                <div class="review-card-small" data-review-id="@review.ReviewId" data-isbn="@review.Isbn">
-                    <div class="book-cover-small">
-                        @if (!string.IsNullOrEmpty(review.Book.ImageUrl)) {
-                            <img src="@review.Book.ImageUrl" alt="@review.Book.Title" draggable="false" />
-                        } else {
-                            <span>書影</span>
-                        }
-                    </div>
-                    <div class="review-content-small">
-                        <div>
-                            <div class="review-title">@review.Title</div>
-                            <div class="book-title">@review.Book.Title</div>
+            @if (Model.PopularityReviews.Count > 0) {
+                @foreach (var review in Model.PopularityReviews) {
+                    <div class="review-card-small" data-review-id="@review.ReviewId" data-isbn="@review.Isbn">
+                        <div class="book-cover-small">
+                            @if (!string.IsNullOrEmpty(review.Book.ImageUrl)) {
+                                <img src="@review.Book.ImageUrl" alt="@review.Book.Title" draggable="false" />
+                            } else {
+                                <span>書影</span>
+                            }
                         </div>
-                        <div>
-                            <div class="reviewer-info">
-                                <div class="reviewer-icon"></div>
-                                <span class="reviewer-name">@review.User.UserName</span>
+                        <div class="review-content-small">
+                            <div>
+                                <div class="review-title">@review.Title</div>
+                                <div class="book-title">@review.Book.Title</div>
                             </div>
-                            <div class="post-time">@review.PostingTime</div>
+                            <div>
+                                <div class="reviewer-info">
+                                    <div class="reviewer-icon"></div>
+                                    <span class="reviewer-name">@review.User.UserName</span>
+                                </div>
+                                <div class="post-time">@Scripts.StaticEvent.FormatPostingTime(review.PostingTime)</div>
+                            </div>
                         </div>
                     </div>
-                </div>
+                }
+            } else {
+                <a>&emsp;サーバーからのデータ取得でエラーが発生しました。</a>
             }
         </div>
 
         <!-- あなたへのオススメ（大きいカード） -->
         <div class="large-section">
             <h2 class="section-title">あなたへのオススメ</h2>
-
-            @foreach (var review in Model.RecommentedReviews) {
-                <div class="review-card-large" data-review-id="@review.ReviewId" data-isbn="@review.Isbn">
-                    <div class="book-cover-large">
-                        @if (!string.IsNullOrEmpty(review.Book.ImageUrl)) {
-                            <img src="@review.Book.ImageUrl" alt="@review.Book.Title" />
-                        } else {
-                            <span>書影</span>
-                        }
-                    </div>
-                    <div class="review-content-large">
-                        <div class="review-title">@review.Title</div>
-                        <div class="book-title">@review.Book.Title</div>
-                        <div class="review-text">
-                            @Scripts.StaticEvent.TrimReview(review.Review,80)
+            @if (Model.RecommentedReviews.Count > 0) {
+                @foreach (var review in Model.RecommentedReviews) {
+                    <div class="review-card-large" data-review-id="@review.ReviewId" data-isbn="@review.Isbn">
+                        <div class="book-cover-large">
+                            @if (!string.IsNullOrEmpty(review.Book.ImageUrl)) {
+                                <img src="@review.Book.ImageUrl" alt="@review.Book.Title" />
+                            } else {
+                                <span>書影</span>
+                            }
                         </div>
-                        <div class="reviewer-info">
-                            <div class="reviewer-icon"></div>
-                            <span class="reviewer-name">@review.User.UserName</span>
-                            <span class="post-time">@review.PostingTime</span>
+                        <div class="review-content-large">
+                            <div class="review-title">@review.Title</div>
+                            <div class="book-title">@review.Book.Title</div>
+                            <div class="review-text">
+                                @Scripts.StaticEvent.TrimReview(review.Review, 80)
+                            </div>
+                            <div class="reviewer-info">
+                                <div class="reviewer-icon"></div>
+                                <span class="reviewer-name">@review.User.UserName</span>
+                                <span class="post-time">@Scripts.StaticEvent.FormatPostingTime(review.PostingTime)</span>
+                            </div>
                         </div>
                     </div>
-                </div>
+                }
+            } else {
+                <a>&emsp;サーバーからのデータ取得でエラーが発生しました。</a>
             }
         </div>
 
         <!-- バナー -->
         <img class="banner" src="image/仮画像/広告（仮）.png" />
+        <partial name="_BookSearchDialog" />
     </div>
     <script type="text/javascript" rel="script" src="~/js/site.js"></script>
     <script type="text/javascript" rel="script" src="~/js/home.js"></script>
