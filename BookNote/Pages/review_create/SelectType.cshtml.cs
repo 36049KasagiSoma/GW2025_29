@@ -1,5 +1,6 @@
 using Amazon.Runtime.Internal.Util;
 using BookNote.Scripts;
+using BookNote.Scripts.Login;
 using BookNote.Scripts.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -9,10 +10,10 @@ using System.Data.Common;
 
 namespace BookNote.Pages
 {
-    public class ReviewCreateModel : PageModel {
+    public class SelectTypeModel : PageModel {
         private readonly IConfiguration _configuration;
-        private readonly ILogger<ReviewCreateModel> _logger;
-        public ReviewCreateModel(ILogger<ReviewCreateModel> logger, IConfiguration configuration) {
+        private readonly ILogger<SelectTypeModel> _logger;
+        public SelectTypeModel(ILogger<SelectTypeModel> logger, IConfiguration configuration) {
             _logger = logger;
             _configuration = configuration;
         }
@@ -21,9 +22,9 @@ namespace BookNote.Pages
         public int DraftCount { get; set; }
 
         public async Task<IActionResult> OnGetAsync() {
-            // ログインチェック
-            // TODO ユーザーIDの取得
-            var userId = "550e8400-e29b-41d4-a716-446655440000";
+            // TODO ログインチェック
+            UserDataManager userDataManager = new UserDataManager();
+            var userId = userDataManager.GetUserId();    
             //if (string.IsNullOrEmpty(userId)) {
             //    return RedirectToPage("/Login");
             //}
@@ -39,8 +40,8 @@ namespace BookNote.Pages
                 using (var connection = new OracleConnection(Keywords.GetDbConnectionString(_configuration))) {
                     await connection.OpenAsync();
 
-                    // TODO ユーザーIDの取得
-                    var userId = "550e8400-e29b-41d4-a716-446655440000";
+                    UserDataManager userDataManager = new UserDataManager();
+                    var userId = userDataManager.GetUserId();
 
                     // ユーザー確認と削除
                     var sql = @"DELETE FROM BookReview 

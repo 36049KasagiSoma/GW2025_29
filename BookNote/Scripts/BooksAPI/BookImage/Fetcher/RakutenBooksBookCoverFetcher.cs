@@ -19,7 +19,6 @@ namespace BookNote.Scripts.BooksAPI.BookImage.Fetcher {
         public override async Task<string> GetCoverUrlAsync(string isbn) {
             var normalizedIsbn = NormalizeIsbn(isbn);
             var requestUrl = $"{RakutenBooksApiBaseUrl}?applicationId={_applicationId}&isbn={normalizedIsbn}";
-
             try {
                 var response = await _httpClient.GetStringAsync(requestUrl);
                 var json = System.Text.Json.JsonDocument.Parse(response);

@@ -1,5 +1,5 @@
 ﻿@page
-@model ReviewCreateModel
+@model SelectTypeModel
 @{
     ViewData["Title"] = "レビュー作成";
     Layout = "_Layout";
@@ -23,7 +23,7 @@
 
         <!-- 新規作成ボタン -->
         <div class="new-review-section">
-            <div class="option-card new-review" onclick="window.location.href='/WriteReview'">
+            <div class="option-card new-review" onclick="window.location.href='/review_create/WriteReview'">
                 <div class="option-icon">
                     <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M12 5v14M5 12h14" />
@@ -41,7 +41,7 @@
             @if (Model.Drafts != null && Model.Drafts.Any()) {
                 <div class="drafts-list">
                     @foreach (var draft in Model.Drafts) {
-                        <div class="draft-item" onclick="window.location.href='/WriteReview?ReviewId=@draft.ReviewId'">
+                        <div class="draft-item" onclick="window.location.href='/review_create/WriteReview?ReviewId=@draft.ReviewId'">
                             <div class="draft-info">
                                 <div class="draft-title">@(string.IsNullOrEmpty(draft.Title) ? "無題の下書き" : draft.Title)</div>
                                 @if (draft.Book != null) {

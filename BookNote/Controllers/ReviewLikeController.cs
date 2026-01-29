@@ -1,4 +1,5 @@
 ﻿using BookNote.Scripts;
+using BookNote.Scripts.Login;
 using Markdig;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -16,15 +17,14 @@ namespace BookNote.Controllers {
             _configuration = configuration;
         }
 
-        // GetLikeStatus メソッド - 仮のユーザーID使用
+        // GetLikeStatus メソッド
         [HttpGet("{reviewId}/like")]
         public async Task<IActionResult> GetLikeStatus(int reviewId) {
             var isLiked = false;
             var likeCount = 0;
 
-            // 仮のユーザーID (36文字のGUID形式)
-            // TODO ユーザID取得処理
-            var tempUserId = "550e8400-e29b-41d4-a716-446655440000";
+            UserDataManager userDataManager = new UserDataManager();
+            var userId = userDataManager.GetUserId();
 
             using (var connection = new OracleConnection(Keywords.GetDbConnectionString(_configuration))) {
                 await connection.OpenAsync();
@@ -38,12 +38,11 @@ namespace BookNote.Controllers {
                     likeCount = Convert.ToInt32(result);
                 }
 
-                // 仮ユーザーのいいね状態を確認
                 using (var likeCmd = new OracleCommand(
                     "SELECT COUNT(*) FROM GoodReview WHERE Review_Id = :reviewId AND User_Id = :userId",
                     connection)) {
                     likeCmd.Parameters.Add(":reviewId", OracleDbType.Int32).Value = reviewId;
-                    likeCmd.Parameters.Add(":userId", OracleDbType.Char).Value = tempUserId;
+                    likeCmd.Parameters.Add(":userId", OracleDbType.Char).Value = userId;
                     var result = await likeCmd.ExecuteScalarAsync();
                     isLiked = Convert.ToInt32(result) > 0;
                 }
@@ -52,12 +51,10 @@ namespace BookNote.Controllers {
             return Ok(new { isLiked, likeCount });
         }
 
-        // ToggleLike メソッド - [Authorize]属性を削除し、仮のユーザーID使用
         [HttpPost("{reviewId}/like")]
         public async Task<IActionResult> ToggleLike(int reviewId) {
-            // 仮のユーザーID (36文字のGUID形式)
-            // TODO ユーザID取得処理
-            var userId = "550e8400-e29b-41d4-a716-446655440000";
+            UserDataManager userDataManager = new UserDataManager();
+            var userId = userDataManager.GetUserId();
 
             var isLiked = false;
             var likeCount = 0;

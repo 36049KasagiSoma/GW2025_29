@@ -1,4 +1,5 @@
 ﻿using BookNote.Scripts;
+using BookNote.Scripts.Login;
 using Markdig;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -8,13 +9,11 @@ using System;
 using System.ComponentModel.DataAnnotations;
 using System.Text;
 
-namespace BookNote.Pages {
+namespace BookNote.Pages.review_create {
     public class WriteReviewModel : PageModel {
         private readonly ILogger<WriteReviewModel> _logger;
         private readonly IConfiguration _configuration;
 
-        // TODO ユーザID取得処理
-        private const string DEFAULT_USER_ID = "550e8400-e29b-41d4-a716-446655440000";
 
         public WriteReviewModel(ILogger<WriteReviewModel> logger, IConfiguration configuration) {
             _logger = logger;
@@ -30,7 +29,7 @@ namespace BookNote.Pages {
             if (ReviewId.HasValue) {
                 await LoadReviewAsync(ReviewId.Value);
                 if (ReviewInput == null) {
-                    Response.Redirect("/WriteReview");
+                    Response.Redirect("/review_create/WriteReview");
                 }
             }
             return Page();
@@ -40,8 +39,8 @@ namespace BookNote.Pages {
             try {
                 using (var connection = new OracleConnection(Keywords.GetDbConnectionString(_configuration))) {
                     await connection.OpenAsync();
-
-                    var userId = DEFAULT_USER_ID;
+                    UserDataManager userDataManager = new UserDataManager();
+                    var userId = userDataManager.GetUserId();
 
                     var sql = @"SELECT R.REVIEW_ID, R.USER_ID, R.ISBN, B.TITLE, B.AUTHOR, B.PUBLISHER,
                                R.RATING, R.ISSPOILERS, R.TITLE AS REVIEW_TITLE, R.REVIEW
@@ -85,7 +84,7 @@ namespace BookNote.Pages {
                                 // Markdown → HTML変換（Quill編集用）
                                 ReviewInput.ContentHtml = ConvertMarkdownToQuillHtml(ReviewInput.ContentMarkdown);
 
-                                ReviewInput.ContentHtml = Markdig.Markdown.ToHtml(ReviewInput.ContentMarkdown);
+                                ReviewInput.ContentHtml = Markdown.ToHtml(ReviewInput.ContentMarkdown);
                                 _logger.LogInformation(ReviewInput.ContentHtml);
                             }
                         }
@@ -102,11 +101,11 @@ namespace BookNote.Pages {
             }
 
             // Markdigのパイプライン設定
-            var pipeline = new Markdig.MarkdownPipelineBuilder()
+            var pipeline = new MarkdownPipelineBuilder()
                 .UseAdvancedExtensions()
                 .Build();
 
-            var html = Markdig.Markdown.ToHtml(markdown, pipeline);
+            var html = Markdown.ToHtml(markdown, pipeline);
             return html;
         }
 
@@ -140,8 +139,8 @@ namespace BookNote.Pages {
                 return false;
             }
 
-            var converter = new Converter(new ReverseMarkdown.Config {
-                UnknownTags = ReverseMarkdown.Config.UnknownTagsOption.PassThrough,
+            var converter = new Converter(new Config {
+                UnknownTags = Config.UnknownTagsOption.PassThrough,
                 GithubFlavored = true,
                 SmartHrefHandling = true
             });
@@ -186,19 +185,21 @@ namespace BookNote.Pages {
                         }
                     }
 
+                    UserDataManager userDataManager = new UserDataManager();
+
                     using (var command = new OracleCommand(sql, connection)) {
                         command.BindByName = true;
                         // 先にUPDATE/INSERT共通のパラメータを設定
                         command.Parameters.Add(":Rating", OracleDbType.Int32).Value = ReviewInput.Rating;
                         command.Parameters.Add(":IsSpoilers", OracleDbType.Int32).Value = ReviewInput.ContainsSpoiler ? 1 : 0;
                         command.Parameters.Add(":Title", OracleDbType.Varchar2).Value =
-                            string.IsNullOrEmpty(ReviewInput.Title) ? (object)DBNull.Value : ReviewInput.Title;
+                            string.IsNullOrEmpty(ReviewInput.Title) ? DBNull.Value : ReviewInput.Title;
                         command.Parameters.Add(":Review", OracleDbType.Clob).Value =
-                            string.IsNullOrEmpty(ReviewInput.ContentMarkdown) ? (object)DBNull.Value : ReviewInput.ContentMarkdown;
+                            string.IsNullOrEmpty(ReviewInput.ContentMarkdown) ? DBNull.Value : ReviewInput.ContentMarkdown;
                         if (ReviewId.HasValue) {
                             command.Parameters.Add(":ReviewId", OracleDbType.Int32).Value = ReviewId.Value;
                         } else {
-                            command.Parameters.Add(":UserId", OracleDbType.Char).Value = DEFAULT_USER_ID;
+                            command.Parameters.Add(":UserId", OracleDbType.Char).Value = userDataManager.GetUserId();
                             command.Parameters.Add(":ISBN", OracleDbType.Char).Value = ReviewInput.BookIsbn;
                         }
 
@@ -219,7 +220,7 @@ namespace BookNote.Pages {
             _logger.LogInformation("下書き保存処理開始 - ReviewId: {ReviewId}", ReviewId);
 
             if (await SaveReviewAsync(isDraft: true)) {
-                return RedirectToPage("/ReviewCreate");
+                return RedirectToPage("/review_create/SelectType");
             }
             return Page();
         }

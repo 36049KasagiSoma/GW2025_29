@@ -8,8 +8,8 @@ namespace BookNote.Scripts.BooksAPI.BookImage {
         public static IBookCoverFetcher Create(BookCoverSource source) {
             return source switch {
                 BookCoverSource.Ndl => new NdlBookCoverFetcher(),
-                BookCoverSource.GoogleBooks => new GoogleBooksBookCoverFetcher(),
                 BookCoverSource.Racuten => new RakutenBooksBookCoverFetcher("1034198535573888291"),
+                BookCoverSource.GoogleBooks => new GoogleBooksBookCoverFetcher("AIzaSyD-2r-CAE_yMGjlNc0iZMqdZ8NhtvjzEB4"),
                 _ => throw new ArgumentException($"未対応のソース: {source}", nameof(source))
             };
         }

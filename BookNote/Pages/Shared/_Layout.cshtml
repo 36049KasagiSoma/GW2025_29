@@ -9,35 +9,16 @@
     <link rel="stylesheet" href="~/BookNote.styles.css" asp-append-version="true" />
 </head>
 <body>
-    <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container">
-                <a class="navbar-brand" asp-area="" asp-page="/Index">BookNote</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-page="/Index">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-page="/Privacy">Privacy</a>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </nav>
-    </header>
     <!-- オーバーレイ -->
     <div class="overlay" onclick="toggleDrawer()"></div>
     <!-- ナビゲーションドロワー -->
     <div class="drawer">
         <div class="drawer-content">
-            <a href="/Reviews" class="drawer-item">レビュー一覧</a>
+            <a href="~/Reviews" class="drawer-item">レビュー一覧</a>
             <div class="drawer-item">あなたにオススメ</div>
-            <a href="/ReviewCreate" class="drawer-item">レビューを書く</a>
+            <a href="~/review_create/SelectType" class="drawer-item">レビューを書く</a>
+            <div class="drawer-spacer"></div>
+            <a href="~/Policy" class="drawer-item">About・Policy</a>
         </div>
     </div>
     <!-- ハンバーガーメニュー -->

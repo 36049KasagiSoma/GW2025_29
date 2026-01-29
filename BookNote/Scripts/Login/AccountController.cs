@@ -25,6 +25,7 @@ namespace BookNote.Scripts.Login {
 
             // AWSホストUIへのリダイレクトURL
             var loginUrl = $"https://{cognitoDomain}/login?" +
+                          $"lang=ja&" +
                           $"client_id={clientId}&" +
                           $"response_type=code&" +
                           $"scope=openid+email+profile&" +

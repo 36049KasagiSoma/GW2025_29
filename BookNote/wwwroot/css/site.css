@@ -30,7 +30,16 @@ body {
 
 .drawer-content {
     padding: 80px 20px 20px;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
 }
+
+.drawer-spacer {
+    flex-grow: 1;
+    min-height: 20px;
+}
+
 
 .drawer-item {
     padding: 16px 20px;
@@ -50,6 +59,9 @@ body {
         background: #F5E6D3;
         border-color: #D2B48C;
         transform: translateX(5px);
+    }
+    .drawer-item:last-child {
+        margin-bottom: 20px;
     }
 a.drawer-item {
     padding: 16px 20px;

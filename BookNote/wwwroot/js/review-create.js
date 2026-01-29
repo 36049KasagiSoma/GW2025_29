@@ -10,7 +10,7 @@ async function deleteDraft(draftId) {
     if (!confirm('この下書きを削除しますか?')) return;
 
     try {
-        const response = await fetch(`/ReviewCreate?handler=DeleteDraft&draftId=${draftId}`, {
+        const response = await fetch(`/review_create/SelectType?handler=DeleteDraft&draftId=${draftId}`, {
             method: 'POST',
             headers: {
                 'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value

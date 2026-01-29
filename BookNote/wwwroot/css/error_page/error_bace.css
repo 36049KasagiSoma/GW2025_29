@@ -1,0 +1,197 @@
+﻿/* エラーページ専用スタイル */
+
+/* エラーページでのアップバー・ロゴのオーバーライド */
+.error-page .appbar {
+    height: 60px;
+}
+
+.error-page .logo-link {
+    left: 80px;
+    transform: translateX(0);
+    height: 35px;
+}
+
+.error-page .logo {
+    height: 35px;
+}
+
+/* スクロール時の変更を無効化 */
+.error-page .appbar.scrolled {
+    height: 60px;
+}
+
+    .error-page .appbar.scrolled .logo-link {
+        left: 80px;
+        transform: translateX(0);
+        height: 35px;
+    }
+
+    .error-page .appbar.scrolled .logo {
+        height: 35px;
+    }
+
+.error-page .hamburger.scrolled {
+    top: 10px;
+}
+
+.error-page .main-content {
+    padding: 0;
+    margin: 0;
+    max-width: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+}
+
+.error-page {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #F5E6D3 0%, #E8D4C0 100%);
+    padding: 20px;
+}
+
+.error-container {
+    max-width: 600px;
+    width: 100%;
+    background: white;
+    border-radius: 16px;
+    padding: 60px 40px;
+    box-shadow: 0 8px 24px rgba(101, 67, 33, 0.15);
+    text-align: center;
+}
+
+.error-code {
+    font-size: 120px;
+    font-weight: 700;
+    color: #654321;
+    margin: 0;
+    line-height: 1;
+    text-shadow: 2px 2px 4px rgba(101, 67, 33, 0.1);
+}
+
+.error-title {
+    font-size: 32px;
+    font-weight: 600;
+    color: #654321;
+    margin: 20px 0 16px;
+}
+
+.error-message {
+    font-size: 16px;
+    color: #8B6F47;
+    line-height: 1.6;
+    margin-bottom: 40px;
+}
+
+.error-icon {
+    width: 120px;
+    height: 120px;
+    margin: 0 auto 30px;
+    background: #FFF3CD;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 60px;
+    color: #654321;
+}
+
+.error-actions {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.error-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 14px 32px;
+    background: #654321;
+    color: white;
+    text-decoration: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    border: none;
+    cursor: pointer;
+}
+
+    .error-button:hover {
+        background: #8B6F47;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(101, 67, 33, 0.2);
+    }
+
+    .error-button.secondary {
+        background: white;
+        color: #654321;
+        border: 2px solid #654321;
+    }
+
+        .error-button.secondary:hover {
+            background: #F5E6D3;
+            border-color: #8B6F47;
+            color: #8B6F47;
+        }
+
+.error-details {
+    margin-top: 40px;
+    padding-top: 30px;
+    border-top: 1px solid #E8D4C0;
+}
+
+.error-details-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: #A0826D;
+    margin-bottom: 12px;
+}
+
+.error-details-content {
+    background: #F5E6D3;
+    padding: 16px;
+    border-radius: 8px;
+    font-size: 13px;
+    color: #5C4033;
+    text-align: left;
+    font-family: 'Courier New', monospace;
+    word-wrap: break-word;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+/* レスポンシブ対応 */
+@media (max-width: 768px) {
+    .error-container {
+        padding: 40px 24px;
+    }
+
+    .error-code {
+        font-size: 80px;
+    }
+
+    .error-title {
+        font-size: 24px;
+    }
+
+    .error-icon {
+        width: 80px;
+        height: 80px;
+        font-size: 40px;
+    }
+
+    .error-actions {
+        flex-direction: column;
+    }
+
+    .error-button {
+        width: 100%;
+        justify-content: center;
+    }
+}

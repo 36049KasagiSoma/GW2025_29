@@ -1,4 +1,5 @@
 using BookNote.Scripts;
+using BookNote.Scripts.Login;
 using BookNote.Scripts.Models;
 using BookNote.Scripts.SelectBookReview;
 using Microsoft.AspNetCore.Mvc;
@@ -27,8 +28,8 @@ namespace BookNote.Pages {
                     await connection.OpenAsync();
                     LatestReviews = await new LatestBook(connection).GetReview(20);
                     PopularReviews = await new PopularityBook(connection).GetReview();
-                    // TODO ユーザId取得処理
-                    FollowingReviews = await new FollowingUserBook(connection).GetReview("550e8400-e29b-41d4-a716-446655440000");
+                    UserDataManager userDataManager = new UserDataManager();
+                    FollowingReviews = await new FollowingUserBook(connection).GetReview(userDataManager.GetUserId());
                 }
             } catch (Exception ex) {
                 _logger.LogInformation(ex,"オススメ取得エラー");

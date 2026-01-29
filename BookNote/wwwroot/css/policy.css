@@ -1,0 +1,282 @@
+﻿/* ポリシーページ専用スタイル */
+
+/* ページ全体の設定をオーバーライド */
+.policy-page .appbar {
+    height: 60px;
+}
+
+.policy-page .logo-link {
+    left: 80px;
+    transform: translateX(0);
+    height: 35px;
+}
+
+.policy-page .logo {
+    height: 35px;
+}
+
+/* スクロール時の変更を無効化 */
+.policy-page .appbar.scrolled {
+    height: 60px;
+}
+
+    .policy-page .appbar.scrolled .logo-link {
+        left: 80px;
+        transform: translateX(0);
+        height: 35px;
+    }
+
+    .policy-page .appbar.scrolled .logo {
+        height: 35px;
+    }
+
+.policy-page .hamburger.scrolled {
+    top: 10px;
+}
+
+.policy-page .main-content {
+    padding-top: 100px;
+    max-width: 900px;
+    margin: 0 auto;
+    padding-left: 40px;
+    padding-right: 40px;
+    padding-bottom: 60px;
+}
+
+/* タブ切り替え */
+.tab-container {
+    display: flex;
+    gap: 0;
+    margin-bottom: 40px;
+    border-bottom: 3px solid #E8D4C0;
+}
+
+.tab-button {
+    flex: 1;
+    padding: 16px 24px;
+    background: transparent;
+    border: none;
+    font-size: 18px;
+    font-weight: 600;
+    color: #A0826D;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    border-bottom: 3px solid transparent;
+    margin-bottom: -3px;
+}
+
+    .tab-button:hover {
+        color: #654321;
+        background: #FFF8F0;
+    }
+
+    .tab-button.active {
+        color: #654321;
+        border-bottom-color: #654321;
+    }
+
+.tab-content {
+    display: none;
+}
+
+    .tab-content.active {
+        display: block;
+    }
+
+/* ページタイトル */
+.policy-header {
+    text-align: center;
+    margin-bottom: 50px;
+    padding-bottom: 30px;
+    border-bottom: 3px solid #D2B48C;
+}
+
+.policy-main-title {
+    font-size: 36px;
+    font-weight: 700;
+    color: #654321;
+    margin-bottom: 12px;
+}
+
+.policy-subtitle {
+    font-size: 16px;
+    color: #8B6F47;
+    line-height: 1.6;
+}
+
+/* セクションタイトル */
+.policy-section {
+    margin-bottom: 50px;
+}
+
+.policy-section-title {
+    font-size: 28px;
+    font-weight: 600;
+    color: #654321;
+    margin-bottom: 24px;
+    padding-bottom: 12px;
+    border-bottom: 2px solid #E8D4C0;
+}
+
+/* サブセクションタイトル */
+.policy-subsection-title {
+    font-size: 20px;
+    font-weight: 600;
+    color: #654321;
+    margin-top: 30px;
+    margin-bottom: 16px;
+}
+
+/* 本文 */
+.policy-content {
+    font-size: 15px;
+    color: #5C4033;
+    line-height: 1.8;
+}
+
+    .policy-content p {
+        margin-bottom: 16px;
+    }
+
+    /* リスト */
+    .policy-content ul {
+        margin: 16px 0;
+        padding-left: 24px;
+    }
+
+        .policy-content ul li {
+            margin-bottom: 10px;
+            line-height: 1.7;
+            list-style-type: disc;
+        }
+
+    .policy-content ol {
+        margin: 16px 0;
+        padding-left: 24px;
+    }
+
+        .policy-content ol li {
+            margin-bottom: 12px;
+            line-height: 1.7;
+        }
+
+/* 注意書き */
+.policy-note {
+    background: #FFF3CD;
+    border-left: 4px solid #FFC107;
+    padding: 16px 20px;
+    margin: 24px 0;
+    border-radius: 4px;
+}
+
+    .policy-note p {
+        margin: 0;
+        color: #856404;
+        font-size: 14px;
+    }
+
+/* お問い合わせセクション */
+.contact-section {
+    background: #F5E6D3;
+    padding: 30px;
+    border-radius: 12px;
+    margin-top: 50px;
+}
+
+.contact-title {
+    font-size: 20px;
+    font-weight: 600;
+    color: #654321;
+    margin-bottom: 16px;
+}
+
+.contact-info {
+    font-size: 15px;
+    color: #5C4033;
+    line-height: 1.8;
+}
+
+    .contact-info p {
+        margin-bottom: 8px;
+    }
+
+/* 制定日 */
+.policy-footer {
+    text-align: right;
+    margin-top: 50px;
+    padding-top: 30px;
+    border-top: 1px solid #E8D4C0;
+    color: #A0826D;
+    font-size: 14px;
+}
+
+/* 目次 */
+.policy-toc {
+    background: white;
+    border: 2px solid #E8D4C0;
+    border-radius: 12px;
+    padding: 24px 30px;
+    margin-bottom: 40px;
+}
+
+.policy-toc-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: #654321;
+    margin-bottom: 16px;
+}
+
+.policy-toc ul {
+    list-style: none;
+    padding: 0;
+}
+
+    .policy-toc ul li {
+        margin-bottom: 10px;
+    }
+
+.policy-toc a {
+    color: #8B6F47;
+    text-decoration: none;
+    font-size: 15px;
+    transition: color 0.3s ease;
+}
+
+    .policy-toc a:hover {
+        color: #654321;
+        text-decoration: underline;
+    }
+
+/* レスポンシブ対応 */
+@media (max-width: 768px) {
+    .policy-page .main-content {
+        padding-left: 20px;
+        padding-right: 20px;
+        padding-top: 80px;
+    }
+
+    .policy-main-title {
+        font-size: 28px;
+    }
+
+    .policy-section-title {
+        font-size: 22px;
+    }
+
+    .policy-subsection-title {
+        font-size: 18px;
+    }
+
+    .policy-content {
+        font-size: 14px;
+    }
+
+    .policy-toc {
+        padding: 20px;
+    }
+
+    .contact-section {
+        padding: 20px;
+    }
+}
