@@ -44,7 +44,7 @@
                             <span class="like-count">0</span>
                         </button>
                         <div class="reviewer-info">
-                            <div class="reviewer-icon"></div>
+                            <div class="reviewer-icon" data-public-id="@Model.UserPublicId"></div>
                             <a href="/user/UserProfile/@Model.UserPublicId" class="reviewer-name">@Model.UserName</a>
                             <span class="post-time">@Model.PostingTimeDisplay</span>
                         </div>
@@ -57,6 +57,7 @@
     </div>
 
     <script type="text/javascript" src="~/js/site.js"></script>
+    <script type="text/javascript" src="~/js/load_image.js"></script>
     <script type="text/javascript" src="~/js/review_details.js"></script>
 </body>
 </html>

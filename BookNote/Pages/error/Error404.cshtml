@@ -1,0 +1,40 @@
+﻿@page
+@model BookNote.Pages.error.Error404Model
+@{
+    ViewData["Title"] = "ページが見つかりません";
+}
+
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BookNote - @ViewData["Title"]</title>
+    <link type="text/css" rel="stylesheet" href="~/css/error_page/error_bace.css">
+</head>
+<body class="error-page">
+    <div class="main-content">
+        <div class="error-container">
+            <div class="error-icon">!</div>
+            <h1 class="error-code">404</h1>
+            <h2 class="error-title" style="font-size: 20px;">
+                お探しのページは見つかりませんでした。
+            </h2>
+            <p class="error-message">
+                お探しのページは見つかりませんでした。<br>
+                URLが正しいかをご確認のうえ、再度お試しください。
+            </p>
+            <button class="error-button" onclick="location.href='/'">
+                トップへ戻る
+            </button>            @if (Model.ShowDetails && !string.IsNullOrEmpty(Model.ErrorMessage)) {
+                <div class="error-details">
+                    <div class="error-details-title">エラー詳細 (開発モード)</div>
+                    <div class="error-details-content">
+                        @Model.ErrorMessage
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</body>
+</html>

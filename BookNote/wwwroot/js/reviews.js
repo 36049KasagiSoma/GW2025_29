@@ -115,7 +115,7 @@ async function performSearch() {
                     <div class="book-title">${escapeHtml(review.book.title)}</div>
                     <div class="review-text">${escapeHtml(review.review)}</div>
                     <div class="reviewer-info">
-                        <div class="reviewer-icon"></div>
+                        <div class="reviewer-icon" data-public-id="${escapeHtml(review.user.userPublicId)}"></div>
                         <span class="reviewer-name">${escapeHtml(review.user.userName)}</span>
                         <span class="post-time">${escapeHtml(review.formattedTime)}</span>
                     </div>
@@ -123,6 +123,7 @@ async function performSearch() {
             </div>
         `).join('');
         await loadBookImages('#search-results');
+        await loadUserIcons('#search-results');
         setupCardClickEvents('#search-results');
     } catch (error) {
         resultsContainer.innerHTML = '<p class="empty-message">検索エラーが発生しました</p>';

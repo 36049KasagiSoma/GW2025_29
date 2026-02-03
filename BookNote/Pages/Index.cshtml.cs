@@ -4,6 +4,8 @@ using BookNote.Scripts.BooksAPI.BookSearch;
 using BookNote.Scripts.BooksAPI.BookSearch.Fetcher;
 using BookNote.Scripts.Models;
 using BookNote.Scripts.SelectBookReview;
+using BookNote.Scripts.UserControl;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
@@ -17,6 +19,7 @@ namespace BookNote.Pages {
         private readonly ILogger<IndexModel> _logger;
         private readonly IConfiguration _configuration;
         private readonly BookImageController _bookImageController;
+        private readonly UserIconGetter _userIconGetter;
 
         public List<BookReview> PopularityReviews { get; set; }
         public List<BookReview> RecommentedReviews { get; set; }
@@ -27,6 +30,7 @@ namespace BookNote.Pages {
             _logger = logger;
             _configuration = configuration;
             _bookImageController = new BookImageController();
+            _userIconGetter = new UserIconGetter();
         }
 
         public async Task OnGetAsync() {
@@ -39,7 +43,7 @@ namespace BookNote.Pages {
                     RecommentedReviews = await rb.GetReview();
                 }
             } catch (Exception ex) {
-                _logger.LogError(ex,"オススメ取得エラー");
+                _logger.LogError(ex, "オススメ取得エラー");
                 PopularityReviews = [];
                 RecommentedReviews = [];
             }
@@ -47,6 +51,15 @@ namespace BookNote.Pages {
 
         public async Task<IActionResult> OnGetImageAsync(string isbn) {
             byte[]? imageData = await _bookImageController.GetBookImageData(isbn);
+            if (imageData != null && imageData.Length > 0) {
+                return File(imageData, "image/jpeg"); // または "image/png"
+            }
+
+            return NotFound();
+        }
+
+        public async Task<IActionResult> OnGetUserIconAsync(string publicId) {
+            byte[]? imageData = await _userIconGetter.GetIconImageData(publicId, UserIconGetter.IconSize.SMALL);
             if (imageData != null && imageData.Length > 0) {
                 return File(imageData, "image/jpeg"); // または "image/png"
             }

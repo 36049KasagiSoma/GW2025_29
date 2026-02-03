@@ -14,7 +14,7 @@ namespace BookNote.Scripts.SelectBookReview {
             if (_connection.State != ConnectionState.Open)
                 await _connection.OpenAsync();
             const string sql = @"
-                SELECT R.REVIEW_ID, R.USER_ID, U.USER_NAME, R.ISBN, B.TITLE, B.AUTHOR,B.PUBLISHER, R.RATING, R.ISSPOILERS, R.POSTINGTIME, R.TITLE AS REVIEW_TITLE, R.REVIEW
+                SELECT R.REVIEW_ID, R.USER_ID, U.USER_NAME, U.USER_PUBLICID, R.ISBN, B.TITLE, B.AUTHOR,B.PUBLISHER, R.RATING, R.ISSPOILERS, R.POSTINGTIME, R.TITLE AS REVIEW_TITLE, R.REVIEW
                 FROM BOOKREVIEW R, USERS U, BOOKS B
                 WHERE R.USER_ID = U.USER_ID AND R.ISBN = B.ISBN AND R.POSTINGTIME IS NOT NULL
                 ORDER BY POSTINGTIME DESC";
@@ -32,6 +32,7 @@ namespace BookNote.Scripts.SelectBookReview {
                     Review = reader.IsDBNull(reader.GetOrdinal("REVIEW")) ? null : reader.GetString(reader.GetOrdinal("REVIEW")),
                     User = new User() {
                         UserId = reader.GetString(reader.GetOrdinal("USER_ID")).Trim(),
+                        UserPublicId = reader.GetString(reader.GetOrdinal("USER_PUBLICID")).Trim(),
                         UserName = reader.GetString(reader.GetOrdinal("USER_NAME")).Trim(),
                     },
                     Book = new Book() {

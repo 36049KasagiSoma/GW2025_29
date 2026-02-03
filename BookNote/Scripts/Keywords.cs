@@ -19,5 +19,7 @@ namespace BookNote.Scripts {
             return sb.ToString();
         }
 
+        public static string GetCloudFrontBaceUrl() => "https://d2dayc6ex7a6gk.cloudfront.net";
+
     }
 }

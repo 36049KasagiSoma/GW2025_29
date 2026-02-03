@@ -27,7 +27,7 @@ namespace BookNote.Scripts.SelectBookReview {
             };
             string sql = $@"
                 SELECT * FROM (
-                    SELECT R.REVIEW_ID, R.USER_ID, U.USER_NAME, R.ISBN, B.TITLE, B.AUTHOR, B.PUBLISHER, 
+                    SELECT R.REVIEW_ID, R.USER_ID, U.USER_NAME, U.USER_PUBLICID, R.ISBN, B.TITLE, B.AUTHOR, B.PUBLISHER, 
                            R.RATING, R.ISSPOILERS, R.POSTINGTIME, R.TITLE AS REVIEW_TITLE, R.REVIEW,
                            (CASE WHEN B.TITLE LIKE :keyword THEN 4 ELSE 0 END +
                             CASE WHEN B.AUTHOR LIKE :keyword THEN 3 ELSE 0 END +
@@ -66,6 +66,7 @@ namespace BookNote.Scripts.SelectBookReview {
                     Review = reader.IsDBNull(reader.GetOrdinal("REVIEW")) ? null : reader.GetString(reader.GetOrdinal("REVIEW")),
                     User = new User() {
                         UserId = reader.GetString(reader.GetOrdinal("USER_ID")).Trim(),
+                        UserPublicId = reader.GetString(reader.GetOrdinal("USER_PUBLICID")).Trim(),
                         UserName = reader.GetString(reader.GetOrdinal("USER_NAME")).Trim(),
                     },
                     Book = new Book() {

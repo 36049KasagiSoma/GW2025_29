@@ -40,6 +40,8 @@ namespace BookNote {
 
             app.UseStaticFiles();
 
+            app.UseStatusCodePagesWithReExecute("/error/Error{0}");
+
             app.UseRouting();
 
             app.UseSession();

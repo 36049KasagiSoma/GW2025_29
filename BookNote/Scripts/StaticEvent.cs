@@ -1,4 +1,6 @@
-﻿using System.Text.RegularExpressions;
+﻿using System.Security.Cryptography;
+using System.Text;
+using System.Text.RegularExpressions;
 
 namespace BookNote.Scripts {
     public class StaticEvent {
@@ -64,6 +66,14 @@ namespace BookNote.Scripts {
             } else {
                 return postingTime.ToString("yyyy/MM/dd");
             }
+        }
+
+        public static string toHash(string text) {
+            using var sha = SHA512.Create();
+            byte[] bytes = Encoding.UTF8.GetBytes(text);
+            byte[] hash = sha.ComputeHash(bytes);
+
+            return Convert.ToHexString(hash);
         }
     }
 }

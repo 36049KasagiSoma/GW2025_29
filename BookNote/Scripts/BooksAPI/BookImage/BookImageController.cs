@@ -67,11 +67,13 @@ namespace BookNote.Scripts.BooksAPI.BookImage {
             bool isExist = await ExistsInS3Async(isbn);
 
             if (!isExist) {
+                Console.WriteLine($"{isbn}:キャッシュヒットしなかったためAPIから取得");
                 var image = await GetBookImage(isbn);
                 if (image != null)
                     await PutObjectAsync(isbn, image);
                 return image;
             }
+
 
             var getImage = await _clientFetcher.GetCoverImageAsync(isbn);
             if (getImage != null) {
@@ -96,13 +98,15 @@ namespace BookNote.Scripts.BooksAPI.BookImage {
 
         private async Task<bool> ExistsInS3Async(string isbn) {
             try {
-                await _s3Client.GetObjectMetadataAsync(_bucketName, $"covers/{isbn}.jpg");
+                await _s3Client.GetObjectMetadataAsync(_bucketName, $"covers/{StaticEvent.toHash(isbn)}.jpg");
                 return true;
             } catch (AmazonS3Exception ex)
                   when (ex.StatusCode == System.Net.HttpStatusCode.NotFound) {
+                Console.WriteLine(ex.Message);
                 return false;
             } catch (AmazonS3Exception ex)
                   when (ex.StatusCode == System.Net.HttpStatusCode.Forbidden) {
+                Console.WriteLine(ex.Message);
                 return false;
             }
         }
@@ -112,7 +116,7 @@ namespace BookNote.Scripts.BooksAPI.BookImage {
 
             var request = new PutObjectRequest {
                 BucketName = _bucketName,
-                Key = $"covers/{isbn}.jpg",
+                Key = $"covers/{StaticEvent.toHash(isbn)}.jpg",
                 InputStream = stream,
                 ContentType = "image/jpeg",
                 CannedACL = S3CannedACL.Private

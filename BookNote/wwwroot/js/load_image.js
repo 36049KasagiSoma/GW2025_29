@@ -36,6 +36,41 @@ async function loadBookImages(containerSelector = '') {
     await Promise.all(fetchPromises);
 }
 
+// ユーザーアイコン読み込み関数
+async function loadUserIcons(containerSelector = '') {
+    const selector = containerSelector
+        ? `${containerSelector} .reviewer-icon`
+        : '.reviewer-icon';
+    const reviewerIcons = document.querySelectorAll(selector);
+    const publicIdMap = new Map();
+
+    reviewerIcons.forEach(reviewerIcon => {
+        if (reviewerIcon.querySelector('img')) return;
+        const publicId = reviewerIcon.dataset.publicId;
+        if (!publicId) return;
+        if (!publicIdMap.has(publicId)) {
+            publicIdMap.set(publicId, []);
+        }
+        publicIdMap.get(publicId).push(reviewerIcon);
+    });
+
+    const fetchPromises = Array.from(publicIdMap.entries()).map(async ([publicId, reviewerIcons]) => {
+        try {
+            const response = await fetch(`/?handler=UserIcon&publicId=${publicId}`);
+            if (!response.ok) return;
+            const blob = await response.blob();
+            const imageUrl = URL.createObjectURL(blob);
+            reviewerIcons.forEach(reviewerIcon => {
+                reviewerIcon.innerHTML = `<img src="${imageUrl}" alt="ユーザーアイコン" draggable="false"/>`;
+            });
+        } catch (error) {
+            console.error(`PublicId ${publicId} のアイコン取得に失敗しました:`, error);
+        }
+    });
+
+    await Promise.all(fetchPromises);
+}
+
 // カードクリックイベントを設定
 function setupCardClickEvents(containerSelector = '') {
     const selector = containerSelector
@@ -51,6 +86,10 @@ function setupCardClickEvents(containerSelector = '') {
         });
     });
 }
+
+document.addEventListener('DOMContentLoaded', async () => {
+    await loadUserIcons();
+});
 
 document.addEventListener('DOMContentLoaded', async () => {
     await loadBookImages();

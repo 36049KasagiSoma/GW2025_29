@@ -84,6 +84,14 @@
         display: block;
     }
 
+/* ロゴ */
+.policy-main-logo {
+    display: block;
+    margin: 0 auto;
+    margin-block-end:70px;
+    max-height:150px;
+}
+
 /* ページタイトル */
 .policy-header {
     text-align: center;
@@ -104,6 +112,7 @@
     color: #8B6F47;
     line-height: 1.6;
 }
+
 
 /* セクションタイトル */
 .policy-section {

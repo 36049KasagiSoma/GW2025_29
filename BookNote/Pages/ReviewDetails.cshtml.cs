@@ -1,5 +1,6 @@
 using BookNote.Scripts;
 using BookNote.Scripts.BooksAPI.BookImage;
+using BookNote.Scripts.UserControl;
 using Markdig;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -8,7 +9,8 @@ using Oracle.ManagedDataAccess.Client;
 namespace BookNote.Pages {
     public class ReviewDetailsModel : PageModel {
         private readonly IConfiguration _configuration;
-
+        private readonly BookImageController _bookImageController;
+        private readonly UserIconGetter _userIconGetter;
         public int ReviewId { get; set; }
         public string? UserPublicId { get; set; }
         public string? Isbn { get; set; }
@@ -26,6 +28,8 @@ namespace BookNote.Pages {
 
         public ReviewDetailsModel(IConfiguration configuration) {
             _configuration = configuration;
+            _bookImageController = new BookImageController();
+            _userIconGetter = new UserIconGetter();
         }
 
         public async Task<IActionResult> OnGetAsync(int reviewId) {
@@ -104,7 +108,16 @@ namespace BookNote.Pages {
         public class ReviewData { }
 
         public async Task<IActionResult> OnGetImageAsync(string isbn) {
-            byte[]? imageData = await new BookImageController().GetBookImageData(isbn);
+            byte[]? imageData = await _bookImageController.GetBookImageData(isbn);
+            if (imageData != null && imageData.Length > 0) {
+                return File(imageData, "image/jpeg"); // ‚Ü‚½‚Í "image/png"
+            }
+
+            return NotFound();
+        }
+
+        public async Task<IActionResult> OnGetUserIconAsync(string publicId) {
+            byte[]? imageData = await _userIconGetter.GetIconImageData(publicId, UserIconGetter.IconSize.LARGE);
             if (imageData != null && imageData.Length > 0) {
                 return File(imageData, "image/jpeg"); // ‚Ü‚½‚Í "image/png"
             }
