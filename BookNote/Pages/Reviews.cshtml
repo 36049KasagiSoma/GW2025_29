@@ -23,7 +23,9 @@
             <div class="tab active" data-tab="search">検索</div>
             <div class="tab" data-tab="latest">最新</div>
             <div class="tab" data-tab="popular">人気</div>
-            <div class="tab" data-tab="following">フォロー新着</div>
+            @if (Scripts.Login.AccountController.IsAuthenticated()) {
+                <div class="tab" data-tab="following">フォロー新着</div>
+            }
         </div>
 
         <!-- 検索タブコンテンツ -->
@@ -93,27 +95,29 @@
         </div>
 
         <!-- フォロー新着タブコンテンツ -->
-        <div class="tab-content" id="following-content">
-            <div class="reviews-grid">
-                @foreach (var review in Model.FollowingReviews) {
-                    <div class="review-card-large" data-review-id="@review.ReviewId" data-isbn="@review.Isbn">
-                        <div class="book-cover-large">書影</div>
-                        <div class="review-content-large">
-                            <div class="review-title">@review.Title</div>
-                            <div class="book-title">@review.Book.Title</div>
-                            <div class="review-text">
-                                @Scripts.StaticEvent.TrimReview(review.Review, 80)
-                            </div>
-                            <div class="reviewer-info">
-                                <div class="reviewer-icon" data-public-id="@review.User.UserPublicId"></div>
-                                <span class="reviewer-name">@review.User.UserName</span>
-                                <span class="post-time">@Scripts.StaticEvent.FormatPostingTime(review.PostingTime)</span>
+        @if (Scripts.Login.AccountController.IsAuthenticated()) {
+            <div class="tab-content" id="following-content">
+                <div class="reviews-grid">
+                    @foreach (var review in Model.FollowingReviews) {
+                        <div class="review-card-large" data-review-id="@review.ReviewId" data-isbn="@review.Isbn">
+                            <div class="book-cover-large">書影</div>
+                            <div class="review-content-large">
+                                <div class="review-title">@review.Title</div>
+                                <div class="book-title">@review.Book.Title</div>
+                                <div class="review-text">
+                                    @Scripts.StaticEvent.TrimReview(review.Review, 80)
+                                </div>
+                                <div class="reviewer-info">
+                                    <div class="reviewer-icon" data-public-id="@review.User.UserPublicId"></div>
+                                    <span class="reviewer-name">@review.User.UserName</span>
+                                    <span class="post-time">@Scripts.StaticEvent.FormatPostingTime(review.PostingTime)</span>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                }
+                    }
+                </div>
             </div>
-        </div>
+        }
     </div>
 
     <script type="text/javascript" rel="script" src="~/js/site.js"></script>

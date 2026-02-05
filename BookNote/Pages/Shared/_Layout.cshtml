@@ -32,13 +32,25 @@
         <a href="/" class="logo-link logo-link-fixed">
             <img src="~/image/Logo_home.png" alt="BookNote" class="logo logo-fixed">
         </a>
-        @if (!string.IsNullOrEmpty(Context.Session.GetString("AccessToken"))) {
+        @using BookNote.Scripts.Login
+        @{
+            // セッションとクッキー認証の両方をチェック
+            var isSessionAuth = !string.IsNullOrEmpty(Context.Session.GetString("AccessToken"));
+            var isCookieAuth = AccountController.IsAuthenticated();
+            var userName = Context.Session.GetString("Name")
+            ?? Context.Session.GetString("Username")
+            ?? AccountController.GetUserName()
+            ?? "ユーザー";
+        }
+
+        @if (isSessionAuth || isCookieAuth) {
             <!-- ログイン済みの場合 -->
             <div class="auth-section" style="margin-left: auto; display: flex; align-items: center; gap: 15px;">
-                <span class="username-display">
-                    @(Context.Session.GetString("Name") ?? Context.Session.GetString("Username") ?? "ユーザー")
-                </span>
-                <button class="auth-button auth-button-logout" onclick="location.href='/Logout'">ログアウト</button>
+                <span class="username-display">@await Component.InvokeAsync("UserName")</span>
+                <form method="post" action="/Account/Logout" style="margin: 0;">
+                    @Html.AntiForgeryToken()
+                    <button type="submit" class="auth-button auth-button-logout">ログアウト</button>
+                </form>
             </div>
         } else {
             <!-- 未ログインの場合 -->

@@ -23,8 +23,7 @@ namespace BookNote.Pages
 
         public async Task<IActionResult> OnGetAsync() {
             // TODO ログインチェック
-            UserDataManager userDataManager = new UserDataManager();
-            var userId = userDataManager.GetUserId();    
+            var userId = AccountController.GetUserId();    
             //if (string.IsNullOrEmpty(userId)) {
             //    return RedirectToPage("/Login");
             //}
@@ -40,8 +39,7 @@ namespace BookNote.Pages
                 using (var connection = new OracleConnection(Keywords.GetDbConnectionString(_configuration))) {
                     await connection.OpenAsync();
 
-                    UserDataManager userDataManager = new UserDataManager();
-                    var userId = userDataManager.GetUserId();
+                    var userId = AccountController.GetUserId();
 
                     // ユーザー確認と削除
                     var sql = @"DELETE FROM BookReview 

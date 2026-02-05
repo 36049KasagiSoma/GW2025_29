@@ -42,7 +42,7 @@ namespace BookNote.Scripts.UserControl {
             bool isExist = await ExistsInS3Async(id, size);
             if (!isExist) return null;
             try {
-                var url = $"{Keywords.GetCloudFrontBaceUrl()}/icons/{id}/{(size == IconSize.SMALL ? "64" : "256")}.jpg";
+                var url = $"{Keywords.GetCloudFrontBaceUrl()}/icons/{id}/{IconSizeToString(size)}.jpg";
                 // リクエストメッセージを作成してヘッダーを追加
                 var request = new HttpRequestMessage(HttpMethod.Get, url);
                 request.Headers.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36");
@@ -65,7 +65,7 @@ namespace BookNote.Scripts.UserControl {
 
         private async Task<bool> ExistsInS3Async(string id, IconSize size) {
             try {
-                await _s3Client.GetObjectMetadataAsync(_bucketName, $"icons/{id}/{(size == IconSize.SMALL ? "64" : "256")}.jpg");
+                await _s3Client.GetObjectMetadataAsync(_bucketName, $"icons/{id}/{IconSizeToString(size)}.jpg");
                 return true;
             } catch (AmazonS3Exception ex)
                   when (ex.StatusCode == System.Net.HttpStatusCode.NotFound) {
@@ -80,6 +80,18 @@ namespace BookNote.Scripts.UserControl {
 
         public enum IconSize {
             SMALL, LARGE,
+        }
+
+        public string IconSizeToString(IconSize size) {
+            switch (size) {
+                case IconSize.SMALL:
+                    return "64";
+                case IconSize.LARGE:
+                    return "256";
+                default:
+                    Console.WriteLine($"IconSizeToString:未対応の種類 {size.ToString()}");
+                    return "";
+            }
         }
     }
 }

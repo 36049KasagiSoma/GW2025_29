@@ -50,6 +50,42 @@ namespace BookNote.Scripts.UserControl {
             return user;
         }
 
+        public async Task<User?> GetUserToSub(string UserId) {
+            if (_connection.State != ConnectionState.Open)
+                await _connection.OpenAsync();
+            const string sql = @"
+                SELECT *
+                FROM USERS
+                WHERE USER_ID = :UserId";
+            using var cmd = new OracleCommand(sql, _connection);
+            cmd.BindByName = true;
+            cmd.Parameters.Add(":UserId", OracleDbType.Varchar2, 36).Value = UserId;
+            using var reader = await cmd.ExecuteReaderAsync();
+            User? user = null;
+            if (await reader.ReadAsync()) {
+                try {
+                    string R_Id = reader.GetString(reader.GetOrdinal("USER_ID"));
+                    string R_PId = reader.GetString(reader.GetOrdinal("USER_PUBLICID"));
+                    string R_Name = reader.GetString(reader.GetOrdinal("USER_NAME"));
+                    string R_Profile = reader.IsDBNull(reader.GetOrdinal("USER_PROFILE"))
+                        ? ""
+                        : reader.GetString(reader.GetOrdinal("USER_PROFILE"));
+                    user = new User {
+                        UserId = R_Id,
+                        UserPublicId = R_PId,
+                        UserName = R_Name,
+                        UserProfile = R_Profile,
+                    };
+                } catch (Exception ex) {
+                    throw;
+                }
+            }
+            if (user != null) {
+                user.BookReviews = await GetUserReviews(user.UserPublicId);
+            }
+            return user;
+        }
+
 
         public async Task<List<BookReview>> GetUserReviews(string UserPublicId) {
             var list = new List<BookReview>();

@@ -31,8 +31,7 @@ namespace BookNote.Pages {
                     await connection.OpenAsync();
                     LatestReviews = await new LatestBook(connection).GetReview(20);
                     PopularReviews = await new PopularityBook(connection).GetReview();
-                    UserDataManager userDataManager = new UserDataManager();
-                    FollowingReviews = await new FollowingUserBook(connection).GetReview(userDataManager.GetUserId());
+                    FollowingReviews = await new FollowingUserBook(connection).GetReview(AccountController.GetUserId());
                 }
             } catch (Exception ex) {
                 _logger.LogInformation(ex,"オススメ取得エラー");

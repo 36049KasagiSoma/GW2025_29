@@ -39,8 +39,7 @@ namespace BookNote.Pages.review_create {
             try {
                 using (var connection = new OracleConnection(Keywords.GetDbConnectionString(_configuration))) {
                     await connection.OpenAsync();
-                    UserDataManager userDataManager = new UserDataManager();
-                    var userId = userDataManager.GetUserId();
+                    var userId = AccountController.GetUserId();
 
                     var sql = @"SELECT R.REVIEW_ID, R.USER_ID, R.ISBN, B.TITLE, B.AUTHOR, B.PUBLISHER,
                                R.RATING, R.ISSPOILERS, R.TITLE AS REVIEW_TITLE, R.REVIEW
@@ -185,7 +184,6 @@ namespace BookNote.Pages.review_create {
                         }
                     }
 
-                    UserDataManager userDataManager = new UserDataManager();
 
                     using (var command = new OracleCommand(sql, connection)) {
                         command.BindByName = true;
@@ -199,7 +197,7 @@ namespace BookNote.Pages.review_create {
                         if (ReviewId.HasValue) {
                             command.Parameters.Add(":ReviewId", OracleDbType.Int32).Value = ReviewId.Value;
                         } else {
-                            command.Parameters.Add(":UserId", OracleDbType.Char).Value = userDataManager.GetUserId();
+                            command.Parameters.Add(":UserId", OracleDbType.Char).Value = AccountController.GetUserId();
                             command.Parameters.Add(":ISBN", OracleDbType.Char).Value = ReviewInput.BookIsbn;
                         }
 
@@ -237,17 +235,36 @@ namespace BookNote.Pages.review_create {
 
 
     public class ReviewInputModel {
+        private string _bookTitle = string.Empty;
+        private string _bookAuthor = string.Empty;
+        private string _bookPublisher = string.Empty;
+        private string _title = string.Empty;
+
         [Required(ErrorMessage = "書籍を選択してください")]
         public string BookIsbn { get; set; } = string.Empty;
-        [Required(ErrorMessage = "書籍を選択してください")]
-        public string BookTitle { get; set; } = string.Empty;
 
-        public string BookAuthor { get; set; } = string.Empty;
-        public string BookPublisher { get; set; } = string.Empty;
+        [Required(ErrorMessage = "書籍を選択してください")]
+        public string BookTitle {
+            get => _bookTitle;
+            set => _bookTitle = TruncateByByteLength(value, 100);
+        }
+
+        public string BookAuthor {
+            get => _bookAuthor;
+            set => _bookAuthor = TruncateByByteLength(value, 50);
+        }
+
+        public string BookPublisher {
+            get => _bookPublisher;
+            set => _bookPublisher = TruncateByByteLength(value, 30);
+        }
 
         [Required(ErrorMessage = "レビュータイトルを入力してください")]
-        [StringLength(20, ErrorMessage = "レビュータイトルは20文字以内で入力してください")]
-        public string Title { get; set; } = string.Empty;
+        [StringLength(100, ErrorMessage = "レビュータイトルは100文字以内で入力してください")]
+        public string Title {
+            get => _title;
+            set => _title = TruncateByByteLength(value, 100);
+        }
 
         [Required(ErrorMessage = "評価を選択してください")]
         [Range(1, 5, ErrorMessage = "評価は1〜5の間で選択してください")]
@@ -260,18 +277,48 @@ namespace BookNote.Pages.review_create {
 
         public bool ContainsSpoiler { get; set; }
 
+        /// <summary>
+        /// UTF-8バイト長で文字列を切り捨てる（Oracleの VARCHAR2(n BYTE) 対応）
+        /// </summary>
+        private static string TruncateByByteLength(string input, int maxByteLength) {
+            if (string.IsNullOrEmpty(input)) {
+                return input;
+            }
+
+            var encoding = Encoding.UTF8;
+            var bytes = encoding.GetBytes(input);
+
+            if (bytes.Length <= maxByteLength) {
+                return input;
+            }
+
+            // maxByteLengthを超えないように文字を削る
+            var truncatedBytes = new byte[maxByteLength];
+            Array.Copy(bytes, truncatedBytes, maxByteLength);
+
+            // 不完全なマルチバイト文字を避けるため、デコード可能な位置まで戻る
+            var result = encoding.GetString(truncatedBytes);
+
+            // デコードエラーで末尾に (U+FFFD) が含まれる場合は1文字削る
+            while (result.Contains('\uFFFD') && result.Length > 0) {
+                result = result.Substring(0, result.Length - 1);
+            }
+
+            return result;
+        }
+
         public override string ToString() {
             return $@"ReviewInputModel {{
-              BookIsbn = ""{BookIsbn}"",
-              BookTitle = ""{BookTitle}"",
-              BookAuthor = ""{BookAuthor}"",
-              BookPublisher = ""{BookPublisher}"",
-              Title = ""{Title}"",
-              Rating = {Rating},
-              ContentHtml = ""{(ContentHtml.Length > 50 ? ContentHtml.Substring(0, 50) + "..." : ContentHtml)}"",
-              ContentMarkdown = ""{(ContentMarkdown.Length > 50 ? ContentMarkdown.Substring(0, 50) + "..." : ContentMarkdown)}"",
-              ContainsSpoiler = {ContainsSpoiler}
-            }}";
+          BookIsbn = ""{BookIsbn}"",
+          BookTitle = ""{BookTitle}"",
+          BookAuthor = ""{BookAuthor}"",
+          BookPublisher = ""{BookPublisher}"",
+          Title = ""{Title}"",
+          Rating = {Rating},
+          ContentHtml = ""{(ContentHtml.Length > 50 ? ContentHtml.Substring(0, 50) + "..." : ContentHtml)}"",
+          ContentMarkdown = ""{(ContentMarkdown.Length > 50 ? ContentMarkdown.Substring(0, 50) + "..." : ContentMarkdown)}"",
+          ContainsSpoiler = {ContainsSpoiler}
+        }}";
         }
     }
 }
