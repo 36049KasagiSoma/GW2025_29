@@ -1,0 +1,109 @@
+﻿@page
+@model BookNote.Pages.user.SettingsModel
+@{
+    ViewData["Title"] = "設定";
+}
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BookNote - @ViewData["Title"]</title>
+    <link type="text/css" rel="stylesheet" href="~/css/site.css">
+    <link type="text/css" rel="stylesheet" href="~/css/settings.css">
+    <!-- Cropper.js CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.css">
+</head>
+<body class="settings-page">
+    <div class="main-content">
+        <h1 class="page-title">設定</h1>
+
+        <div class="settings-container">
+            <form method="post" enctype="multipart/form-data" id="settings-form">
+
+                <!-- アイコン設定 -->
+                <div class="settings-section">
+                    <h2 class="section-title">プロフィール画像</h2>
+                    <div class="icon-upload-area">
+                        <div class="current-icon">
+                            <div class="profile-icon-large" id="preview-icon">
+                                @if (Model.IconImageData != null && Model.IconImageData.Length > 0) {
+                                    var base64 = Convert.ToBase64String(Model.IconImageData);
+                                    var imgSrc = $"data:image/png;base64,{base64}";
+                                    <img src="@imgSrc" alt="プロフィール画像" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;" />
+                                } else {
+                                    <div class="default-icon" data-public-id="@Model.UserPublicId"></div>
+                                }
+                            </div>
+                        </div>
+                        <div class="upload-controls">
+                            <input type="file" id="icon-input" accept="image/*" style="display: none;">
+                            <input type="hidden" asp-for="IconBase64" id="icon-base64">
+                            <button type="button" class="btn-secondary" id="select-icon-btn">画像を選択</button>
+                            <p class="help-text">正方形に切り取って表示されます</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ユーザー名設定 -->
+                <div class="settings-section">
+                    <h2 class="section-title">ユーザー名</h2>
+                    <input type="text"
+                           asp-for="UserName"
+                           class="form-input"
+                           placeholder="ユーザー名を入力"
+                           maxlength="50"
+                           required>
+                    <span asp-validation-for="UserName" class="text-danger"></span>
+                </div>
+
+                <!-- プロフィール設定 -->
+                <div class="settings-section">
+                    <h2 class="section-title">プロフィール</h2>
+                    <textarea asp-for="Profile"
+                              class="form-textarea"
+                              placeholder="自己紹介を入力してください"
+                              maxlength="500"
+                              rows="6"></textarea>
+                    <p class="char-count"><span id="profile-count">@(Model.Profile?.Length ?? 0)</span> / 500</p>
+                    <span asp-validation-for="Profile" class="text-danger"></span>
+                </div>
+
+                <!-- 保存ボタン -->
+                <div class="settings-footer">
+                    <a href="/user/MyPage" class="btn-secondary">キャンセル</a>
+                    <button type="submit" class="btn-primary">保存する</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- 画像切り取りモーダル -->
+    <div class="crop-modal" id="crop-modal">
+        <div class="crop-modal-content">
+            <div class="crop-modal-header">
+                <h3>画像を切り取る</h3>
+                <button type="button" class="crop-modal-close" id="crop-modal-close">&times;</button>
+            </div>
+            <div class="crop-modal-body">
+                <div class="crop-container">
+                    <img id="crop-image" src="" alt="切り取り対象">
+                </div>
+            </div>
+            <div class="crop-modal-footer">
+                <button type="button" class="btn-secondary" id="crop-cancel">キャンセル</button>
+                <button type="button" class="btn-primary" id="crop-apply">適用</button>
+            </div>
+        </div>
+    </div>
+
+    <script type="text/javascript" src="~/js/site.js"></script>
+    <script type="text/javascript" src="~/js/load_image.js"></script>
+    <!-- Cropper.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.js"></script>
+    <script type="text/javascript" src="~/js/settings.js"></script>
+    @section Scripts {
+        <partial name="_ValidationScriptsPartial" />
+    }
+</body>
+</html>

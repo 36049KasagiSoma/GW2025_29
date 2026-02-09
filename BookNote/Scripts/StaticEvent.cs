@@ -1,6 +1,12 @@
-﻿using System.Security.Cryptography;
+﻿using SixLabors.ImageSharp.Formats.Png;
+using SixLabors.ImageSharp.Processing;
+using System.Drawing;
+using System.Drawing;
+using System.Drawing.Imaging;
+using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace BookNote.Scripts {
     public class StaticEvent {
@@ -75,5 +81,39 @@ namespace BookNote.Scripts {
 
             return Convert.ToHexString(hash);
         }
+
+
+
+        /// <summary>
+        /// アイコン画像を指定サイズにリサイズ
+        /// </summary>
+        /// <param name="sourceImageData">元画像のバイトデータ</param>
+        /// <param name="targetSize">目標サイズ</param>
+        /// <returns>リサイズされた画像のバイトデータ</returns>
+        public static byte[] ResizeIcon(byte[] sourceImageData, int targetSize) {
+            if (sourceImageData == null || sourceImageData.Length == 0) {
+                throw new ArgumentException("画像データが空です", nameof(sourceImageData));
+            }
+
+            if (targetSize <= 0) {
+                throw new ArgumentException("サイズは正の数である必要があります", nameof(targetSize));
+            }
+
+            using (var image = SixLabors.ImageSharp.Image.Load(sourceImageData)) {
+                // リサイズ
+                image.Mutate(x => x.Resize(new ResizeOptions {
+                    Size = new SixLabors.ImageSharp.Size(targetSize, targetSize),
+                    Mode = ResizeMode.Crop,
+                    Sampler = KnownResamplers.Lanczos3
+                }));
+
+                // PNG形式でバイト配列に変換
+                using (var outputStream = new MemoryStream()) {
+                    image.Save(outputStream, new PngEncoder());
+                    return outputStream.ToArray();
+                }
+            }
+        }
+
     }
 }

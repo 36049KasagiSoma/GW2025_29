@@ -1,0 +1,72 @@
+﻿@page
+@model BookNote.Pages.user.MyPageModel
+@{
+    ViewData["Title"] = "マイページ";
+}
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BookNote - @ViewData["Title"]</title>
+    <link type="text/css" rel="stylesheet" href="~/css/site.css">
+    <link type="text/css" rel="stylesheet" href="~/css/mypage.css">
+</head>
+<body class="mypage-page">
+    <div class="main-content">
+        <h1 class="page-title">マイページ</h1>
+
+        <div class="profile-container">
+            <div class="profile-card">
+                <div class="profile-header">
+                    @if (Model.IconImageData != null && Model.IconImageData.Length > 0) {
+                        var base64 = Convert.ToBase64String(Model.IconImageData);
+                        var imgSrc = $"data:image/png;base64,{base64}";
+                        <img src="@imgSrc" alt="プロフィール画像" class="profile-icon-large" />
+                    } else {
+                        <div class="profile-icon-large default-icon" data-public-id="@Model.UserPublicId"></div>
+                    }
+                    <div class="profile-info">
+                        <h2 class="profile-username">@Model.UserName</h2>
+                        <p class="profile-public-id">ID: @Model.UserPublicId</p>
+                    </div>
+                </div>
+
+                <div class="profile-body">
+                    <div class="profile-section">
+                        <h3 class="section-title">プロフィール</h3>
+                        <div class="profile-text">
+                            @if (!string.IsNullOrEmpty(Model.Profile)) {
+                                <p>@Model.Profile</p>
+                            } else {
+                                <p class="empty-text">プロフィールが設定されていません</p>
+                            }
+                        </div>
+                    </div>
+
+                    <div class="profile-section">
+                        <h3 class="section-title">統計情報</h3>
+                        <div class="stats-grid">
+                            <div class="stat-item">
+                                <span class="stat-label">投稿レビュー数</span>
+                                <span class="stat-value">@Model.ReviewCount</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">受け取ったいいね</span>
+                                <span class="stat-value">@Model.TotalLikes</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="profile-footer">
+                    <a href="/user/Settings" class="btn-primary">設定を変更</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="text/javascript" src="~/js/site.js"></script>
+    <script type="text/javascript" src="~/js/load_image.js"></script>
+</body>
+</html>

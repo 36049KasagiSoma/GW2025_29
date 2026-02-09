@@ -1,0 +1,214 @@
+/* マイページ専用スタイル */
+/* ロゴとアップバーの固定位置用 */
+.mypage-page .appbar {
+    height: 60px;
+}
+
+.mypage-page .logo-link {
+    left: 80px;
+    transform: translateX(0);
+    height: 35px;
+}
+
+.mypage-page .logo {
+    height: 35px;
+}
+
+.mypage-page .main-content {
+    padding-top: 100px;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.page-title {
+    font-size: 36px;
+    font-weight: 600;
+    color: #654321;
+    margin-bottom: 30px;
+    text-align: left;
+}
+
+/* プロフィールカード */
+.profile-container {
+    width: 100%;
+}
+
+.profile-card {
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 4px 12px rgba(101, 67, 33, 0.1);
+    overflow: hidden;
+}
+
+.profile-header {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    padding: 32px;
+    background: linear-gradient(135deg, #F5E6D3 0%, #E8D4C0 100%);
+}
+
+.profile-icon-large {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 48px;
+    font-weight: 600;
+    color: #A0826D;
+    border: 4px solid white;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    flex-shrink: 0;
+    overflow: hidden;
+}
+
+.profile-icon-large img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.profile-info {
+    flex: 1;
+}
+
+.profile-username {
+    font-size: 28px;
+    font-weight: 600;
+    color: #654321;
+    margin-bottom: 8px;
+}
+
+.profile-public-id {
+    font-size: 14px;
+    color: #8B6F47;
+    margin: 0;
+}
+
+/* プロフィール本文 */
+.profile-body {
+    padding: 32px;
+}
+
+.profile-section {
+    margin-bottom: 32px;
+}
+
+.profile-section:last-child {
+    margin-bottom: 0;
+}
+
+.section-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: #654321;
+    margin-bottom: 16px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid #E8D4C0;
+}
+
+.profile-text p {
+    font-size: 15px;
+    color: #5C4033;
+    line-height: 1.8;
+    margin: 0;
+}
+
+.empty-text {
+    color: #A0826D;
+    font-style: italic;
+}
+
+/* 統計情報 */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+}
+
+.stat-item {
+    background: #F5E6D3;
+    padding: 20px;
+    border-radius: 12px;
+    text-align: center;
+}
+
+.stat-label {
+    display: block;
+    font-size: 13px;
+    color: #8B6F47;
+    margin-bottom: 8px;
+}
+
+.stat-value {
+    display: block;
+    font-size: 32px;
+    font-weight: 600;
+    color: #654321;
+}
+
+/* フッター */
+.profile-footer {
+    padding: 24px 32px;
+    background: #F9F6F2;
+    text-align: center;
+}
+
+.btn-primary {
+    display: inline-block;
+    padding: 12px 32px;
+    background: #654321;
+    color: white;
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+    background: #8B6F47;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(101, 67, 33, 0.2);
+}
+
+/* レスポンシブ対応 */
+@media (max-width: 768px) {
+    .mypage-page .main-content {
+        padding-top: 80px;
+    }
+
+    .page-title {
+        font-size: 24px;
+    }
+
+    .profile-header {
+        flex-direction: column;
+        text-align: center;
+        padding: 24px;
+    }
+
+    .profile-icon-large {
+        width: 100px;
+        height: 100px;
+        font-size: 40px;
+    }
+
+    .profile-username {
+        font-size: 24px;
+    }
+
+    .profile-body {
+        padding: 24px;
+    }
+
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .profile-footer {
+        padding: 20px;
+    }
+}

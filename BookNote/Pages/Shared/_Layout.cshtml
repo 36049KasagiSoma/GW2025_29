@@ -46,7 +46,7 @@
         @if (isSessionAuth || isCookieAuth) {
             <!-- ログイン済みの場合 -->
             <div class="auth-section" style="margin-left: auto; display: flex; align-items: center; gap: 15px;">
-                <span class="username-display">@await Component.InvokeAsync("UserName")</span>
+                <a class="username-display" href="/user/MyPage">@await Component.InvokeAsync("UserName")</a>
                 <form method="post" action="/Account/Logout" style="margin: 0;">
                     @Html.AntiForgeryToken()
                     <button type="submit" class="auth-button auth-button-logout">ログアウト</button>

@@ -14,6 +14,7 @@ namespace BookNote.Pages.Users {
         public bool UserExists { get; set; }
         public string UserName { get; set; }
         public string UserId { get; set; }
+        public string UserPublicId { get; set; }
         public string ProfileDescription { get; set; }
         public int TotalReviewCount { get; set; }
 
@@ -22,10 +23,12 @@ namespace BookNote.Pages.Users {
         public bool IsHighRatedReviewsPublic { get; set; }
         private readonly IConfiguration _configuration;
         private readonly ILogger<UserProfileModel> _logger;
+        private UserIconGetter _iconGetter;
 
         public UserProfileModel(ILogger<UserProfileModel> logger,IConfiguration configuration) {
             _logger = logger;
             _configuration = configuration;
+            _iconGetter = new UserIconGetter();
         }
 
         public async Task OnGetAsync(string userId) {
@@ -40,6 +43,7 @@ namespace BookNote.Pages.Users {
                     }
                     UserExists = true;
                     UserId = userId;
+                    UserPublicId = user.UserPublicId;
                     UserName = user.UserName;
                     ProfileDescription = user.UserProfile;
                     TotalReviewCount = user.BookReviews.Count;
@@ -50,7 +54,26 @@ namespace BookNote.Pages.Users {
             } catch (Exception ex) {
                 _logger?.LogError(ex.Message);
             }
+        }
 
+        public async Task<IActionResult> OnGetUserIconAsync(string publicId) {
+            Console.WriteLine(publicId);
+            byte[]? imageData = await _iconGetter.GetIconImageData(publicId, UserIconGetter.IconSize.SMALL);
+            if (imageData != null && imageData.Length > 0) {
+                return File(imageData, "image/jpeg"); // ‚Ü‚½‚Í "image/png"
+            }
+
+            return NotFound();
+        }
+
+        public async Task<IActionResult> OnGetUserLargeIconAsync(string publicId) {
+            Console.WriteLine(publicId);
+            byte[]? imageData = await _iconGetter.GetIconImageData(publicId, UserIconGetter.IconSize.LARGE);
+            if (imageData != null && imageData.Length > 0) {
+                return File(imageData, "image/jpeg"); // ‚Ü‚½‚Í "image/png"
+            }
+
+            return NotFound();
         }
     }
 }
