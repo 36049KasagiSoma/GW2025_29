@@ -60,8 +60,23 @@ namespace BookNote.Scripts {
         }
 
         public static string FormatPostingTime(DateTime postingTime) {
-            var now = DateTime.Now;
-            var diff = now - postingTime;
+            // 日本時間(JST)で現在時刻を取得
+            TimeZoneInfo jstZone;
+            try {
+                jstZone = TimeZoneInfo.FindSystemTimeZoneById("Asia/Tokyo");
+            } catch {
+                // Windowsの場合
+                jstZone = TimeZoneInfo.FindSystemTimeZoneById("Tokyo Standard Time");
+            }
+
+            var now = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, jstZone);
+
+            // postingTimeがUTCの場合はJSTに変換
+            var postingTimeJst = postingTime.Kind == DateTimeKind.Utc
+                ? TimeZoneInfo.ConvertTimeFromUtc(postingTime, jstZone)
+                : postingTime;
+
+            var diff = now - postingTimeJst;
 
             if (diff.TotalMinutes < 60) {
                 return $"{(int)diff.TotalMinutes}分前";
@@ -70,7 +85,7 @@ namespace BookNote.Scripts {
             } else if (diff.TotalDays < 30) {
                 return $"{(int)diff.TotalDays}日前";
             } else {
-                return postingTime.ToString("yyyy/MM/dd");
+                return postingTimeJst.ToString("yyyy/MM/dd");
             }
         }
 

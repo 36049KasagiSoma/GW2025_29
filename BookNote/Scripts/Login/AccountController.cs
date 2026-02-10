@@ -16,141 +16,14 @@ namespace BookNote.Scripts.Login {
     [Route("[controller]")]
     public class AccountController : Controller {
         private readonly IConfiguration _configuration;
+        private readonly OracleConnection _conn;
         private readonly HttpClient _httpClient;
-        private static IHttpContextAccessor _staticHttpContextAccessor;
 
-        public AccountController(IConfiguration configuration, IHttpClientFactory httpClientFactory, IHttpContextAccessor httpContextAccessor) {
+        public AccountController(IConfiguration configuration, IHttpClientFactory httpClientFactory, IHttpContextAccessor httpContextAccessor, OracleConnection conn) {
             _configuration = configuration;
             _httpClient = httpClientFactory.CreateClient();
-            if (_staticHttpContextAccessor == null) {
-                _staticHttpContextAccessor = httpContextAccessor;
-            }
-        }
-
-        public static void Initialize(IHttpContextAccessor httpContextAccessor) {
-            _staticHttpContextAccessor = httpContextAccessor;
-        }
-        // ========== Static メソッド（ログイン情報取得用） ==========
-
-        /// <summary>
-        /// ログインしているかどうかを確認
-        /// </summary>
-        public static bool IsAuthenticated() {
-            var httpContext = _staticHttpContextAccessor?.HttpContext;
-            return httpContext?.User?.Identity?.IsAuthenticated ?? false;
-        }
-
-        /// <summary>
-        /// ユーザー名を取得
-        /// </summary>
-        public static string GetUserName() {
-            var httpContext = _staticHttpContextAccessor?.HttpContext;
-            if (httpContext?.User?.Identity?.IsAuthenticated != true) return null;
-            return httpContext.User.FindFirst(ClaimTypes.Name)?.Value;
-        }
-        /// <summary>
-        /// ユーザー名を取得(DB)
-        /// </summary>
-        public static async Task<string?> GetDbUserNameAsync() {
-            var id = GetUserId();
-            var config = new ConfigurationBuilder()
-            .AddJsonFile("appsettings.json", false)
-            .Build();
-            try {
-                using (var connection = new OracleConnection(Keywords.GetDbConnectionString(config))) {
-                    await connection.OpenAsync();
-                    UserGetter userGetter = new UserGetter(connection);
-                    var user = await userGetter.GetUserToSub(id);
-                    return user != null ? user.UserName : null;
-                }
-            } catch (Exception ex) {
-                Console.WriteLine(ex.Message);
-            }
-            return null;
-        }
-
-        /// <summary>
-        /// メールアドレスを取得
-        /// </summary>
-        public static string GetEmail() {
-            var httpContext = _staticHttpContextAccessor?.HttpContext;
-            if (httpContext?.User?.Identity?.IsAuthenticated != true) return null;
-            return httpContext.User.FindFirst(ClaimTypes.Email)?.Value;
-        }
-
-        /// <summary>
-        /// ユーザーID（sub）を取得
-        /// </summary>
-        /// <summary>
-        /// ユーザーID（sub）を取得
-        /// </summary>
-        public static string GetUserId() {
-            var httpContext = _staticHttpContextAccessor?.HttpContext;
-
-            // デバッグ情報を出力
-            if (httpContext == null) {
-                Console.WriteLine("DEBUG: HttpContext is null");
-                return null;
-            }
-
-            if (httpContext.User == null) {
-                Console.WriteLine("DEBUG: User is null");
-                return null;
-            }
-
-            if (httpContext.User.Identity?.IsAuthenticated != true) {
-                Console.WriteLine("DEBUG: User is not authenticated");
-                return null;
-            }
-
-
-            var userId = httpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-
-            return userId;
-        }
-
-        /// <summary>
-        /// アクセストークンを取得
-        /// </summary>
-        public static string GetAccessToken() {
-            var httpContext = _staticHttpContextAccessor?.HttpContext;
-            if (httpContext?.User?.Identity?.IsAuthenticated != true) return null;
-            return httpContext.User.FindFirst("access_token")?.Value;
-        }
-
-        /// <summary>
-        /// IDトークンを取得
-        /// </summary>
-        public static string GetIdToken() {
-            var httpContext = _staticHttpContextAccessor?.HttpContext;
-            if (httpContext?.User?.Identity?.IsAuthenticated != true) return null;
-            return httpContext.User.FindFirst("id_token")?.Value;
-        }
-
-        /// <summary>
-        /// リフレッシュトークンを取得
-        /// </summary>
-        public static string GetRefreshToken() {
-            var httpContext = _staticHttpContextAccessor?.HttpContext;
-            if (httpContext?.User?.Identity?.IsAuthenticated != true) return null;
-            return httpContext.User.FindFirst("refresh_token")?.Value;
-        }
-
-        /// <summary>
-        /// すべてのユーザー情報を取得
-        /// </summary>
-        public static UserInfoData GetUserInfo() {
-            var httpContext = _staticHttpContextAccessor?.HttpContext;
-            if (httpContext?.User?.Identity?.IsAuthenticated != true) return null;
-
-            return new UserInfoData {
-                UserId = GetUserId(),
-                Name = GetUserName(),
-                Email = GetEmail(),
-                AccessToken = GetAccessToken(),
-                IdToken = GetIdToken(),
-                RefreshToken = GetRefreshToken()
-            };
+            AccountDataGetter.Initialize(httpContextAccessor);
+            _conn = conn;
         }
 
         // ========== ログイン/ログアウト処理 ==========
@@ -227,6 +100,9 @@ namespace BookNote.Scripts.Login {
 
                 // クッキー認証
                 try {
+                    var userName = await AccountDataGetter.GetDbUserNameAsync(_conn);
+                    var userPublicId = await AccountDataGetter.GetDbUserPublicIdAsync(_conn);
+
                     var claims = new List<Claim>
                     {
                         new Claim(ClaimTypes.NameIdentifier, userInfo?.sub ?? "unknown"),
@@ -234,7 +110,9 @@ namespace BookNote.Scripts.Login {
                         new Claim(ClaimTypes.Name, userInfo?.name ?? userInfo?.username ?? ""),
                         new Claim("access_token", tokenResponse.access_token),
                         new Claim("id_token", tokenResponse.id_token),
-                        new Claim("refresh_token", tokenResponse.refresh_token)
+                        new Claim("refresh_token", tokenResponse.refresh_token),
+                        new Claim("db_username", userName ?? ""),
+                        new Claim("user_public_id", userPublicId ?? ""),
                     };
 
                     var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
@@ -319,15 +197,6 @@ namespace BookNote.Scripts.Login {
             public string email { get; set; }
             public string username { get; set; }
             public string name { get; set; }
-        }
-
-        public class UserInfoData {
-            public string UserId { get; set; }
-            public string Name { get; set; }
-            public string Email { get; set; }
-            public string AccessToken { get; set; }
-            public string IdToken { get; set; }
-            public string RefreshToken { get; set; }
         }
     }
 }

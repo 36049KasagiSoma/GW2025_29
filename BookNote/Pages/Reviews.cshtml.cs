@@ -6,12 +6,13 @@ using BookNote.Scripts.UserControl;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Oracle.ManagedDataAccess.Client;
+using System.Data;
 using static BookNote.Pages.ReviewDetailsModel;
 
 namespace BookNote.Pages {
     public class ReviewsModel : PageModel {
-        IConfiguration _configuration;
-        UserIconGetter _userIconGetter;
+        private readonly OracleConnection _conn;
+        private readonly UserIconGetter _userIconGetter;
 
         public List<BookReview> LatestReviews { get; set; } = new();
         public List<BookReview> PopularReviews { get; set; } = new();
@@ -19,22 +20,23 @@ namespace BookNote.Pages {
 
         private readonly ILogger<ReviewsModel> _logger;
 
-        public ReviewsModel(ILogger<ReviewsModel> logger, IConfiguration configuration) {
+        public ReviewsModel(ILogger<ReviewsModel> logger, OracleConnection conn) {
             _logger = logger;
-            _configuration = configuration;
             _userIconGetter = new UserIconGetter();
+            _conn = conn;
         }
 
         public async Task OnGetAsync() {
             try {
-                using (var connection = new OracleConnection(Keywords.GetDbConnectionString(_configuration))) {
-                    await connection.OpenAsync();
-                    LatestReviews = await new LatestBook(connection).GetReview(20);
-                    PopularReviews = await new PopularityBook(connection).GetReview();
-                    FollowingReviews = await new FollowingUserBook(connection).GetReview(AccountController.GetUserId());
+                if (_conn.State != ConnectionState.Open) {
+                    await _conn.OpenAsync();
                 }
+                LatestReviews = await new LatestBook(_conn).GetReview(20);
+                PopularReviews = await new PopularityBook(_conn).GetReview();
+                FollowingReviews = await new FollowingUserBook(_conn).GetReview(AccountDataGetter.GetUserId());
+
             } catch (Exception ex) {
-                _logger.LogInformation(ex,"オススメ取得エラー");
+                _logger.LogInformation(ex, "オススメ取得エラー");
                 LatestReviews = [];
                 PopularReviews = [];
                 FollowingReviews = [];

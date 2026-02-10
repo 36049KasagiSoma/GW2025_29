@@ -17,13 +17,21 @@
         @if (Model.UserExists) {
             <!-- プロフィールヘッダー -->
             <div class="profile-header">
-                <div class="profile-icon-large" data-public-id="@Model.UserPublicId"></div>
+                @if (Model.IconImageData != null && Model.IconImageData.Length > 0) {
+                    var base64 = Convert.ToBase64String(Model.IconImageData);
+                    var imgSrc = $"data:image/png;base64,{base64}";
+                    <img src="@imgSrc" alt="プロフィール画像" class="profile-icon-large" />
+                } else {
+                    <div class="profile-icon-large default-icon"></div>
+                }
                 <div class="profile-info">
-                    <div class="profile-username">@Model.UserName</div>
-                    <div class="profile-userid">@@@Model.UserId</div>
-                    @if (!string.IsNullOrWhiteSpace(Model.ProfileDescription)) {
-                        <div class="profile-description">@Model.ProfileDescription</div>
-                    }
+                    <div class="profile-username-container">
+                        <span class="profile-username">@Model.UserName</span>
+                        @if (Model.IsMyAccount) {
+                            <button class="mypage-button" onclick="location.href='/user/MyPage'">マイページ</button>
+                        }
+                    </div>
+                    <div class="profile-userid">@@@Model.UserPublicId</div>
                 </div>
             </div>
 
@@ -125,10 +133,5 @@
     <script type="text/javascript" src="~/js/site.js"></script>
     <script type="text/javascript" src="~/js/user_profile.js"></script>
     <script type="text/javascript" src="~/js/load_image.js"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', async () => {
-            await loadUserLargeIcons();
-        });
-    </script>
 </body>
 </html>

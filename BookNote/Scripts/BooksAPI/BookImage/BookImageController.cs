@@ -64,6 +64,9 @@ namespace BookNote.Scripts.BooksAPI.BookImage {
         /// <param name="isbn">対象のISBN</param>
         /// <returns>画像Byte配列 存在しない場合は NULL</returns>
         public async Task<byte[]?> GetBookImageData(string isbn) {
+            if (!isbn.StartsWith("978")) {
+                return null;
+            }
             bool isExist = await ExistsInS3Async(isbn);
 
             if (!isExist) {

@@ -10,13 +10,12 @@ namespace BookNote.Scripts.UserControl {
             _connection = connection;
         }
         public async Task<User?> GetUser(string UserPublicId) {
-
             if (_connection.State != ConnectionState.Open)
                 await _connection.OpenAsync();
             const string sql = @"
                 SELECT *
                 FROM USERS
-                WHERE USER_PublicId = :UserPublicId";
+                WHERE USER_PUBLICID = :UserPublicId";
             using var cmd = new OracleCommand(sql, _connection);
             cmd.BindByName = true;
             cmd.Parameters.Add(":UserPublicId", OracleDbType.Char).Value = UserPublicId;
@@ -24,10 +23,12 @@ namespace BookNote.Scripts.UserControl {
             User? user = null;
             while (await reader.ReadAsync()) {
                 try {
-                    string R_Id = reader.GetString(reader.GetOrdinal("User_Id"));
-                    string R_PId = reader.GetString(reader.GetOrdinal("User_PublicId"));
-                    string R_Name = reader.GetString(reader.GetOrdinal("User_Name"));
-                    string R_Profile = reader.GetString(reader.GetOrdinal("User_Profile"));
+                    string R_Id = reader.GetString(reader.GetOrdinal("USER_ID"));
+                    string R_PId = reader.GetString(reader.GetOrdinal("USER_PUBLICID"));
+                    string R_Name = reader.GetString(reader.GetOrdinal("USER_NAME"));
+                    string R_Profile = reader.IsDBNull(reader.GetOrdinal("USER_PROFILE"))
+                        ? ""
+                        : reader.GetString(reader.GetOrdinal("USER_PROFILE"));
                     user = new User {
                         UserId = R_Id,
                         UserPublicId = R_PId,

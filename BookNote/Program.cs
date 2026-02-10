@@ -2,9 +2,13 @@ using Amazon;
 using Amazon.CognitoIdentityProvider;
 using Amazon.Extensions.NETCore.Setup;
 using Amazon.Runtime;
+using BookNote.Scripts;
 using BookNote.Scripts.Login;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
+using Oracle.ManagedDataAccess.Client;
+using System;
+using System.Data;
 
 namespace BookNote {
     public class Program {
@@ -38,6 +42,12 @@ namespace BookNote {
                 options.Cookie.IsEssential = true;
             });
 
+            // データベース
+            builder.Services.AddScoped<OracleConnection>(sp =>
+                new OracleConnection(
+                    Keywords.GetDbConnectionString(
+                        sp.GetRequiredService<IConfiguration>())));
+
             // Razor Pages
             builder.Services.AddRazorPages();
 
@@ -49,7 +59,7 @@ namespace BookNote {
             // AccountControllerを初期化
             using (var scope = app.Services.CreateScope()) {
                 var httpContextAccessor = scope.ServiceProvider.GetRequiredService<IHttpContextAccessor>();
-                AccountController.Initialize(httpContextAccessor);
+                AccountDataGetter.Initialize(httpContextAccessor);
             }
 
             // Configure the HTTP request pipeline.

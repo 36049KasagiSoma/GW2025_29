@@ -213,6 +213,14 @@
         opacity: 0.7;
     }
 
+    .like-button.disabled {
+        opacity: 0.5;
+    }
+
+        .like-button.disabled:hover {
+            opacity: 0.5;
+        }
+
     .like-button .heart-icon {
         width: 24px;
         height: 24px;
@@ -230,6 +238,213 @@
 
     .like-button .heart-icon.animate {
         animation: heartBeat 0.3s ease;
+    }
+
+.comments-section {
+    margin-top: 40px;
+    padding-top: 30px;
+    border-top: 2px solid #E8D4C0;
+}
+
+.comments-header {
+    font-size: 20px;
+    font-weight: 600;
+    color: #654321;
+    margin-bottom: 20px;
+}
+
+/* コメント投稿フォーム */
+.comment-form {
+    background: #FFFFFF;
+    border: 1px solid #E8D4C0;
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 24px;
+}
+
+#comment-input {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #E8D4C0;
+    border-radius: 8px;
+    font-size: 15px;
+    font-family: inherit;
+    color: #5C4033;
+    resize: vertical;
+    min-height: 80px;
+    box-sizing: border-box;
+}
+
+    #comment-input:focus {
+        outline: none;
+        border-color: #A0826D;
+    }
+
+.comment-form-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 12px;
+}
+
+.char-count {
+    font-size: 13px;
+    color: #A0826D;
+}
+
+.submit-comment-btn {
+    padding: 10px 24px;
+    background: #654321;
+    color: #FFFFFF;
+    border: none;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+    .submit-comment-btn:hover {
+        background: #8B6F47;
+        transform: translateY(-2px);
+    }
+
+    .submit-comment-btn:active {
+        transform: translateY(0);
+    }
+
+/* ログインプロンプト */
+.login-prompt {
+    background: #F5E6D3;
+    border: 1px solid #E8D4C0;
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+    color: #5C4033;
+    font-size: 15px;
+    margin-bottom: 24px;
+}
+
+    .login-prompt a {
+        color: #654321;
+        font-weight: 600;
+        text-decoration: none;
+        border-bottom: 2px solid #A0826D;
+    }
+
+        .login-prompt a:hover {
+            color: #A0826D;
+        }
+
+/* コメントリスト */
+.comments-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.comment-item {
+    background: #FFFFFF;
+    border: 1px solid #E8D4C0;
+    border-radius: 12px;
+    padding: 16px;
+    transition: box-shadow 0.3s ease;
+}
+
+    .comment-item:hover {
+        box-shadow: 0 2px 8px rgba(101, 67, 33, 0.1);
+    }
+
+.comment-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.comment-item .reviewer-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: #F5E6D3;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    color: #A0826D;
+    font-weight: 600;
+    overflow: hidden;
+    flex-shrink: 0;
+}
+
+    .comment-item .reviewer-icon img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+.comment-item .user-name {
+    font-weight: 600;
+    color: #654321;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+    .comment-item .user-name:hover {
+        color: #A0826D;
+    }
+
+.comment-item .post-time {
+    font-size: 13px;
+    color: #A0826D;
+}
+
+.delete-comment-btn {
+    padding: 6px 12px;
+    background: #FFF3CD;
+    border: 1px solid #FFC107;
+    border-radius: 6px;
+    color: #856404;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+    .delete-comment-btn:hover {
+        background: #FFE69C;
+    }
+
+.comment-text {
+    font-size: 15px;
+    color: #5C4033;
+    line-height: 1.6;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+
+/* すべて見るリンク */
+.view-all-link {
+    display: block;
+    text-align: center;
+    margin-top: 20px;
+    padding: 12px;
+    color: #654321;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 15px;
+    background: #F5E6D3;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+    .view-all-link:hover {
+        background: #E8D4C0;
     }
 
 
@@ -265,6 +480,46 @@
     }
 
     .review-text {
+        font-size: 14px;
+    }
+    .comments-section {
+        margin-top: 30px;
+        padding-top: 20px;
+    }
+
+    .comments-header {
+        font-size: 18px;
+    }
+
+    .comment-form {
+        padding: 12px;
+    }
+
+    #comment-input {
+        font-size: 14px;
+        padding: 10px;
+    }
+
+    .submit-comment-btn {
+        padding: 8px 20px;
+        font-size: 14px;
+    }
+
+    .comment-item {
+        padding: 12px;
+    }
+
+    .comment-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+
+    .delete-comment-btn {
+        align-self: flex-end;
+    }
+
+    .comment-text {
         font-size: 14px;
     }
 }

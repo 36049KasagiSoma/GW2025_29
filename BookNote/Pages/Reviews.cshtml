@@ -23,7 +23,7 @@
             <div class="tab active" data-tab="search">検索</div>
             <div class="tab" data-tab="latest">最新</div>
             <div class="tab" data-tab="popular">人気</div>
-            @if (Scripts.Login.AccountController.IsAuthenticated()) {
+            @if (Scripts.Login.AccountDataGetter.IsAuthenticated()) {
                 <div class="tab" data-tab="following">フォロー新着</div>
             }
         </div>
@@ -95,7 +95,7 @@
         </div>
 
         <!-- フォロー新着タブコンテンツ -->
-        @if (Scripts.Login.AccountController.IsAuthenticated()) {
+        @if (Scripts.Login.AccountDataGetter.IsAuthenticated()) {
             <div class="tab-content" id="following-content">
                 <div class="reviews-grid">
                     @foreach (var review in Model.FollowingReviews) {

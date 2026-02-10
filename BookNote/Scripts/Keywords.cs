@@ -16,6 +16,11 @@ namespace BookNote.Scripts {
             sb.Append($"(PORT={rds["Port"]}))");
             sb.Append($"(CONNECT_DATA=(SERVICE_NAME={rds["Service"]}))");
             sb.Append(")");
+
+            sb.Append("Pooling=true;");
+            sb.Append("Min Pool Size=5;");
+            sb.Append("Max Pool Size=100;");
+            sb.Append("Connection Lifetime=120;");
             return sb.ToString();
         }
 

@@ -23,26 +23,36 @@
                     <div class="review-content-large">
                         <div class="review-title">@Model.ReviewTitle</div>
                         <div class="book-title">@Model.BookTitle</div>
-
                         @if (Model.Evaluation.HasValue) {
                             <div class="rating">
                                 評価: @Model.Evaluation / 5
                             </div>
                         }
-
                         @if (Model.IsSpoilers) {
                             <div class="spoiler-warning">
                                 ⚠️ ネタバレ注意
                             </div>
                         }
-
                         <div class="review-text">
                             @Html.Raw(Model.ReviewHtml)
                         </div>
-                        <button class="like-button" data-review-id="@Model.ReviewId" type="button">
+                        <button class="like-button @(Scripts.Login.AccountDataGetter.IsAuthenticated() ? "" : "disabled")"
+                                data-review-id="@Model.ReviewId"
+                                type="button"
+                                @(Scripts.Login.AccountDataGetter.IsAuthenticated() ? "" : "disabled")>
                             <span class="heart-icon"></span>
                             <span class="like-count">0</span>
                         </button>
+                        @if (!Scripts.Login.AccountDataGetter.IsAuthenticated()) {
+                            <script>
+                                window.isUserAuthenticated = false;
+                            </script>
+                        } else {
+                            <script>
+                                window.isUserAuthenticated = true;
+                                window.currentUserPublicId = '@await Scripts.Login.AccountDataGetter.GetDbUserPublicIdAsync()';
+                            </script>
+                        }
                         <div class="reviewer-info">
                             <div class="reviewer-icon" data-public-id="@Model.UserPublicId"></div>
                             <a href="/user/UserProfile/@Model.UserPublicId" class="reviewer-name">@Model.UserName</a>
@@ -50,14 +60,55 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- コメントセクション -->
+                <div class="comments-section" id="comments-container">
+                    <div class="comments-header">
+                        <span>コメント (0)</span>
+                    </div>
+
+                    @if (Scripts.Login.AccountDataGetter.IsAuthenticated()) {
+                        <div class="comment-form">
+                            <textarea id="comment-input"
+                              placeholder="コメントを入力してください（1000文字まで）"
+                              maxlength="1000"
+                              rows="3"></textarea>
+                            <div class="comment-form-footer">
+                                <span class="char-count">0 / 1000</span>
+                                <button id="submit-comment" class="submit-comment-btn">投稿</button>
+                            </div>
+                        </div>
+                    } else {
+                        <div class="login-prompt">
+                            コメントを投稿するには<a href="/Login">ログイン</a>してください
+                        </div>
+                    }
+
+                    <div class="comments-list" id="comments-list">
+                        <!-- コメントがここに動的に追加されます -->
+                    </div>
+
+                    <a href="#" id="view-all-comments" class="view-all-link" style="display: none;">
+                        すべてのコメントを見る →
+                    </a>
+                </div>
             </div>
         } else {
             <p class="empty-message">レビューが見つかりませんでした。</p>
         }
     </div>
-
     <script type="text/javascript" src="~/js/site.js"></script>
     <script type="text/javascript" src="~/js/load_image.js"></script>
     <script type="text/javascript" src="~/js/review_details.js"></script>
+    <script>
+        // 文字数カウント
+        const commentInput = document.getElementById('comment-input');
+        const charCount = document.querySelector('.char-count');
+        if (commentInput && charCount) {
+            commentInput.addEventListener('input', function() {
+                charCount.textContent = `${this.value.length} / 1000`;
+            });
+        }
+    </script>
 </body>
 </html>

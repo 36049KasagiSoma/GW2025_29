@@ -64,18 +64,41 @@ function removeBook() {
     document.getElementById('selected-book-noimage').style.display = 'block';
 }
 
+// フォーム要素を無効化
+function disableFormInputs() {
+    const form = document.getElementById('review-form');
+    const inputs = form.querySelectorAll('input, textarea, button');
+    inputs.forEach(input => {
+        input.disabled = true;
+    });
+}
+
+let isSubmitting = false;
 // フォーム送信前の準備
-function prepareFormSubmit() {
+function prepareFormSubmit(isDraft) {
+    // 二重送信防止
+    if (isSubmitting) {
+        return false;
+    }
+
     // エディタの内容をHTMLとしてhidden fieldに設定
-    // Markdown変換はサーバー側で実施
     const htmlContent = quill.root.innerHTML;
     document.getElementById('review-content-html').value = htmlContent;
 
-    // クライアント側の基本バリデーション
-    if (quill.getText().trim().length === 0) {
-        alert('レビュー本文を入力してください');
-        return false;
+    // 投稿の場合のみバリデーション実行
+    if (!isDraft) {
+        if (quill.getText().trim().length === 0) {
+            alert('レビュー本文を入力してください');
+            return false;
+        }
     }
+
+    isSubmitting = true;
+
+    // フォーム送信後にボタンを無効化（送信を妨げないようsetTimeoutで遅延実行）
+    setTimeout(() => {
+        disableFormInputs();
+    }, 0);
 
     return true;
 }
@@ -88,7 +111,6 @@ quill.on('text-change', function () {
 
 // ページ離脱時の確認（未保存の変更がある場合）
 let initialContent = '';
-let formSubmitting = false;
 
 window.addEventListener('load', function () {
     initialContent = quill.root.innerHTML;
@@ -96,11 +118,11 @@ window.addEventListener('load', function () {
 
 // フォーム送信時はページ離脱警告を出さない
 document.getElementById('review-form')?.addEventListener('submit', function () {
-    formSubmitting = true;
+    isSubmitting = true;
 });
 
 window.addEventListener('beforeunload', function (e) {
-    if (formSubmitting) {
+    if (isSubmitting) {
         return;
     }
 

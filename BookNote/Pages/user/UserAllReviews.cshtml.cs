@@ -6,15 +6,18 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Oracle.ManagedDataAccess.Client;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 
 namespace BookNote.Pages.Users {
     public class UserAllReviewsModel : PageModel {
         private const int PageSize = 20;
 
+        private readonly OracleConnection _conn;
+
         public bool UserExists { get; set; }
         public string UserName { get; set; }
-        public string UserId { get; set; }
+        public string UserPublicId { get; set; }
         public bool IsHighRatedReviewsPublic { get; set; }
 
         public List<BookReview> AllReviews { get; set; }
@@ -25,14 +28,17 @@ namespace BookNote.Pages.Users {
         public int HighRatedCurrentPage { get; set; }
         public int HighRatedTotalPages { get; set; }
 
+        public byte[]? IconImageData { get; set; }
+
+        private UserIconGetter _userIconGetter { get; set; }
+
         public string CurrentTab { get; set; }
         private readonly ILogger<UserAllReviewsModel> _logger;
-        private readonly IConfiguration _configuration;
 
-        public UserAllReviewsModel(ILogger<UserAllReviewsModel> logger, IConfiguration configuration) {
+        public UserAllReviewsModel(ILogger<UserAllReviewsModel> logger, OracleConnection conn) {
             _logger = logger;
-            _configuration = configuration;
-        
+            _userIconGetter = new UserIconGetter();
+            _conn = conn;
         }
 
         public async Task OnGetAsync(string userId) {
@@ -50,36 +56,42 @@ namespace BookNote.Pages.Users {
 
 
             if (string.IsNullOrEmpty(userId)) {
-                userId = Request.Query["userId"];
+                string? id = Request.Query["userId"];
+
+                if (id == null) {
+                    UserExists = false;
+                    return;
+                }
+                userId = id;
             }
 
-            if (userId == null) {
-                UserExists = false;
-                return;
-            }
 
             var allReviewsData = new List<BookReview>();
             var highRatedReviewsData = new List<BookReview>();
 
             try {
-                using (var connection = new OracleConnection(Keywords.GetDbConnectionString(_configuration))) {
-                    await connection.OpenAsync();
-                    var userGetter = new UserGetter(connection);
-                    var user = await userGetter.GetUser(userId);
-                    if (user == null) {
-                        UserExists = false;
-                        return;
-                    }
-                    UserExists = true;
-                    UserId = userId;
-                    UserName = user.UserName;
-                    IsHighRatedReviewsPublic = true; // 高評価リスト全体の公開設定
-                    allReviewsData.AddRange(user.BookReviews);
-                    highRatedReviewsData.AddRange((await userGetter.GetUserGoodReviews(userId)).ToList());
+                if (_conn.State != ConnectionState.Open) {
+                    await _conn.OpenAsync();
                 }
+                var userGetter = new UserGetter(_conn);
+                var user = await userGetter.GetUser(userId);
+                if (user == null) {
+                    UserExists = false;
+                    return;
+                }
+                UserExists = true;
+                UserPublicId = userId;
+                UserName = user.UserName;
+                IsHighRatedReviewsPublic = true; // 高評価リスト全体の公開設定
+                allReviewsData.AddRange(user.BookReviews);
+                highRatedReviewsData.AddRange((await userGetter.GetUserGoodReviews(userId)).ToList());
+
+                IconImageData = await _userIconGetter.GetIconImageData(user.UserPublicId, UserIconGetter.IconSize.LARGE);
+
             } catch (Exception ex) {
                 _logger?.LogError(ex.Message);
             }
+
 
             if (currentPage < 1) currentPage = 1;
 
@@ -114,27 +126,14 @@ namespace BookNote.Pages.Users {
             }
         }
 
-        private List<BookReview> GenerateAllReviewsData() {
-            // 仮のデータ生成（実際はDBから取得）
-            var reviews = new List<BookReview>();
-
-            for (int i = 1; i <= 42; i++) {
-                reviews.Add(new BookReview {
-                    ReviewId = i,
-                    Title = $"レビュータイトル {i}",
-                    Book = new Book {
-                        Title = $"書籍タイトル {i}",
-                        Isbn = $"978{i:D10}",
-                    },
-                    Isbn = $"978{i:D10}",
-                    Rating = i % 5 + 1,
-                    IsSpoilers = i % 3 == 0 ? 1:0,
-                    Review = $"これは{i}番目のレビューです。内容のプレビューがここに表示されます...",
-                    PostingTime = DateTime.Now,
-                });
+        public async Task<IActionResult> OnGetUserIconAsync(string publicId) {
+            Console.WriteLine(publicId);
+            byte[]? imageData = await _userIconGetter.GetIconImageData(publicId, UserIconGetter.IconSize.SMALL);
+            if (imageData != null && imageData.Length > 0) {
+                return File(imageData, "image/jpeg"); // または "image/png"
             }
 
-            return reviews;
+            return NotFound();
         }
     }
 }

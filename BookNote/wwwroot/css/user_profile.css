@@ -38,6 +38,15 @@
     top: 10px;
 }
 
+img {
+    user-select: none; /* 選択禁止 */
+    -webkit-user-drag: none; /* Webkitブラウザ（ChromeやSafari）向け */
+    -webkit-user-select: none;
+    -moz-user-select: none; /* Firefox向け */
+    -ms-user-select: none; /* IE向け */
+    pointer-events: none; /* 右クリックや長押し禁止 */
+}
+
 /* プロフィールヘッダー */
 .profile-header {
     display: flex;
@@ -65,7 +74,6 @@
     font-size: 32px;
     font-weight: 600;
     color: #654321;
-    margin-bottom: 8px;
 }
 
 .profile-userid {
@@ -204,6 +212,36 @@
     font-weight: 500;
 }
 
+.profile-username-container {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 8px;
+}
+
+.mypage-button {
+    padding: 8px 20px;
+    background: linear-gradient(135deg, #A0826D 0%, #8B6F47 100%);
+    color: white;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(139, 111, 71, 0.3);
+}
+
+    .mypage-button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(139, 111, 71, 0.4);
+        background: linear-gradient(135deg, #8B6F47 0%, #6B5437 100%);
+    }
+
+    .mypage-button:active {
+        transform: translateY(0);
+    }
+
 /* 空メッセージ */
 .empty-message {
     text-align: center;
@@ -224,6 +262,15 @@
 
     .profile-username {
         font-size: 24px;
+    }
+
+    .profile-username-container {
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .mypage-button {
+        width: 100%;
     }
 
     .section-title {

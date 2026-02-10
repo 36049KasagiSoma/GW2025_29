@@ -36,17 +36,22 @@
         @{
             // セッションとクッキー認証の両方をチェック
             var isSessionAuth = !string.IsNullOrEmpty(Context.Session.GetString("AccessToken"));
-            var isCookieAuth = AccountController.IsAuthenticated();
+            var isCookieAuth = AccountDataGetter.IsAuthenticated();
             var userName = Context.Session.GetString("Name")
             ?? Context.Session.GetString("Username")
-            ?? AccountController.GetUserName()
+            ?? AccountDataGetter.GetUserName()
             ?? "ユーザー";
         }
 
         @if (isSessionAuth || isCookieAuth) {
             <!-- ログイン済みの場合 -->
-            <div class="auth-section" style="margin-left: auto; display: flex; align-items: center; gap: 15px;">
-                <a class="username-display" href="/user/MyPage">@await Component.InvokeAsync("UserName")</a>
+            <div class="auth-section" style="margin-left: auto;">
+                <a href="/user/MyPage" class="user-display-area">
+                    <div class="user-icon-container">
+                        @await Component.InvokeAsync("UserIcon")
+                    </div>
+                    <span class="username-display">@await Component.InvokeAsync("UserName")</span>
+                </a>
                 <form method="post" action="/Account/Logout" style="margin: 0;">
                     @Html.AntiForgeryToken()
                     <button type="submit" class="auth-button auth-button-logout">ログアウト</button>

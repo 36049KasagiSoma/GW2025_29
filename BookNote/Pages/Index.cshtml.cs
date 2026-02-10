@@ -11,13 +11,14 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
 using Oracle.ManagedDataAccess.Client;
 using System.Configuration;
+using System.Data;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace BookNote.Pages {
     public class IndexModel : PageModel {
         private readonly ILogger<IndexModel> _logger;
-        private readonly IConfiguration _configuration;
+        private readonly OracleConnection _conn;
         private readonly BookImageController _bookImageController;
         private readonly UserIconGetter _userIconGetter;
 
@@ -26,22 +27,22 @@ namespace BookNote.Pages {
 
 
 
-        public IndexModel(ILogger<IndexModel> logger, IConfiguration configuration) {
+        public IndexModel(ILogger<IndexModel> logger, OracleConnection conn) {
             _logger = logger;
-            _configuration = configuration;
+            _conn = conn;
             _bookImageController = new BookImageController();
             _userIconGetter = new UserIconGetter();
         }
 
         public async Task OnGetAsync() {
             try {
-                using (var connection = new OracleConnection(Keywords.GetDbConnectionString(_configuration))) {
-                    await connection.OpenAsync();
-                    PopularityBook pb = new PopularityBook(connection);
-                    RecommentedBook rb = new RecommentedBook(connection);
-                    PopularityReviews = await pb.GetReview();
-                    RecommentedReviews = await rb.GetReview();
+                if (_conn.State != ConnectionState.Open) {
+                    await _conn.OpenAsync();
                 }
+                PopularityBook pb = new PopularityBook(_conn);
+                RecommentedBook rb = new RecommentedBook(_conn);
+                PopularityReviews = await pb.GetReview();
+                RecommentedReviews = await rb.GetReview();
             } catch (Exception ex) {
                 _logger.LogError(ex, "オススメ取得エラー");
                 PopularityReviews = [];

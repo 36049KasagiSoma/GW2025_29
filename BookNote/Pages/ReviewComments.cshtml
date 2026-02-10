@@ -1,0 +1,139 @@
+﻿@page "/review/{reviewId:int}/comments"
+@model BookNote.Pages.ReviewCommentsModel
+@{
+    ViewData["Title"] = $"{Model.ReviewTitle} - コメント一覧";
+}
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BookNote - @ViewData["Title"]</title>
+    <link type="text/css" rel="stylesheet" href="~/css/site.css">
+    <link type="text/css" rel="stylesheet" href="~/css/review_comments.css">
+</head>
+<body class="review-comments-page">
+    <div class="main-content">
+        <div class="page-header">
+            <a href="/ReviewDetails/@Model.ReviewId" class="back-link">← 「@Model.ReviewTitle」のレビューに戻る</a>
+            <h1 class="page-title">コメント一覧</h1>
+            <p class="review-title">@Model.ReviewTitle</p>
+            <p class="comment-count">全 @Model.TotalComments 件のコメント</p>
+        </div>
+
+        @if (Model.Comments.Any()) {
+            <div class="comments-list">
+                @foreach (var comment in Model.Comments) {
+                    <div class="comment-item" data-comment-id="@comment.CommentId">
+                        <div class="comment-header">
+                            <div class="user-info">
+                                <div class="reviewer-icon" data-public-id="@comment.UserPublicId"></div>
+                                <a href="/user/UserProfile/@comment.UserPublicId" class="user-name">@comment.UserName</a>
+                                <span class="post-time">@comment.PostingTimeDisplay</span>
+                            </div>
+                            @if (Scripts.Login.AccountDataGetter.IsAuthenticated() &&
+                                                (await Scripts.Login.AccountDataGetter.GetDbUserPublicIdAsync()) == comment.UserPublicId) {
+                                <button class="delete-btn" data-comment-id="@comment.CommentId">削除</button>
+                            }
+                        </div>
+                        <div class="comment-text">@comment.CommentText</div>
+                    </div>
+                }
+            </div>
+
+            @if (Model.TotalPages > 1) {
+                <div class="pagination">
+                    @if (Model.CurrentPage > 1) {
+                        <a href="/review/@Model.ReviewId/comments?page=@(Model.CurrentPage - 1)" class="page-link">前へ</a>
+                    }
+
+                    @for (int i = 1; i <= Model.TotalPages; i++) {
+                        if (i == Model.CurrentPage) {
+                            <span class="page-link current">@i</span>
+                        } else {
+                            <a href="/review/@Model.ReviewId/comments?page=@i" class="page-link">@i</a>
+                        }
+                    }
+
+                    @if (Model.CurrentPage < Model.TotalPages) {
+                        <a href="/review/@Model.ReviewId/comments?page=@(Model.CurrentPage + 1)" class="page-link">次へ</a>
+                    }
+                </div>
+            }
+        } else {
+            <p class="empty-message">まだコメントがありません</p>
+        }
+    </div>
+
+    <script type="text/javascript" src="~/js/site.js"></script>
+    <script type="text/javascript" src="~/js/load_image.js"></script>
+    <script>
+        var reviewId = @Model.ReviewId;
+
+        // load_image.jsの関数を使う
+        document.addEventListener('DOMContentLoaded', function() {
+            if (typeof loadUserIcons === 'function') {
+                loadUserIcons();
+            }
+
+            setupDeleteButtons();
+        });
+
+        function setupDeleteButtons() {
+            document.querySelectorAll('.delete-btn').forEach(function(btn) {
+                btn.addEventListener('click', async function() {
+                    if (!confirm('このコメントを削除しますか?')) {
+                        return;
+                    }
+
+                    var commentId = this.getAttribute('data-comment-id');
+                    var commentItem = this.closest('.comment-item'); 
+
+                    try {
+                        var response = await fetch('/api/reviews/' + reviewId + '/comments/' + commentId, {
+                            method: 'DELETE',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            }
+                        });
+
+                        if (response.ok) {
+                            if (commentItem) {
+                                commentItem.remove();
+                            }
+
+                            // コメント数を更新
+                            var commentCountElement = document.querySelector('.comment-count');
+                            if (commentCountElement) {
+                                var currentCount = parseInt(commentCountElement.textContent.match(/\d+/)[0]);
+                                var newCount = currentCount - 1;
+                                commentCountElement.textContent = '全 ' + newCount + ' 件のコメント';
+
+                                // コメントが0件になった場合の処理
+                                if (newCount === 0) {
+                                    var commentsList = document.querySelector('.comments-list');
+                                    if (commentsList) {
+                                        commentsList.innerHTML = '<p class="empty-message">まだコメントがありません</p>';
+                                    }
+                                }
+                            }
+
+                            // ページングの調整（現在のページにコメントがなくなった場合）
+                            var remainingComments = document.querySelectorAll('.comment-item').length;
+                            if (remainingComments === 0 && @Model.CurrentPage > 1) {
+                                // 前のページに戻る
+                                window.location.href = '/review/' + reviewId + '/comments?page=' + (@Model.CurrentPage - 1);
+                            }
+                        } else {
+                            alert('削除に失敗しました');
+                        }
+                    } catch (error) {
+                        console.error('削除エラー:', error);
+                        alert('通信エラーが発生しました');
+                    }
+                });
+            });
+        }
+    </script>
+</body>
+</html>

@@ -5,13 +5,14 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Oracle.ManagedDataAccess.Client;
 using System.ComponentModel.DataAnnotations;
+using System.Data;
 
 namespace BookNote.Pages.user {
     public class SettingsModel : PageModel {
-        private readonly IConfiguration _configuration;
+        private readonly OracleConnection _conn;
 
-        public SettingsModel(IConfiguration configuration) {
-            _configuration = configuration;
+        public SettingsModel(OracleConnection conn) {
+            _conn = conn;
         }
 
         public string UserPublicId { get; set; } = string.Empty;
@@ -31,16 +32,16 @@ namespace BookNote.Pages.user {
         public byte[]? IconImageData { get; set; }
 
         public async Task<IActionResult> OnGetAsync() {
-            if (!AccountController.IsAuthenticated()) {
+            if (!AccountDataGetter.IsAuthenticated()) {
                 return RedirectToPage("/Login");
             }
 
-            var userId = AccountController.GetUserId();
+            var userId = AccountDataGetter.GetUserId();
 
-            using (var connection = new OracleConnection(Keywords.GetDbConnectionString(_configuration))) {
-                await connection.OpenAsync();
-
-                var query = @"
+            if (_conn.State != ConnectionState.Open) {
+                await _conn.OpenAsync();
+            }
+            var query = @"
                     SELECT 
                         User_PublicId,
                         User_Name,
@@ -49,44 +50,44 @@ namespace BookNote.Pages.user {
                     WHERE User_Id = :UserId
                 ";
 
-                using (var command = new OracleCommand(query, connection)) {
-                    command.Parameters.Add(new OracleParameter("UserId", userId));
+            using (var command = new OracleCommand(query, _conn)) {
+                command.Parameters.Add(new OracleParameter("UserId", userId));
 
-                    using (var reader = await command.ExecuteReaderAsync()) {
-                        if (await reader.ReadAsync()) {
-                            UserPublicId = reader["User_PublicId"] as string ?? "";
-                            UserName = reader["User_Name"] as string ?? "";
-                            Profile = reader["User_Profile"] as string ?? "";
-                        }
+                using (var reader = await command.ExecuteReaderAsync()) {
+                    if (await reader.ReadAsync()) {
+                        UserPublicId = reader["User_PublicId"] as string ?? "";
+                        UserName = reader["User_Name"] as string ?? "";
+                        Profile = reader["User_Profile"] as string ?? "";
                     }
                 }
-
-                // アイコン画像データを取得
-                IconImageData = await new UserIconGetter()
-                    .GetIconImageData(UserPublicId, UserIconGetter.IconSize.LARGE);
             }
+
+            // アイコン画像データを取得
+            IconImageData = await new UserIconGetter()
+                .GetIconImageData(UserPublicId, UserIconGetter.IconSize.LARGE);
+
 
             return Page();
         }
 
         public async Task<IActionResult> OnPostAsync() {
-            if (!AccountController.IsAuthenticated()) {
+            if (!AccountDataGetter.IsAuthenticated()) {
                 return RedirectToPage("/Login");
             }
 
-            var userId = AccountController.GetUserId();
+            var userId = AccountDataGetter.GetUserId();
 
             // UserPublicIdを最初に取得（この位置に移動）
-            using (var connection = new OracleConnection(Keywords.GetDbConnectionString(_configuration))) {
-                await connection.OpenAsync();
-
-                var query = "SELECT User_PublicId FROM Users WHERE User_Id = :UserId";
-                using (var command = new OracleCommand(query, connection)) {
-                    command.Parameters.Add(new OracleParameter("UserId", userId));
-                    var result = await command.ExecuteScalarAsync();
-                    UserPublicId = result as string ?? "";
-                }
+            if (_conn.State != ConnectionState.Open) {
+                await _conn.OpenAsync();
             }
+            var query = "SELECT User_PublicId FROM Users WHERE User_Id = :UserId";
+            using (var command = new OracleCommand(query, _conn)) {
+                command.Parameters.Add(new OracleParameter("UserId", userId));
+                var result = await command.ExecuteScalarAsync();
+                UserPublicId = result as string ?? "";
+            }
+
 
             if (!ModelState.IsValid) {
                 // バリデーションエラー時の処理
@@ -134,28 +135,24 @@ namespace BookNote.Pages.user {
                 }
             }
 
-            // データベース更新処理
-            using (var connection = new OracleConnection(Keywords.GetDbConnectionString(_configuration))) {
-                await connection.OpenAsync();
-
-                var query = @"
+            var query2 = @"
                     UPDATE Users
                     SET User_Name = :UserName,
                         User_Profile = :Profile
                     WHERE User_Id = :UserId
                 ";
 
-                using (var command = new OracleCommand(query, connection)) {
-                    command.Parameters.Add(new OracleParameter("UserName", UserName));
-                    command.Parameters.Add(new OracleParameter("Profile", (object?)Profile ?? DBNull.Value));
-                    command.Parameters.Add(new OracleParameter("UserId", userId));
+            using (var command = new OracleCommand(query2, _conn)) {
+                command.Parameters.Add(new OracleParameter("UserName", UserName));
+                command.Parameters.Add(new OracleParameter("Profile", (object?)Profile ?? DBNull.Value));
+                command.Parameters.Add(new OracleParameter("UserId", userId));
 
-                    await command.ExecuteNonQueryAsync();
-                }
+                await command.ExecuteNonQueryAsync();
             }
+
 
             return RedirectToPage("/user/MyPage");
         }
-          
+
     }
 }

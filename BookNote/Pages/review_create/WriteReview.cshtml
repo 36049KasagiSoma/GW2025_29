@@ -93,8 +93,8 @@
 
             <!-- ボタン群 -->
             <div class="form-actions">
-                <button type="submit" class="btn-secondary" asp-page-handler="SaveDraft" onclick="return prepareFormSubmit()">下書き保存</button>
-                <button type="submit" class="btn-primary" asp-page-handler="Publish" onclick="return prepareFormSubmit()">投稿する</button>
+                <button type="submit" class="btn-secondary" asp-page-handler="SaveDraft" onclick="return prepareFormSubmit(true)">下書き保存</button>
+                <button type="submit" class="btn-primary" asp-page-handler="Publish" onclick="return prepareFormSubmit(false)">投稿する</button>
             </div>
         </form>
 

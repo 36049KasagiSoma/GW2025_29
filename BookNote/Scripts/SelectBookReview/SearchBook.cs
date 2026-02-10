@@ -6,17 +6,13 @@ using System.Data.Common;
 using static Microsoft.Extensions.Logging.EventSource.LoggingEventSource;
 
 namespace BookNote.Scripts.SelectBookReview {
-    public class SearchBooks : ISelectBookReview {
+    public class SearchBooks : SelectBookReviewBace {
 
-        OracleConnection _connection;
 
-        public SearchBooks(OracleConnection connection) {
-            _connection = connection;
+        public SearchBooks(OracleConnection connection):base(connection) {
         }
         public async Task<List<BookReview>> GetReview(string keyword, int count, string sortOrder = "match") {
             var list = new List<BookReview>();
-            if (_connection.State != ConnectionState.Open)
-                await _connection.OpenAsync();
 
             Console.WriteLine($"GetReview呼び出し: keyword={keyword}, count={count}, sortOrder={sortOrder}"); // デバッグ用
 
@@ -47,46 +43,20 @@ namespace BookNote.Scripts.SelectBookReview {
                     {orderByClause}
                 )";
 
-            using var cmd = new OracleCommand(sql, _connection);
+            using var cmd = new OracleCommand(sql, _conn);
             cmd.Parameters.Add(":keyword", OracleDbType.Varchar2).Value = $"%{keyword}%";
             cmd.Parameters.Add(":count", OracleDbType.Int32).Value = count;
 
-            using var reader = await cmd.ExecuteReaderAsync();
-            int rowCount = 0;
-            while (await reader.ReadAsync()) {
-                rowCount++;
-                list.Add(new BookReview {
-                    ReviewId = reader.GetInt32(reader.GetOrdinal("REVIEW_ID")),
-                    UserId = reader.GetString(reader.GetOrdinal("USER_ID")).Trim(),
-                    Isbn = reader.GetString(reader.GetOrdinal("ISBN")).Trim(),
-                    Rating = reader.IsDBNull(reader.GetOrdinal("RATING")) ? null : reader.GetInt32(reader.GetOrdinal("RATING")),
-                    IsSpoilers = reader.IsDBNull(reader.GetOrdinal("ISSPOILERS")) ? null : reader.GetInt32(reader.GetOrdinal("ISSPOILERS")),
-                    PostingTime = reader.GetDateTime(reader.GetOrdinal("POSTINGTIME")),
-                    Title = reader.IsDBNull(reader.GetOrdinal("REVIEW_TITLE")) ? null : reader.GetString(reader.GetOrdinal("REVIEW_TITLE")),
-                    Review = reader.IsDBNull(reader.GetOrdinal("REVIEW")) ? null : reader.GetString(reader.GetOrdinal("REVIEW")),
-                    User = new User() {
-                        UserId = reader.GetString(reader.GetOrdinal("USER_ID")).Trim(),
-                        UserPublicId = reader.GetString(reader.GetOrdinal("USER_PUBLICID")).Trim(),
-                        UserName = reader.GetString(reader.GetOrdinal("USER_NAME")).Trim(),
-                    },
-                    Book = new Book() {
-                        Title = reader.GetString(reader.GetOrdinal("TITLE")).Trim(),
-                        Author = reader.GetString(reader.GetOrdinal("AUTHOR")).Trim(),
-                        Publisher = reader.GetString(reader.GetOrdinal("PUBLISHER")).Trim(),
-                    },
-                });
+            
 
-                if (rowCount >= count) break;
-            }
-
-            return list;
+            return await GetListFromSql(cmd);
         }
 
         public async Task<List<BookReview>> GetReview(string keyword) {
             return await GetReview(keyword,20);
         }
 
-        public async Task<List<BookReview>> GetReview() {
+        public override async Task<List<BookReview>> GetReview() {
             return await GetReview("");
         }
     }

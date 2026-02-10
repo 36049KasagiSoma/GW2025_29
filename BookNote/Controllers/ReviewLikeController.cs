@@ -23,7 +23,7 @@ namespace BookNote.Controllers {
             var isLiked = false;
             var likeCount = 0;
 
-            var userId = AccountController.GetUserId();
+            var userId = AccountDataGetter.GetUserId();
 
             using (var connection = new OracleConnection(Keywords.GetDbConnectionString(_configuration))) {
                 await connection.OpenAsync();
@@ -52,7 +52,7 @@ namespace BookNote.Controllers {
 
         [HttpPost("{reviewId}/like")]
         public async Task<IActionResult> ToggleLike(int reviewId) {
-            var userId = AccountController.GetUserId();
+            var userId = AccountDataGetter.GetUserId();
 
             var isLiked = false;
             var likeCount = 0;

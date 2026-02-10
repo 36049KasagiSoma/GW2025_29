@@ -1,38 +1,24 @@
 ﻿using BookNote.Scripts.Models;
+using BookNote.Scripts.SelectBook;
 using Oracle.ManagedDataAccess.Client;
+using System.Collections.Generic;
 using System.Data;
+using System.Data.Common;
 
 namespace BookNote.Scripts.SelectBookReview {
-    public class FollowingUserBook {
-        OracleConnection _connection;
-
-        public FollowingUserBook(OracleConnection connection) {
-            _connection = connection;
+    public abstract class SelectBookReviewBace : ISelectBookReview {
+        protected readonly OracleConnection _conn;
+        public SelectBookReviewBace(OracleConnection conn) {
+            _conn = conn;
         }
-        public async Task<List<BookReview>> GetReview(string userId) {
+
+        public abstract Task<List<BookReview>> GetReview();
+
+        protected async Task<List<BookReview>> GetListFromSql(OracleCommand cmd) {
             var list = new List<BookReview>();
 
-            if (_connection.State != ConnectionState.Open)
-                await _connection.OpenAsync();
-
-            const string sql = @"
-                SELECT R.REVIEW_ID, R.USER_ID, U.USER_NAME,U.USER_PUBLICID, R.ISBN,
-                       B.TITLE, B.AUTHOR, B.PUBLISHER,
-                       R.RATING, R.ISSPOILERS, R.POSTINGTIME,
-                       R.TITLE AS REVIEW_TITLE, R.REVIEW
-                FROM BOOKREVIEW R
-                JOIN USERS U ON R.USER_ID = U.USER_ID
-                JOIN BOOKS B ON R.ISBN = B.ISBN
-                WHERE R.USER_ID IN (
-                    SELECT F.For_User_Id
-                    FROM UserFollow F
-                    WHERE F.To_User_Id = :userId
-                )
-                AND R.POSTINGTIME IS NOT NULL
-                ORDER BY R.POSTINGTIME DESC";
-
-            using var cmd = new OracleCommand(sql, _connection);
-            cmd.Parameters.Add(":userId", OracleDbType.Varchar2).Value = userId;
+            if (_conn.State != ConnectionState.Open)
+                await _conn.OpenAsync();
 
             using var reader = await cmd.ExecuteReaderAsync();
 
@@ -61,6 +47,5 @@ namespace BookNote.Scripts.SelectBookReview {
 
             return list;
         }
-
     }
 }
