@@ -1,5 +1,20 @@
 /* コメント一覧ページ専用スタイル */
 
+/* ロゴとアップバーの固定位置用 */
+.review-comments-page .appbar {
+    height: 60px;
+}
+
+.review-comments-page .logo-link {
+    left: 80px;
+    transform: translateX(0);
+    height: 35px;
+}
+
+.review-comments-page .logo {
+    height: 35px;
+}
+
 .review-comments-page .main-content {
     padding-top: 100px;
     max-width: 900px;

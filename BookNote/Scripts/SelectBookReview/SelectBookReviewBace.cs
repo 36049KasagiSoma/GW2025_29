@@ -8,8 +8,10 @@ using System.Data.Common;
 namespace BookNote.Scripts.SelectBookReview {
     public abstract class SelectBookReviewBace : ISelectBookReview {
         protected readonly OracleConnection _conn;
-        public SelectBookReviewBace(OracleConnection conn) {
+        protected readonly string? _myId;
+        public SelectBookReviewBace(OracleConnection conn, string? myId) {
             _conn = conn;
+            _myId = myId;
         }
 
         public abstract Task<List<BookReview>> GetReview();

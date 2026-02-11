@@ -1,4 +1,5 @@
-﻿using Amazon.Runtime;
+﻿using Amazon.CloudFront;
+using Amazon.Runtime;
 using Amazon.S3;
 using Amazon.S3.Model;
 using BookNote.Scripts.BooksAPI.BookImage.Fetcher;
@@ -29,12 +30,15 @@ namespace BookNote.Scripts.BooksAPI.BookImage {
                 RegionEndpoint = Amazon.RegionEndpoint.USEast1 // バージニア北部
             };
 
-            var credentials = new BasicAWSCredentials(
-                s3c["Ak"],
-                s3c["Sk"]
-            );
+            // ============================================
+            //var credentials = new BasicAWSCredentials(
+            //    s3c["Ak"],
+            //    s3c["Sk"]
+            //);
+            //_s3Client = new AmazonS3Client(credentials, s3config);
+            // ============================================
+            _s3Client = new AmazonS3Client(s3config);
 
-            _s3Client = new AmazonS3Client(credentials, s3config);
             _bucketName = s3c["BucketName"] ?? "";
         }
 

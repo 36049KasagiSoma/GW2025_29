@@ -4,6 +4,9 @@ using Amazon.Runtime;
 using Amazon.S3;
 using Amazon.S3.Model;
 using BookNote.Scripts.BooksAPI.BookImage.Fetcher;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Formats.Jpeg;
+using SixLabors.ImageSharp.Processing;
 
 namespace BookNote.Scripts.UserControl {
     public class UserIconGetter {
@@ -24,15 +27,20 @@ namespace BookNote.Scripts.UserControl {
                 RegionEndpoint = Amazon.RegionEndpoint.USEast1 // バージニア北部
             };
 
-            var credentials = new BasicAWSCredentials(
-                s3c["Ak"],
-                s3c["Sk"]
-            );
+            // ============================================
+            //var credentials = new BasicAWSCredentials(
+            //    s3c["Ak"],
+            //    s3c["Sk"]
+            //);
+            //_s3Client = new AmazonS3Client(credentials, s3config);
+            //_cloudFrontClient = new AmazonCloudFrontClient(credentials, Amazon.RegionEndpoint.USEast1);
+            // ============================================
+            _s3Client = new AmazonS3Client(s3config);
+            _cloudFrontClient = new AmazonCloudFrontClient(Amazon.RegionEndpoint.USEast1);
+            //=============================================
             _distributionId = s3c["CloudFrontDistributionId"] ?? "";
-            _s3Client = new AmazonS3Client(credentials, s3config);
             _httpClient = new HttpClient();
             _bucketName = s3c["BucketName"] ?? "";
-            _cloudFrontClient = new AmazonCloudFrontClient(credentials, Amazon.RegionEndpoint.USEast1);
 
         }
 
@@ -165,8 +173,9 @@ namespace BookNote.Scripts.UserControl {
         private async Task<bool> UploadIconToS3Async(string userId, byte[] imageData, IconSize size) {
             try {
                 var key = $"icons/{userId}/{IconSizeToString(size)}.jpg";
+                byte[] jpegData = ConvertToJpeg(imageData);
 
-                using (var stream = new MemoryStream(imageData)) {
+                using (var stream = new MemoryStream(jpegData)) {
                     var putRequest = new PutObjectRequest {
                         BucketName = _bucketName,
                         Key = key,
@@ -224,6 +233,22 @@ namespace BookNote.Scripts.UserControl {
             } catch (Exception ex) {
                 Console.WriteLine($"アイコンアップロードエラー: {ex.Message}");
                 return false;
+            }
+        }
+
+        private byte[] ConvertToJpeg(byte[] imageData) {
+            using (var outputStream = new MemoryStream()) {
+                using (var image = Image.Load(imageData)) {
+                    // 透過部分を白背景に変換してからJPEG保存
+                    image.Mutate(x => x.BackgroundColor(Color.White));
+
+                    // JPEG形式で保存(品質90)
+                    image.SaveAsJpeg(outputStream, new JpegEncoder {
+                        Quality = 90
+                    });
+                }
+
+                return outputStream.ToArray();
             }
         }
 

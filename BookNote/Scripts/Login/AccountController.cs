@@ -1,4 +1,5 @@
-﻿using BookNote.Scripts.Models;
+﻿using BookNote.Scripts.ActivityTrace;
+using BookNote.Scripts.Models;
 using BookNote.Scripts.UserControl;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -132,6 +133,9 @@ namespace BookNote.Scripts.Login {
                     // セッション認証は成功しているので続行
                 }
 
+                if (AccountDataGetter.IsAuthenticated())
+                    ActivityTracer.LogActivity(ActivityTrace.ActivityType.LOGIN, AccountDataGetter.GetUserId());
+
                 // リダイレクト
                 var returnUrl = !string.IsNullOrEmpty(state) ? state : "/";
 
@@ -178,7 +182,8 @@ namespace BookNote.Scripts.Login {
             var cognitoLogoutUrl = $"https://{cognitoDomain}/logout?" +
                                   $"client_id={clientId}&" +
                                   $"logout_uri={Uri.EscapeDataString(logoutUrl)}";
-
+            if (AccountDataGetter.IsAuthenticated())
+                ActivityTracer.LogActivity(ActivityTrace.ActivityType.LOGOUT, AccountDataGetter.GetUserId());
             return Redirect(cognitoLogoutUrl);
         }
 

@@ -3,12 +3,14 @@ using Amazon.CognitoIdentityProvider;
 using Amazon.Extensions.NETCore.Setup;
 using Amazon.Runtime;
 using BookNote.Scripts;
+using BookNote.Scripts.ActivityTrace;
 using BookNote.Scripts.Login;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Oracle.ManagedDataAccess.Client;
 using System;
 using System.Data;
+using System.Diagnostics;
 
 namespace BookNote {
     public class Program {
@@ -43,13 +45,18 @@ namespace BookNote {
             });
 
             // データベース
-            builder.Services.AddScoped<OracleConnection>(sp =>
-                new OracleConnection(
-                    Keywords.GetDbConnectionString(
-                        sp.GetRequiredService<IConfiguration>())));
+            builder.Services.AddScoped<OracleConnection>(sp => {
+                var conStr = Keywords.GetDbConnectionString(
+                        sp.GetRequiredService<IConfiguration>());
+                ActivityTracer.Initialize(conStr);
+                return new OracleConnection(conStr);
+            });
+
 
             // Razor Pages
-            builder.Services.AddRazorPages();
+            builder.Services.AddRazorPages().AddJsonOptions(options => {
+                options.JsonSerializerOptions.PropertyNamingPolicy = null;
+            });
 
             // Controller
             builder.Services.AddControllers();

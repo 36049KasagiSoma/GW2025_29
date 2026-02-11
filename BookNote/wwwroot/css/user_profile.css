@@ -252,6 +252,152 @@ img {
     border-radius: 12px;
 }
 
+.action-buttons {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+    align-items: center;
+}
+
+.follow-button, .block-button {
+    padding: 8px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: bold;
+    transition: all 0.3s ease;
+}
+
+.follow-button {
+    background-color: #4a90e2;
+    color: white;
+    border: none;
+}
+
+    .follow-button:hover:not(:disabled) {
+        background-color: #357abd;
+    }
+
+    .follow-button.following {
+        background-color: #e8f0f8;
+        color: #4a90e2;
+        border: 2px solid #4a90e2;
+    }
+
+        .follow-button.following:hover:not(:disabled) {
+            background-color: #d4e4f4;
+        }
+
+    .follow-button:disabled {
+        background-color: #e0e0e0;
+        color: #999;
+        border: 2px solid #ccc;
+        cursor: not-allowed;
+        opacity: 0.6;
+    }
+
+/* ブロックボタン - 控えめなデザイン */
+.block-button {
+    background-color: transparent;
+    color: #888;
+    border: 1px solid #ddd;
+    font-size: 12px;
+    padding: 6px 12px;
+    font-weight: normal;
+}
+
+    .block-button:hover:not(:disabled) {
+        background-color: #fff5f5;
+        color: #d32f2f;
+        border-color: #d32f2f;
+    }
+
+    .block-button.blocking {
+        background-color: #fff5f5;
+        color: #d32f2f;
+        border: 1px solid #d32f2f;
+    }
+
+        .block-button.blocking:hover:not(:disabled) {
+            background-color: #ffe0e0;
+        }
+
+    .block-button:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
+
+/* ブロック確認モーダル */
+.block-confirm-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+}
+
+    .block-confirm-modal.show {
+        display: flex;
+    }
+
+.block-confirm-content {
+    background: white;
+    padding: 30px;
+    border-radius: 8px;
+    max-width: 400px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+    .block-confirm-content h3 {
+        margin: 0 0 15px 0;
+        color: #333;
+        font-size: 18px;
+    }
+
+    .block-confirm-content p {
+        margin: 0 0 20px 0;
+        color: #666;
+        line-height: 1.6;
+    }
+
+.block-confirm-buttons {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+}
+
+    .block-confirm-buttons button {
+        padding: 8px 20px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: bold;
+    }
+
+.block-cancel-button {
+    background-color: #f0f0f0;
+    color: #333;
+}
+
+    .block-cancel-button:hover {
+        background-color: #e0e0e0;
+    }
+
+.block-execute-button {
+    background-color: #d32f2f;
+    color: white;
+}
+
+    .block-execute-button:hover {
+        background-color: #b71c1c;
+    }
+
 /* レスポンシブ対応 */
 @media (max-width: 768px) {
     .profile-header {

@@ -16,6 +16,7 @@
     <div class="main-content">
         @if (Model.UserExists) {
             <!-- プロフィールヘッダー -->
+            <!-- プロフィールヘッダー -->
             <div class="profile-header">
                 @if (Model.IconImageData != null && Model.IconImageData.Length > 0) {
                     var base64 = Convert.ToBase64String(Model.IconImageData);
@@ -29,6 +30,20 @@
                         <span class="profile-username">@Model.UserName</span>
                         @if (Model.IsMyAccount) {
                             <button class="mypage-button" onclick="location.href='/user/MyPage'">マイページ</button>
+                        } else {
+                            <div class="action-buttons">
+                                <button class="follow-button @(Model.IsFollowing ? "following" : "")"
+                                        id="followButton"
+                                        data-user-id="@Model.UserPublicId"
+                                        @(Model.IsBlocking ? "disabled" : "")>
+                                    @(Model.IsFollowing ? "フォロー中" : "フォロー")
+                                </button>
+                                <button class="block-button @(Model.IsBlocking ? "blocking" : "")"
+                                        id="blockButton"
+                                        data-user-id="@Model.UserPublicId">
+                                    @(Model.IsBlocking ? "ブロック中" : "ブロック")
+                                </button>
+                            </div>
                         }
                     </div>
                     <div class="profile-userid">@@@Model.UserPublicId</div>

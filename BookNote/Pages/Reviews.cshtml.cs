@@ -31,10 +31,14 @@ namespace BookNote.Pages {
                 if (_conn.State != ConnectionState.Open) {
                     await _conn.OpenAsync();
                 }
-                LatestReviews = await new LatestBook(_conn).GetReview(20);
-                PopularReviews = await new PopularityBook(_conn).GetReview();
-                FollowingReviews = await new FollowingUserBook(_conn).GetReview(AccountDataGetter.GetUserId());
-
+                var myid = AccountDataGetter.IsAuthenticated() ? AccountDataGetter.GetUserId() : null;
+                LatestReviews = await new LatestBook(_conn, myid).GetReview(20);
+                PopularReviews = await new PopularityBook(_conn, myid).GetReview();
+                if (AccountDataGetter.IsAuthenticated()) {
+                    FollowingReviews = await new FollowingUserBook(_conn).GetReview(AccountDataGetter.GetUserId());
+                } else {
+                    FollowingReviews = [];
+                }
             } catch (Exception ex) {
                 _logger.LogInformation(ex, "オススメ取得エラー");
                 LatestReviews = [];

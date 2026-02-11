@@ -1,4 +1,5 @@
 ﻿using BookNote.Scripts;
+using BookNote.Scripts.Login;
 using BookNote.Scripts.Models;
 using BookNote.Scripts.SelectBookReview;
 using Microsoft.AspNetCore.Mvc;
@@ -20,7 +21,8 @@ namespace BookNote.Controllers {
             try {
                 using (var connection = new OracleConnection(Keywords.GetDbConnectionString(_configuration))) {
                     await connection.OpenAsync();
-                    results = await new SearchBooks(connection).GetReview(keyword, 20, sortOrder);
+                    var myid = AccountDataGetter.IsAuthenticated() ? AccountDataGetter.GetUserId() : null;
+                    results = await new SearchBooks(connection,myid).GetReview(keyword, 20, sortOrder);
                 }
             } catch (Exception) {
             }

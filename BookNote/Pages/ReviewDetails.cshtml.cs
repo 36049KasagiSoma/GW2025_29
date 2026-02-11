@@ -1,11 +1,14 @@
 using BookNote.Scripts;
+using BookNote.Scripts.ActivityTrace;
 using BookNote.Scripts.BooksAPI.BookImage;
+using BookNote.Scripts.Login;
 using BookNote.Scripts.UserControl;
 using Markdig;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Oracle.ManagedDataAccess.Client;
 using System.Data;
+using System.Diagnostics;
 
 namespace BookNote.Pages {
     public class ReviewDetailsModel : PageModel {
@@ -101,6 +104,8 @@ namespace BookNote.Pages {
                 }
 
             }
+            if (AccountDataGetter.IsAuthenticated())
+                ActivityTracer.LogActivity(ActivityType.VIEW, AccountDataGetter.GetUserId(), reviewId.ToString());
 
             return Page();
         }

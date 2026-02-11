@@ -2,6 +2,7 @@ using BookNote.Scripts;
 using BookNote.Scripts.BooksAPI.BookImage;
 using BookNote.Scripts.BooksAPI.BookSearch;
 using BookNote.Scripts.BooksAPI.BookSearch.Fetcher;
+using BookNote.Scripts.Login;
 using BookNote.Scripts.Models;
 using BookNote.Scripts.SelectBookReview;
 using BookNote.Scripts.UserControl;
@@ -39,8 +40,9 @@ namespace BookNote.Pages {
                 if (_conn.State != ConnectionState.Open) {
                     await _conn.OpenAsync();
                 }
-                PopularityBook pb = new PopularityBook(_conn);
-                RecommentedBook rb = new RecommentedBook(_conn);
+                var myid = AccountDataGetter.IsAuthenticated() ? AccountDataGetter.GetUserId() : null;
+                PopularityBook pb = new PopularityBook(_conn, myid);
+                RecommentedBook rb = new RecommentedBook(_conn, myid);
                 PopularityReviews = await pb.GetReview();
                 RecommentedReviews = await rb.GetReview();
             } catch (Exception ex) {

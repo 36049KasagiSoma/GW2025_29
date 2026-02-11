@@ -1,4 +1,5 @@
-﻿using BookNote.Scripts.Login;
+﻿using BookNote.Scripts.ActivityTrace;
+using BookNote.Scripts.Login;
 using Microsoft.AspNetCore.Mvc;
 using Oracle.ManagedDataAccess.Client;
 using System.Data;
@@ -113,7 +114,7 @@ namespace BookNote.Controllers {
                 var query = @"
                     INSERT INTO ReviewComment (Review_Id, User_Id, Comment_Text, PostingTime)
                     VALUES (:ReviewId, :UserId, :CommentText, SYSTIMESTAMP AT TIME ZONE 'Asia/Tokyo')
-                    RETURNING Comment_Id INTO :CommentId"; ;
+                    RETURNING Comment_Id INTO :CommentId";
 
                 int commentId;
 
@@ -132,7 +133,9 @@ namespace BookNote.Controllers {
                 }
 
                 var userName = await AccountDataGetter.GetDbUserNameAsync();
-                var userPublicId =  AccountDataGetter.GetDbUserPublicIdAsync();
+                var userPublicId = AccountDataGetter.GetDbUserPublicIdAsync();
+                if (AccountDataGetter.IsAuthenticated())
+                    ActivityTracer.LogActivity(ActivityType.WRITE_COMMENT, AccountDataGetter.GetUserId(), reviewId.ToString());
 
                 return Ok(new {
                     commentId,

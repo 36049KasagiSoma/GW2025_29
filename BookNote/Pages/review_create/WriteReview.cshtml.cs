@@ -1,4 +1,5 @@
 ﻿using BookNote.Scripts;
+using BookNote.Scripts.ActivityTrace;
 using BookNote.Scripts.Login;
 using Markdig;
 using Microsoft.AspNetCore.Mvc;
@@ -216,10 +217,12 @@ namespace BookNote.Pages.review_create {
                         sql = @"UPDATE BookReview 
                            SET ISBN = :ISBN, Rating = :Rating, ISSPOILERS = :IsSpoilers, Title = :Title, Review = :Review, PostingTime = NULL
                            WHERE Review_Id = :ReviewId";
+
                     } else {
                         sql = @"UPDATE BookReview 
                            SET ISBN = :ISBN, Rating = :Rating, ISSPOILERS = :IsSpoilers, Title = :Title, Review = :Review, PostingTime = SYSTIMESTAMP AT TIME ZONE 'Asia/Tokyo'
                            WHERE Review_Id = :ReviewId";
+
                     }
                 } else {
                     // 新規レビューの作成
@@ -230,6 +233,7 @@ namespace BookNote.Pages.review_create {
                            (USER_ID, ISBN, RATING, ISSPOILERS, TITLE, REVIEW, POSTINGTIME) 
                            VALUES 
                            (:UserId, :ISBN, :Rating, :IsSpoilers, :Title, :Review, NULL)";
+
                     } else {
                         sql = @"INSERT INTO BookReview 
                                (USER_ID, ISBN, RATING, ISSPOILERS, TITLE, REVIEW, POSTINGTIME) 
@@ -264,6 +268,12 @@ namespace BookNote.Pages.review_create {
                         command.Parameters.Add(":UserId", OracleDbType.Char).Value = AccountDataGetter.GetUserId();
                         command.Parameters.Add(":ISBN", OracleDbType.Char).Value = isbnValue2;
                     }
+
+                    if (AccountDataGetter.IsAuthenticated())
+                        ActivityTracer.LogActivity(
+                            isDraft ? ActivityType.SAVE_DRAFT : ActivityType.WRITE_REVIEW,
+                            AccountDataGetter.GetUserId(),
+                            ReviewId.HasValue ? ReviewId.Value.ToString() : null);
 
                     await command.ExecuteNonQueryAsync();
                 }

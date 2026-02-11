@@ -9,7 +9,7 @@ namespace BookNote.Scripts.SelectBookReview {
     public class SearchBooks : SelectBookReviewBace {
 
 
-        public SearchBooks(OracleConnection connection):base(connection) {
+        public SearchBooks(OracleConnection connection, string? myId) : base(connection, myId) {
         }
         public async Task<List<BookReview>> GetReview(string keyword, int count, string sortOrder = "match") {
             var list = new List<BookReview>();
@@ -21,6 +21,7 @@ namespace BookNote.Scripts.SelectBookReview {
                 "rating" => "ORDER BY GOOD_COUNT DESC, POSTINGTIME DESC",
                 _ => "ORDER BY MATCH_SCORE DESC, POSTINGTIME DESC"
             };
+
             string sql = $@"
                 SELECT * FROM (
                     SELECT R.REVIEW_ID, R.USER_ID, U.USER_NAME, U.USER_PUBLICID, R.ISBN, B.TITLE, B.AUTHOR, B.PUBLISHER, 
@@ -40,11 +41,19 @@ namespace BookNote.Scripts.SelectBookReview {
                     ) G ON R.REVIEW_ID = G.REVIEW_ID
                     WHERE R.POSTINGTIME IS NOT NULL
                         AND (B.TITLE LIKE :keyword OR B.AUTHOR LIKE :keyword OR R.TITLE LIKE :keyword OR R.REVIEW LIKE :keyword)
+                        AND (:loginUserId IS NULL OR NOT EXISTS (
+                            SELECT 1 
+                            FROM USERBLOCK BL 
+                            WHERE BL.TO_USER_ID = :loginUserId 
+                              AND BL.FOR_USER_ID = R.USER_ID
+                        ))
                     {orderByClause}
                 )";
 
             using var cmd = new OracleCommand(sql, _conn);
             cmd.Parameters.Add(":keyword", OracleDbType.Varchar2).Value = $"%{keyword}%";
+            cmd.Parameters.Add(":loginUserId", OracleDbType.Char).Value =
+                string.IsNullOrEmpty(_myId) ? (object)DBNull.Value : _myId;
             cmd.Parameters.Add(":count", OracleDbType.Int32).Value = count;
 
             

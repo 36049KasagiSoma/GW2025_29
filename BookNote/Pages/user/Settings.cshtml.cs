@@ -1,4 +1,5 @@
 using BookNote.Scripts;
+using BookNote.Scripts.ActivityTrace;
 using BookNote.Scripts.Login;
 using BookNote.Scripts.UserControl;
 using Microsoft.AspNetCore.Mvc;
@@ -150,7 +151,8 @@ namespace BookNote.Pages.user {
                 await command.ExecuteNonQueryAsync();
             }
 
-
+            if (AccountDataGetter.IsAuthenticated())
+                ActivityTracer.LogActivity(ActivityType.CUSTOM_PROFILE, AccountDataGetter.GetUserId());
             return RedirectToPage("/user/MyPage");
         }
 
