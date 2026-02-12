@@ -11,10 +11,10 @@ namespace BookNote.Scripts.SelectBookReview {
 
         public SearchBooks(OracleConnection connection, string? myId) : base(connection, myId) {
         }
-        public async Task<List<BookReview>> GetReview(string keyword, int count, string sortOrder = "match") {
+        public async Task<List<BookReview>> GetReview(string keyword, int limit, string sortOrder = "match") {
             var list = new List<BookReview>();
 
-            Console.WriteLine($"GetReview呼び出し: keyword={keyword}, count={count}, sortOrder={sortOrder}"); // デバッグ用
+            Console.WriteLine($"GetReview呼び出し: keyword={keyword}, count={limit}, sortOrder={sortOrder}"); // デバッグ用
 
             string orderByClause = sortOrder switch {
                 "date" => "ORDER BY POSTINGTIME DESC",
@@ -48,13 +48,15 @@ namespace BookNote.Scripts.SelectBookReview {
                               AND BL.FOR_USER_ID = R.USER_ID
                         ))
                     {orderByClause}
-                )";
+                )
+                WHERE ROWNUM <= :limit";
 
             using var cmd = new OracleCommand(sql, _conn);
+            cmd.BindByName = true;
             cmd.Parameters.Add(":keyword", OracleDbType.Varchar2).Value = $"%{keyword}%";
             cmd.Parameters.Add(":loginUserId", OracleDbType.Char).Value =
                 string.IsNullOrEmpty(_myId) ? (object)DBNull.Value : _myId;
-            cmd.Parameters.Add(":count", OracleDbType.Int32).Value = count;
+            cmd.Parameters.Add(":limit", OracleDbType.Int32).Value = limit;
 
             
 

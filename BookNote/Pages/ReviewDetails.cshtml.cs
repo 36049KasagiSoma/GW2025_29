@@ -3,7 +3,7 @@ using BookNote.Scripts.ActivityTrace;
 using BookNote.Scripts.BooksAPI.BookImage;
 using BookNote.Scripts.Login;
 using BookNote.Scripts.UserControl;
-using Markdig;
+using Ganss.Xss;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Oracle.ManagedDataAccess.Client;
@@ -29,12 +29,34 @@ namespace BookNote.Pages {
         public string? ReviewHtml { get; set; }
         public ReviewData? Review { get; set; }
         public bool IsDraft { get; set; } = false;
+        private readonly HtmlSanitizer _sanitizer;
+
 
         public ReviewDetailsModel(OracleConnection conn) {
             _bookImageController = new BookImageController();
             _userIconGetter = new UserIconGetter();
             _conn = conn;
+            _sanitizer = new HtmlSanitizer();
+            SetupSabutizer();
         }
+
+        private void SetupSabutizer() {
+            _sanitizer.AllowedTags.Clear();
+            _sanitizer.AllowedTags.Add("p");
+            _sanitizer.AllowedTags.Add("br");
+            _sanitizer.AllowedTags.Add("strong");
+            _sanitizer.AllowedTags.Add("em");
+            _sanitizer.AllowedTags.Add("u");
+            _sanitizer.AllowedTags.Add("s");
+            _sanitizer.AllowedTags.Add("h1");
+            _sanitizer.AllowedTags.Add("h2");
+            _sanitizer.AllowedTags.Add("h3");
+            _sanitizer.AllowedTags.Add("ul");
+            _sanitizer.AllowedTags.Add("ol");
+            _sanitizer.AllowedTags.Add("li");
+            _sanitizer.AllowedTags.Add("blockquote");
+        }
+
 
         public async Task<IActionResult> OnGetAsync(int reviewId) {
             ReviewId = reviewId;
@@ -92,13 +114,8 @@ namespace BookNote.Pages {
 
                         // マークダウンをHTMLに変換
                         if (!reader.IsDBNull(reader.GetOrdinal("Review"))) {
-                            var reviewText = reader.GetOracleClob(reader.GetOrdinal("Review")).Value;
-                            var pipeline = new MarkdownPipelineBuilder()
-                                .UseAdvancedExtensions()
-                                .Build();
-                            ReviewHtml = Markdown.ToHtml(reviewText, pipeline);
+                            ReviewHtml = _sanitizer.Sanitize(reader.GetOracleClob(reader.GetOrdinal("Review")).Value);
                         }
-
                         Review = new ReviewData(); // レビューが存在することを示すフラグ
                     }
                 }

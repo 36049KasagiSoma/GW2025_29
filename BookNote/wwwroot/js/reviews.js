@@ -8,7 +8,7 @@ document.querySelectorAll('.tab').forEach(tab => {
         // クリックされたタブとそのコンテンツに active クラスを追加
         tab.classList.add('active');
         const tabName = tab.getAttribute('data-tab');
-        document.getElementById(`${tabName}-content`).classList.add('active'); // バッククォートに修正
+        document.getElementById(`${tabName}-content`).classList.add('active');
     });
 });
 
@@ -26,8 +26,22 @@ document.getElementById('searchKeyword')?.addEventListener('keypress', (e) => {
 document.getElementById('searchSortOrder')?.addEventListener('change', () => {
     performSearch();
 });
-// DOMContentLoadedイベント内、または適切な初期化タイミングで実行
+
 document.addEventListener('DOMContentLoaded', function () {
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const activeTab = urlParams.get('tab') || 'popular'; // 指定なしは人気タブ
+
+    // すべてのタブとコンテンツから active を外す
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+
+    // 対象タブとコンテンツに active を付与
+    const tabElement = document.querySelector(`.tab[data-tab="${activeTab}"]`);
+    const contentElement = document.getElementById(`${activeTab}-content`);
+    if (tabElement) tabElement.classList.add('active');
+    if (contentElement) contentElement.classList.add('active');
+
     // 検索ボタンのイベント
     const searchButton = document.querySelector('.search-button');
     if (searchButton) {
@@ -66,12 +80,12 @@ async function formatDate(dateString) {
         return dateString;
     }
 }
+
 function escapeHtml(text) {
     const div = document.createElement('div');
     div.textContent = text;
     return div.innerHTML;
 }
-
 
 async function performSearch() {
     const searchInput = document.querySelector('.search-input');

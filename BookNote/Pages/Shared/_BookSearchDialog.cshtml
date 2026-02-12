@@ -9,13 +9,20 @@
         </div>
         <div class="book-search-body">
             <div class="search-input-area">
-                <input type="text" id="bookSearchInput" placeholder="書籍名、著者名、ISBNで検索" />
+                <input type="text" id="bookSearchInput" placeholder="キーワードで検索" />
                 <button onclick="BookSearchDialog.search()">検索</button>
             </div>
             <div id="bookSearchResults" class="search-results"></div>
             <div id="bookSearchPagination" class="search-pagination" style="display: none;"></div>
             <div id="bookSearchLoading" class="search-loading" style="display: none;">
                 <img src="~/image/searching.gif" width="120" onselectstart="return false;" onmousedown="return false;" />
+                <!-- プログレスバー -->
+                <div class="search-progress-wrap">
+                    <div class="search-progress-bar">
+                        <div id="bookSearchProgressFill" class="search-progress-fill"></div>
+                    </div>
+                    <span id="bookSearchProgressLabel" class="search-progress-label">0%</span>
+                </div>
             </div>
         </div>
     </div>

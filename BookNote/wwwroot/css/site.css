@@ -60,9 +60,11 @@ body {
         border-color: #D2B48C;
         transform: translateX(5px);
     }
+
     .drawer-item:last-child {
         margin-bottom: 20px;
     }
+
 a.drawer-item {
     padding: 16px 20px;
     margin: 8px 0;
@@ -218,6 +220,30 @@ a.drawer-item {
         transform: translateY(-2px);
         box-shadow: 0 6px 16px rgba(139, 111, 71, 0.4);
     }
+
+    /* ログイン・ログアウトボタン 非活性時 */
+    .auth-button:disabled {
+        background: linear-gradient(135deg, #C0B0A0 0%, #A89880 100%);
+        color: rgba(255, 255, 255, 0.7);
+        cursor: not-allowed;
+        transform: none;
+        box-shadow: none;
+        opacity: 0.65;
+    }
+
+        .auth-button:disabled:hover {
+            transform: none;
+            box-shadow: none;
+        }
+
+.auth-button-logout:disabled {
+    background-color: #a0a0a0;
+}
+
+    .auth-button-logout:disabled:hover {
+        background-color: #a0a0a0;
+    }
+
 /* 認証セクション */
 .auth-section {
     display: flex;

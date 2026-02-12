@@ -7,11 +7,12 @@ using BookNote.Scripts.BooksAPI.BookImage.Fetcher;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats.Jpeg;
 using SixLabors.ImageSharp.Processing;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace BookNote.Scripts.UserControl {
     public class UserIconGetter {
         private string _bucketName = "";             // S3のバケット名
-        private string _distributionId = "";
         private AmazonS3Client _s3Client;            // S3接続用クライアント
         private HttpClient _httpClient;
         private AmazonCloudFrontClient _cloudFrontClient;
@@ -38,7 +39,6 @@ namespace BookNote.Scripts.UserControl {
             _s3Client = new AmazonS3Client(s3config);
             _cloudFrontClient = new AmazonCloudFrontClient(Amazon.RegionEndpoint.USEast1);
             //=============================================
-            _distributionId = s3c["CloudFrontDistributionId"] ?? "";
             _httpClient = new HttpClient();
             _bucketName = s3c["BucketName"] ?? "";
 
@@ -54,10 +54,10 @@ namespace BookNote.Scripts.UserControl {
         }
 
         private async Task<byte[]?> GetIconImageDataTask(string id, IconSize size) {
-            bool isExist = await ExistsInS3Async(id, size);
-            if (!isExist) return null;
+            string? fileName = await FindIconInS3Async(id, size);
+            if (fileName == null) return null;
             try {
-                var url = $"{Keywords.GetCloudFrontBaceUrl()}/icons/{id}/{IconSizeToString(size)}.jpg";
+                var url = $"{Keywords.GetCloudFrontBaceUrl()}/icons/{id}/{fileName}";
                 // リクエストメッセージを作成してヘッダーを追加
                 var request = new HttpRequestMessage(HttpMethod.Get, url);
                 request.Headers.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36");
@@ -78,101 +78,56 @@ namespace BookNote.Scripts.UserControl {
             }
         }
 
-        private async Task<bool> ExistsInS3Async(string id, IconSize size) {
+        private async Task<string?> FindIconInS3Async(string id, IconSize size) {
             try {
-                await _s3Client.GetObjectMetadataAsync(_bucketName, $"icons/{id}/{IconSizeToString(size)}.jpg");
+                var prefix = $"icons/{id}/{IconSizeToString(size)}_";
+                var request = new ListObjectsV2Request {
+                    BucketName = _bucketName,
+                    Prefix = prefix,
+                    MaxKeys = 1
+                };
+
+                var response = await _s3Client.ListObjectsV2Async(request);
+
+                if (response.S3Objects != null && response.S3Objects.Count > 0) {
+                    // フルパスからファイル名のみを抽出
+                    var fullKey = response.S3Objects[0].Key;
+                    return fullKey.Split('/').Last();
+                }
+
+                return null;
+            } catch (AmazonS3Exception ex) {
+                Console.WriteLine(ex.Message);
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// S3ファイルを削除
+        /// </summary>
+        private async Task<bool> DeleteS3FileAsync(string? userId, string? filename) {
+            try {
+                if (userId == null || filename == null) return false;
+                string path = $"icons/{userId}/{filename}";
+                var request = new DeleteObjectRequest {
+                    BucketName = _bucketName,
+                    Key = path
+                };
+                await _s3Client.DeleteObjectAsync(request);
+
                 return true;
-            } catch (AmazonS3Exception ex)
-                  when (ex.StatusCode == System.Net.HttpStatusCode.NotFound) {
-                Console.WriteLine(ex.Message);
-                return false;
-            } catch (AmazonS3Exception ex)
-                  when (ex.StatusCode == System.Net.HttpStatusCode.Forbidden) {
-                Console.WriteLine(ex.Message);
-                return false;
-            }
-        }
-
-        /// <summary>
-        /// アイコン画像をS3にアップロード（複数サイズ）
-        /// </summary>
-        /// <param name="userId">ユーザーのPublic ID</param>
-        /// <param name="icon256">256×256の画像データ</param>
-        /// <param name="icon64">64×64の画像データ</param>
-        /// <returns>アップロード成功時true</returns>
-        public async Task<bool> UploadIconAsync(string userId, byte[] icon256, byte[] icon64) {
-            try {
-                // 256×256のアイコンをアップロード
-                var upload256Success = await UploadIconToS3Async(userId, icon256, IconSize.LARGE);
-
-                // 64×64のアイコンをアップロード
-                var upload64Success = await UploadIconToS3Async(userId, icon64, IconSize.SMALL);
-
-                if (upload256Success && upload64Success) {
-                    // CloudFrontキャッシュを削除
-                    await InvalidateCloudFrontCacheAsync(userId);
-                    return true;
-                }
-
-                return false;
             } catch (Exception ex) {
-                Console.WriteLine($"アイコンアップロードエラー: {ex.Message}");
+                Console.WriteLine($"S3ファイル削除エラー: {ex.Message}");
                 return false;
             }
         }
 
         /// <summary>
-        /// CloudFrontのキャッシュを削除
-        /// </summary>
-        /// <param name="userId">ユーザーのPublic ID</param>
-        private async Task<bool> InvalidateCloudFrontCacheAsync(string userId) {
-            try {
-                if (string.IsNullOrEmpty(_distributionId)) {
-                    Console.WriteLine("CloudFront Distribution IDが設定されていません");
-                    return false;
-                }
-
-                // 削除するパスのリスト
-                var paths = new List<string> {
-                    $"/icons/{userId}/256.jpg",
-                    $"/icons/{userId}/64.jpg"
-                };
-
-                var invalidationBatch = new InvalidationBatch {
-                    Paths = new Paths {
-                        Quantity = paths.Count,
-                        Items = paths
-                    },
-                    CallerReference = $"{userId}-{DateTime.UtcNow.Ticks}" // 一意の参照ID
-                };
-
-                var request = new CreateInvalidationRequest {
-                    DistributionId = _distributionId,
-                    InvalidationBatch = invalidationBatch
-                };
-
-                var response = await _cloudFrontClient.CreateInvalidationAsync(request);
-
-                if (response.HttpStatusCode == System.Net.HttpStatusCode.Created) {
-                    Console.WriteLine($"CloudFrontキャッシュ削除成功: Invalidation ID = {response.Invalidation.Id}");
-                    Console.WriteLine($"削除対象: {string.Join(", ", paths)}");
-                    return true;
-                } else {
-                    Console.WriteLine($"CloudFrontキャッシュ削除失敗: StatusCode = {response.HttpStatusCode}");
-                    return false;
-                }
-            } catch (Exception ex) {
-                Console.WriteLine($"CloudFrontキャッシュ削除エラー: {ex.Message}");
-                return false;
-            }
-        }
-
-        /// <summary>
-        /// 指定サイズのアイコンをS3にアップロード（短いキャッシュ時間）
+        /// 指定サイズのアイコンをS3にアップロード
         /// </summary>
         private async Task<bool> UploadIconToS3Async(string userId, byte[] imageData, IconSize size) {
             try {
-                var key = $"icons/{userId}/{IconSizeToString(size)}.jpg";
+                var key = $"icons/{userId}/{IconSizeToString(size)}_{GenerateId(10)}.jpg";
                 byte[] jpegData = ConvertToJpeg(imageData);
 
                 using (var stream = new MemoryStream(jpegData)) {
@@ -181,14 +136,7 @@ namespace BookNote.Scripts.UserControl {
                         Key = key,
                         InputStream = stream,
                         ContentType = "image/jpeg",
-                        // 短めのキャッシュ時間を設定（10分）
-                        // Invalidationと組み合わせることで即座に反映しつつ、
-                        // Invalidation失敗時も最大10分で更新される
-                        Headers = {
-                            CacheControl = "public, max-age=600, s-maxage=600"
-                        }
                     };
-
                     var response = await _s3Client.PutObjectAsync(putRequest);
 
                     if (response.HttpStatusCode == System.Net.HttpStatusCode.OK) {
@@ -214,6 +162,9 @@ namespace BookNote.Scripts.UserControl {
         /// </summary>
         public async Task<bool> UploadIconAsync(string userId, byte[] icon256, byte[] icon64, bool invalidateCache = true) {
             try {
+                string? delete64 = await FindIconInS3Async(userId, IconSize.SMALL);
+                string? delete256 = await FindIconInS3Async(userId, IconSize.LARGE);
+
                 // 256×256のアイコンをアップロード
                 var upload256Success = await UploadIconToS3Async(userId, icon256, IconSize.LARGE);
 
@@ -221,10 +172,10 @@ namespace BookNote.Scripts.UserControl {
                 var upload64Success = await UploadIconToS3Async(userId, icon64, IconSize.SMALL);
 
                 if (upload256Success && upload64Success) {
-                    // オプションでキャッシュ削除（デフォルトはtrue）
                     if (invalidateCache) {
                         // バックグラウンドで実行（レスポンスを待たない）
-                        _ = Task.Run(() => InvalidateCloudFrontCacheAsync(userId));
+                        _ = Task.Run(() => DeleteS3FileAsync(userId, delete64));
+                        _ = Task.Run(() => DeleteS3FileAsync(userId, delete256));
                     }
                     return true;
                 }
@@ -266,6 +217,44 @@ namespace BookNote.Scripts.UserControl {
                     Console.WriteLine($"IconSizeToString:未対応の種類 {size.ToString()}");
                     return "";
             }
+        }
+
+
+        private const string Chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
+        /// <summary>
+        /// 日本時間ベースのID生成
+        /// 形式: yyyyMMddssmmdd + ランダム英数字
+        /// </summary>
+        /// <param name="randomLength">ランダム部分の桁数（推奨: 8以上）</param>
+        private static string GenerateId(int randomLength = 8) {
+            // 日本時間取得
+            TimeZoneInfo jst = TimeZoneInfo.FindSystemTimeZoneById(
+                OperatingSystem.IsWindows() ? "Tokyo Standard Time" : "Asia/Tokyo"
+            );
+            DateTime jstNow = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, jst);
+
+            // 日付部分
+            string datePart = jstNow.ToString("yyyyMMddssmmdd");
+
+            // ランダム部分
+            string randomPart = GenerateRandomString(randomLength);
+
+            return datePart + randomPart;
+        }
+        private static string GenerateRandomString(int length) {
+            var result = new StringBuilder(length);
+            byte[] buffer = new byte[length];
+
+            using (var rng = RandomNumberGenerator.Create()) {
+                rng.GetBytes(buffer);
+            }
+
+            for (int i = 0; i < length; i++) {
+                result.Append(Chars[buffer[i] % Chars.Length]);
+            }
+
+            return result.ToString();
         }
     }
 }

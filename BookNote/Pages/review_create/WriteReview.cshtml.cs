@@ -1,7 +1,7 @@
 ﻿using BookNote.Scripts;
 using BookNote.Scripts.ActivityTrace;
 using BookNote.Scripts.Login;
-using Markdig;
+using Ganss.Xss;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Oracle.ManagedDataAccess.Client;
@@ -16,13 +16,32 @@ namespace BookNote.Pages.review_create {
         private readonly ILogger<WriteReviewModel> _logger;
         private readonly IConfiguration _configuration;
         private readonly OracleConnection _conn;
-
+        private readonly HtmlSanitizer _sanitizer;
 
 
         public WriteReviewModel(ILogger<WriteReviewModel> logger, IConfiguration configuration, OracleConnection conn) {
             _logger = logger;
             _configuration = configuration;
             _conn = conn;
+            _sanitizer = new HtmlSanitizer();
+            SetupSabutizer();
+        }
+
+        private void SetupSabutizer() {
+            _sanitizer.AllowedTags.Clear();
+            _sanitizer.AllowedTags.Add("p");
+            _sanitizer.AllowedTags.Add("br");
+            _sanitizer.AllowedTags.Add("strong");
+            _sanitizer.AllowedTags.Add("em");
+            _sanitizer.AllowedTags.Add("u");
+            _sanitizer.AllowedTags.Add("s");
+            _sanitizer.AllowedTags.Add("h1");
+            _sanitizer.AllowedTags.Add("h2");
+            _sanitizer.AllowedTags.Add("h3");
+            _sanitizer.AllowedTags.Add("ul");
+            _sanitizer.AllowedTags.Add("ol");
+            _sanitizer.AllowedTags.Add("li");
+            _sanitizer.AllowedTags.Add("blockquote");
         }
 
         [BindProperty(SupportsGet = true)]
@@ -97,15 +116,9 @@ namespace BookNote.Pages.review_create {
                             ReviewInput.ContainsSpoiler = reader.IsDBNull(reader.GetOrdinal("ISSPOILERS"))
                                 ? false
                                 : reader.GetInt32(reader.GetOrdinal("ISSPOILERS")) == 1;
-                            ReviewInput.ContentMarkdown = reader.IsDBNull(reader.GetOrdinal("REVIEW"))
-                                 ? ""
-                                 : reader.GetString(reader.GetOrdinal("REVIEW")).Trim();
-
-                            // Markdown → HTML変換（Quill編集用）
-                            ReviewInput.ContentHtml = ConvertMarkdownToQuillHtml(ReviewInput.ContentMarkdown);
-
-                            ReviewInput.ContentHtml = Markdown.ToHtml(ReviewInput.ContentMarkdown);
-                            _logger.LogInformation(ReviewInput.ContentHtml);
+                            ReviewInput.ContentHtml = reader.IsDBNull(reader.GetOrdinal("REVIEW"))
+                                ? ""
+                                : reader.GetString(reader.GetOrdinal("REVIEW")).Trim();
                         }
                     }
                 }
@@ -113,20 +126,6 @@ namespace BookNote.Pages.review_create {
             } catch (Exception ex) {
                 _logger.LogError(ex, "レビュー読み込みエラー");
             }
-        }
-
-        private string ConvertMarkdownToQuillHtml(string markdown) {
-            if (string.IsNullOrWhiteSpace(markdown)) {
-                return "";
-            }
-
-            // Markdigのパイプライン設定
-            var pipeline = new MarkdownPipelineBuilder()
-                .UseAdvancedExtensions()
-                .Build();
-
-            var html = Markdown.ToHtml(markdown, pipeline);
-            return html;
         }
 
         private async Task EnsureBookExistsAsync(OracleConnection connection, string isbn) {
@@ -179,17 +178,10 @@ namespace BookNote.Pages.review_create {
                 return false;
             }
 
-            var converter = new Converter(new Config {
-                UnknownTags = Config.UnknownTagsOption.PassThrough,
-                GithubFlavored = true,
-                SmartHrefHandling = true
-            });
-            ReviewInput.ContentMarkdown = converter.Convert(ReviewInput.ContentHtml);
 
             if (isDraft) {
                 _logger.LogInformation("=== 下書き保存 ===");
                 _logger.LogInformation("ContentHtml: {ContentHtml}", ReviewInput.ContentHtml);
-                _logger.LogInformation("ContentMarkdown: {ContentMarkdown}", ReviewInput.ContentMarkdown);
                 _logger.LogInformation("==================");
             }
 
@@ -256,8 +248,12 @@ namespace BookNote.Pages.review_create {
                     command.Parameters.Add(":IsSpoilers", OracleDbType.Int32).Value = ReviewInput.ContainsSpoiler ? 1 : 0;
                     command.Parameters.Add(":Title", OracleDbType.Varchar2).Value =
                         string.IsNullOrEmpty(ReviewInput.Title) ? DBNull.Value : ReviewInput.Title;
+                    // 保存前にサニタイズ
+
+                    ReviewInput.ContentHtml = _sanitizer.Sanitize(ReviewInput.ContentHtml);
+
                     command.Parameters.Add(":Review", OracleDbType.Clob).Value =
-                        string.IsNullOrEmpty(ReviewInput.ContentMarkdown) ? DBNull.Value : ReviewInput.ContentMarkdown;
+                        string.IsNullOrEmpty(ReviewInput.ContentHtml) ? DBNull.Value : ReviewInput.ContentHtml;
 
                     if (ReviewId.HasValue) {
                         // UPDATE時もISBNパラメータを追加
@@ -322,7 +318,7 @@ namespace BookNote.Pages.review_create {
             }
 
             if (await SaveReviewAsync(isDraft: false)) {
-                return RedirectToPage("/Reviews");
+                return RedirectToPage("/Reviews", new { tab = "myreviews" });
             }
             return Page();
         }
@@ -363,8 +359,6 @@ namespace BookNote.Pages.review_create {
 
         public string ContentHtml { get; set; } = string.Empty;
 
-        public string ContentMarkdown { get; set; } = string.Empty;
-
         public bool ContainsSpoiler { get; set; }
 
         /// <summary>
@@ -399,16 +393,15 @@ namespace BookNote.Pages.review_create {
 
         public override string ToString() {
             return $@"ReviewInputModel {{
-          BookIsbn = ""{BookIsbn}"",
-          BookTitle = ""{BookTitle}"",
-          BookAuthor = ""{BookAuthor}"",
-          BookPublisher = ""{BookPublisher}"",
-          Title = ""{Title}"",
-          Rating = {Rating},
-          ContentHtml = ""{(ContentHtml.Length > 50 ? ContentHtml.Substring(0, 50) + "..." : ContentHtml)}"",
-          ContentMarkdown = ""{(ContentMarkdown.Length > 50 ? ContentMarkdown.Substring(0, 50) + "..." : ContentMarkdown)}"",
-          ContainsSpoiler = {ContainsSpoiler}
-        }}";
+              BookIsbn = ""{BookIsbn}"",
+              BookTitle = ""{BookTitle}"",
+              BookAuthor = ""{BookAuthor}"",
+              BookPublisher = ""{BookPublisher}"",
+              Title = ""{Title}"",
+              Rating = {Rating},
+              ContentHtml = ""{(ContentHtml.Length > 50 ? ContentHtml.Substring(0, 50) + "..." : ContentHtml)}"",
+              ContainsSpoiler = {ContainsSpoiler}
+            }}";
         }
     }
 }

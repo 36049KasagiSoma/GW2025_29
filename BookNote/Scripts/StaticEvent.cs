@@ -11,41 +11,40 @@ using static System.Net.Mime.MediaTypeNames;
 namespace BookNote.Scripts {
     public class StaticEvent {
         private StaticEvent() { }
-        public static string ToPlainText(string markdown) {
-            if (string.IsNullOrWhiteSpace(markdown))
+        public static string ToPlainText(string html, bool deleteLineBreak = true) {
+            if (string.IsNullOrWhiteSpace(html))
                 return string.Empty;
+            var text = html;
+            // scriptタグとその内容を削除
+            text = Regex.Replace(text, @"<script[^>]*>[\s\S]*?</script>", string.Empty, RegexOptions.IgnoreCase);
+            // styleタグとその内容を削除
+            text = Regex.Replace(text, @"<style[^>]*>[\s\S]*?</style>", string.Empty, RegexOptions.IgnoreCase);
+            if (deleteLineBreak) {
+                // 改行タグを削除
+                text = Regex.Replace(text, @"<br\s*/?>", "", RegexOptions.IgnoreCase);
+                // ブロック要素の終了タグを削除
+                text = Regex.Replace(text, @"</(p|div|h[1-6]|li|ul|ol)>", "", RegexOptions.IgnoreCase);
+                // 改行コードを統一
+                text = text.Replace("\n", "").Replace("\r", "");
+            } else {
+                // 改行タグを改行文字に変換
+                text = Regex.Replace(text, @"<br\s*/?>", "\n", RegexOptions.IgnoreCase);
+                // ブロック要素の終了タグを改行に変換
+                text = Regex.Replace(text, @"</(p|div|h[1-6]|li|ul|ol)>", "\n", RegexOptions.IgnoreCase);
+                // 改行コードを統一
+                text = text.Replace("\r\n", "\n").Replace("\r", "\n");
+            }
+                      // すべてのHTMLタグを削除
+            text = Regex.Replace(text, @"<[^>]+>", string.Empty);
 
-            var text = markdown;
+            // HTMLエンティティをデコード
+            text = System.Net.WebUtility.HtmlDecode(text);
 
-            // 改行コードを統一
-            text = text.Replace("\r\n", "").Replace("\r", "");
-            // コードブロック ``` ```
-            text = Regex.Replace(text, @"```[\s\S]*?```", string.Empty);
-            // インラインコード `code`
-            text = Regex.Replace(text, @"`([^`]*)`", "$1");
-            // 画像 ![alt](url) → alt
-            text = Regex.Replace(text, @"!\[([^\]]*)\]\([^)]+\)", "$1");
-            // リンク [text](url) → text
-            text = Regex.Replace(text, @"\[(.*?)\]\([^)]+\)", "$1");
-            // 見出し # ## ###
-            text = Regex.Replace(text, @"^\s{0,3}#{1,6}\s*", string.Empty, RegexOptions.Multiline);
-            // 強調 **bold** / __bold__
-            text = Regex.Replace(text, @"(\*\*|__)(.*?)\1", "$2");
-
-            // 斜体 *italic* / _italic_
-            text = Regex.Replace(text, @"(\*|_)(.*?)\1", "$2");
-            // 打ち消し線 ~~text~~
-            text = Regex.Replace(text, @"~~(.*?)~~", "$1");
-            // 引用 >
-            text = Regex.Replace(text, @"^\s*>\s?", string.Empty, RegexOptions.Multiline);
-            // 箇条書き -, *, +
-            text = Regex.Replace(text, @"^\s*[-*+]\s+", string.Empty, RegexOptions.Multiline);
-            // 番号付きリスト 1. 2.
-            text = Regex.Replace(text, @"^\s*\d+\.\s+", string.Empty, RegexOptions.Multiline);
-            // 水平線 --- *** ___
-            text = Regex.Replace(text, @"^\s*([-*_]){3,}\s*$", string.Empty, RegexOptions.Multiline);
             // 余分な空行を整理
             text = Regex.Replace(text, @"\n{2,}", "\n");
+
+            // 行頭・行末の空白を削除
+            text = Regex.Replace(text, @"^[ \t]+|[ \t]+$", string.Empty, RegexOptions.Multiline);
 
             return text.Trim();
         }

@@ -3,10 +3,10 @@ using Oracle.ManagedDataAccess.Client;
 using System.Data;
 
 namespace BookNote.Scripts.SelectBookReview {
-    public class FollowingUserBook {
+    public class MyBookReview {
         OracleConnection _connection;
 
-        public FollowingUserBook(OracleConnection connection) {
+        public MyBookReview(OracleConnection connection) {
             _connection = connection;
         }
 
@@ -28,11 +28,7 @@ namespace BookNote.Scripts.SelectBookReview {
                 FROM BOOKREVIEW R
                 JOIN USERS U ON R.USER_ID = U.USER_ID
                 JOIN BOOKS B ON R.ISBN = B.ISBN
-                WHERE R.USER_ID IN (
-                    SELECT F.For_User_Id
-                    FROM UserFollow F
-                    WHERE F.To_User_Id = :userId
-                )
+                WHERE R.USER_ID = :userId
                 AND R.POSTINGTIME IS NOT NULL
                 ORDER BY R.POSTINGTIME DESC
                 FETCH FIRST :limit ROWS ONLY";

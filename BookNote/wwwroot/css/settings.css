@@ -196,6 +196,27 @@
         transform: translateY(-2px);
         box-shadow: 0 4px 12px rgba(101, 67, 33, 0.2);
     }
+    /* ボタン無効化状態 */
+    .btn-primary:disabled {
+        background: #A0826D;
+        cursor: not-allowed;
+        opacity: 0.6;
+    }
+
+        .btn-primary:disabled:hover {
+            transform: none;
+            box-shadow: none;
+        }
+
+.btn-secondary:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+}
+
+    .btn-secondary:disabled:hover {
+        background: white;
+        color: #654321;
+    }
 
 /* 画像切り取りモーダル */
 .crop-modal {

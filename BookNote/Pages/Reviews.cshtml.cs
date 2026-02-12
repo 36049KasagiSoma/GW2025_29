@@ -17,6 +17,8 @@ namespace BookNote.Pages {
         public List<BookReview> LatestReviews { get; set; } = new();
         public List<BookReview> PopularReviews { get; set; } = new();
         public List<BookReview> FollowingReviews { get; set; } = new();
+        public List<BookReview> MyReviews { get; set; } = new();
+
 
         private readonly ILogger<ReviewsModel> _logger;
 
@@ -32,12 +34,13 @@ namespace BookNote.Pages {
                     await _conn.OpenAsync();
                 }
                 var myid = AccountDataGetter.IsAuthenticated() ? AccountDataGetter.GetUserId() : null;
-                LatestReviews = await new LatestBook(_conn, myid).GetReview(20);
-                PopularReviews = await new PopularityBook(_conn, myid).GetReview();
+                LatestReviews.AddRange(await new LatestBook(_conn, myid).GetReview(20));
+                PopularReviews.AddRange(await new PopularityBook(_conn, myid).GetReview(20));
+                if (AccountDataGetter.IsAuthenticated() && myid != null) {
+                    MyReviews.AddRange(await new MyBookReview(_conn).GetReview(myid, 20));
+                }
                 if (AccountDataGetter.IsAuthenticated()) {
-                    FollowingReviews = await new FollowingUserBook(_conn).GetReview(AccountDataGetter.GetUserId());
-                } else {
-                    FollowingReviews = [];
+                    FollowingReviews.AddRange(await new FollowingUserBook(_conn).GetReview(AccountDataGetter.GetUserId()));
                 }
             } catch (Exception ex) {
                 _logger.LogInformation(ex, "オススメ取得エラー");

@@ -17,8 +17,9 @@ namespace BookNote.Scripts.BooksAPI.BookSearch.Fetcher {
         public override async Task<List<BookSearchResult>> GetSearchBooksAsync(string keyword) {
             List<BookSearchResult> books = new List<BookSearchResult>();
             int maxResults = 30; // 1回あたりの最大取得数
-            int totalToFetch = 200; // 合計取得数
+            int totalToFetch = 90; // 合計取得数
             int page = 1;
+            int totalCount = 0;
 
             try {
                 while (books.Count < totalToFetch) {
@@ -28,13 +29,16 @@ namespace BookNote.Scripts.BooksAPI.BookSearch.Fetcher {
                         $"&format=json" +
                         $"&hits={maxResults}" +
                         $"&page={page}";
-
                     var response = await _httpClient.GetStringAsync(url);
                     using JsonDocument doc = JsonDocument.Parse(response);
                     JsonElement root = doc.RootElement;
-
-                    if (!root.TryGetProperty("Items", out JsonElement items)) {
-                        break; // これ以上結果がない
+                    if (totalCount == 0 &&
+                        root.TryGetProperty("count", out JsonElement countElem)) {
+                        totalCount = countElem.GetInt32();
+                    }
+                    if (!root.TryGetProperty("Items", out JsonElement items)
+                        || items.GetArrayLength() == 0) {
+                        break;
                     }
 
                     int itemCount = 0;
@@ -71,15 +75,22 @@ namespace BookNote.Scripts.BooksAPI.BookSearch.Fetcher {
                             ImageUrl = imageUrl
                         };
 
+                        Console.WriteLine(data.Title);
+
                         books.Add(new BookSearchResult { book = data });
                         itemCount++;
                     }
-
+                    int denominator = totalCount > 0
+                        ? Math.Min(totalToFetch, totalCount)
+                        : totalToFetch;
+                    UpdateProgress((float)books.Count / denominator);
                     page++;
 
                     // API制限を考慮して少し待機
-                    await Task.Delay(30);
+                    await Task.Delay(1200);
                 }
+
+                UpdateProgress(1f);
             } catch (Exception ex) {
                 Console.WriteLine($"エラー: {ex.Message}");
             }

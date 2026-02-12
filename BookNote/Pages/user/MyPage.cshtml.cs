@@ -1,14 +1,12 @@
 using BookNote.Scripts;
 using BookNote.Scripts.Login;
 using BookNote.Scripts.UserControl;
-using Markdig;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.ViewEngines;
 using Oracle.ManagedDataAccess.Client;
 using System.Data;
 using System.Security.Claims;
-using static BookNote.Pages.ReviewDetailsModel;
 
 namespace BookNote.Pages.user {
     public class MyPageModel : PageModel {

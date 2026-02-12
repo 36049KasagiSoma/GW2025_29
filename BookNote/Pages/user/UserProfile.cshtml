@@ -16,7 +16,6 @@
     <div class="main-content">
         @if (Model.UserExists) {
             <!-- プロフィールヘッダー -->
-            <!-- プロフィールヘッダー -->
             <div class="profile-header">
                 @if (Model.IconImageData != null && Model.IconImageData.Length > 0) {
                     var base64 = Convert.ToBase64String(Model.IconImageData);

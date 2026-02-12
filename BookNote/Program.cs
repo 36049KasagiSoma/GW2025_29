@@ -11,6 +11,7 @@ using Oracle.ManagedDataAccess.Client;
 using System;
 using System.Data;
 using System.Diagnostics;
+using System.Text.Json;
 
 namespace BookNote {
     public class Program {
@@ -55,7 +56,7 @@ namespace BookNote {
 
             // Razor Pages
             builder.Services.AddRazorPages().AddJsonOptions(options => {
-                options.JsonSerializerOptions.PropertyNamingPolicy = null;
+                options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
             });
 
             // Controller

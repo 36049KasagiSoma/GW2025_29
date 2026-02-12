@@ -43,8 +43,8 @@ namespace BookNote.Pages {
                 var myid = AccountDataGetter.IsAuthenticated() ? AccountDataGetter.GetUserId() : null;
                 PopularityBook pb = new PopularityBook(_conn, myid);
                 RecommentedBook rb = new RecommentedBook(_conn, myid);
-                PopularityReviews = await pb.GetReview();
-                RecommentedReviews = await rb.GetReview();
+                PopularityReviews = await pb.GetReview(6);
+                RecommentedReviews = await rb.GetReview(6);
             } catch (Exception ex) {
                 _logger.LogError(ex, "オススメ取得エラー");
                 PopularityReviews = [];

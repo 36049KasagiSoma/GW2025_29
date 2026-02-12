@@ -3,7 +3,6 @@ document.addEventListener('DOMContentLoaded', function () {
     const likeButton = document.querySelector('.like-button');
     if (likeButton) {
         const reviewId = likeButton.getAttribute('data-review-id');
-        console.log('Review ID:', reviewId);
         loadLikeStatus(reviewId, likeButton);
         likeButton.addEventListener('click', function (e) {
             e.preventDefault();
@@ -14,7 +13,12 @@ document.addEventListener('DOMContentLoaded', function () {
             if (likeButton.classList.contains('disabled')) {
                 return;
             }
-            console.log('Like button clicked');
+            // 自分のレビューにはいいね不可
+            if (window.currentUserPublicId && window.reviewOwnerPublicId
+                && window.currentUserPublicId === window.reviewOwnerPublicId) {
+                alert('自分のレビューにはいいねできません');
+                return;
+            }
             toggleLike(reviewId, likeButton);
         });
     }
@@ -26,9 +30,7 @@ document.addEventListener('DOMContentLoaded', function () {
 // いいね状態の読み込み
 async function loadLikeStatus(reviewId, button) {
     try {
-        console.log('Loading like status for review:', reviewId);
         const response = await fetch(`/api/reviews/${reviewId}/like`);
-        console.log('Response status:', response.status);
         if (response.ok) {
             const data = await response.json();
             console.log('Like data:', data);
@@ -46,25 +48,21 @@ async function toggleLike(reviewId, button) {
         return;
     }
     try {
-        console.log('Toggling like for review:', reviewId);
         const response = await fetch(`/api/reviews/${reviewId}/like`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             }
         });
-        console.log('Toggle response status:', response.status);
         if (response.status === 401) {
             alert('いいね機能を使用するにはログインが必要です');
             return;
         }
         if (response.ok) {
             const data = await response.json();
-            console.log('Toggle result:', data);
             updateLikeButton(button, data.isLiked, data.likeCount, true);
         } else {
             const errorText = await response.text();
-            console.error('Toggle error:', errorText);
             alert('いいねの処理に失敗しました');
         }
     } catch (error) {
@@ -77,7 +75,6 @@ async function toggleLike(reviewId, button) {
 function updateLikeButton(button, isLiked, count, animate = false) {
     const heartIcon = button.querySelector('.heart-icon');
     const likeCount = button.querySelector('.like-count');
-    console.log('Updating button - isLiked:', isLiked, 'count:', count);
     if (isLiked) {
         button.classList.add('liked');
     } else {

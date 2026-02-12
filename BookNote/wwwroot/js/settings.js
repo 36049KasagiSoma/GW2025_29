@@ -195,6 +195,9 @@ function initializeFormValidation() {
     settingsForm.addEventListener('submit', function (e) {
         const userNameInput = document.querySelector('input[name="UserName"]');
         const profileTextarea = document.querySelector('textarea[name="Profile"]');
+        const submitButton = this.querySelector('button[type="submit"]');
+        const cancelButton = this.querySelector('a.btn-secondary');
+        const selectIconBtn = document.getElementById('select-icon-btn');
 
         if (!userNameInput) {
             return;
@@ -230,6 +233,20 @@ function initializeFormValidation() {
         if (!confirm(confirmMessage)) {
             e.preventDefault();
             return false;
+        }
+
+        // ボタンを非アクティブ化
+        if (submitButton) {
+            submitButton.disabled = true;
+            submitButton.textContent = '保存中...';
+        }
+        if (cancelButton) {
+            cancelButton.style.pointerEvents = 'none';
+            cancelButton.style.opacity = '0.5';
+        }
+        if (selectIconBtn) {
+            selectIconBtn.disabled = true;
+            selectIconBtn.style.opacity = '0.5';
         }
     });
 }

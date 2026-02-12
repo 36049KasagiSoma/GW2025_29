@@ -1,8 +1,9 @@
 ﻿const BookSearchDialog = {
     callback: null,
-    allBooks: [], // 全検索結果を保持
+    allBooks: [],
     currentPage: 1,
     itemsPerPage: 10,
+    _progressTimer: null,
 
     open(callback) {
         this.callback = callback;
@@ -17,14 +18,48 @@
         document.getElementById('bookSearchResults').innerHTML = '';
         document.getElementById('bookSearchInput').value = '';
         document.getElementById('bookSearchPagination').style.display = 'none';
+        document.getElementById('bookSearchLoading').style.display = 'none';
+        this._stopProgress();
+        this._setProgress(0);
         this.allBooks = [];
         this.currentPage = 1;
     },
 
+    _setProgress(value) {
+        const pct = Math.round(value * 100);
+        const fill = document.getElementById('bookSearchProgressFill');
+        const label = document.getElementById('bookSearchProgressLabel');
+        if (fill) fill.style.width = `${pct}%`;
+        if (label) label.textContent = `${pct}%`;
+    },
+
+    _startProgressPolling() {
+        this._setProgress(0);
+        // 即時1回実行してから以降はインターバル
+        const poll = async () => {
+            try {
+                const res = await fetch('/api/books/search-progress');
+                if (!res.ok) return;
+                const data = await res.json();
+                this._setProgress(data.progress ?? 0);
+            } catch { /* 無視 */ }
+        };
+        poll();
+        this._progressTimer = setInterval(poll, 300);
+    },
+
+    _stopProgress() {
+        if (this._progressTimer) {
+            clearInterval(this._progressTimer);
+            this._progressTimer = null;
+        }
+    },
+
     async search() {
         const query = document.getElementById('bookSearchInput').value.trim();
-        console.log('検索開始:', query);
         if (!query) return;
+
+        await fetch('/api/books/search-progress?reset=true');
 
         const loading = document.getElementById('bookSearchLoading');
         const results = document.getElementById('bookSearchResults');
@@ -33,16 +68,15 @@
         loading.style.display = 'block';
         results.innerHTML = '';
         pagination.style.display = 'none';
+        this._startProgressPolling();
 
         try {
             const url = `/api/books/search?query=${encodeURIComponent(query)}`;
-            console.log('リクエストURL:', url);
-
             const response = await fetch(url);
-            console.log('レスポンスステータス:', response.status);
-
             const books = await response.json();
-            console.log('取得データ:', books);
+
+            this._stopProgress();
+            this._setProgress(1);
 
             loading.style.display = 'none';
 
@@ -58,7 +92,7 @@
             this.renderPagination();
 
         } catch (error) {
-            console.error('エラー詳細:', error);
+            this._stopProgress();
             loading.style.display = 'none';
             results.innerHTML = '<div class="search-empty">エラーが発生しました: ' + error.message + '</div>';
         }
@@ -71,19 +105,16 @@
         const pageBooks = this.allBooks.slice(startIndex, endIndex);
 
         results.innerHTML = pageBooks.map(book => `
-            <div class="search-result-item" data-isbn="${book.isbn}" onclick='BookSearchDialog.select(${JSON.stringify(book)})'>
-                <div class="search-result-cover">
-                    NoImage
-                </div>
+            <div class="search-result-item" data-isbn="${book.isbn || book.Isbn}" onclick='BookSearchDialog.select(${JSON.stringify(book)})'>
+                <div class="search-result-cover">NoImage</div>
                 <div class="search-result-info">
-                    <div class="search-result-title">${book.title}</div>
-                    <div class="search-result-author">${book.author || '著者不明'}</div>
-                    <div class="search-result-isbn">ISBN: ${book.isbn || '不明'}</div>
+                    <div class="search-result-title">${book.title || book.Title}</div>
+                    <div class="search-result-author">${book.author || book.Author || '著者不明'}</div>
+                    <div class="search-result-isbn">ISBN: ${book.isbn || book.Isbn || '不明'}</div>
                 </div>
             </div>
         `).join('');
 
-        // 書影を取得
         this.fetchBookImages();
     },
 
@@ -98,20 +129,16 @@
 
         let paginationHtml = '';
 
-        // 前へボタン
         if (this.currentPage > 1) {
             paginationHtml += `<button class="pagination-btn" onclick="BookSearchDialog.goToPage(${this.currentPage - 1})">‹ 前へ</button>`;
         }
 
-        // ページ番号
         const startPage = Math.max(1, this.currentPage - 2);
         const endPage = Math.min(totalPages, this.currentPage + 2);
 
         if (startPage > 1) {
             paginationHtml += `<button class="pagination-btn" onclick="BookSearchDialog.goToPage(1)">1</button>`;
-            if (startPage > 2) {
-                paginationHtml += `<span class="pagination-ellipsis">...</span>`;
-            }
+            if (startPage > 2) paginationHtml += `<span class="pagination-ellipsis">...</span>`;
         }
 
         for (let i = startPage; i <= endPage; i++) {
@@ -120,13 +147,10 @@
         }
 
         if (endPage < totalPages) {
-            if (endPage < totalPages - 1) {
-                paginationHtml += `<span class="pagination-ellipsis">...</span>`;
-            }
+            if (endPage < totalPages - 1) paginationHtml += `<span class="pagination-ellipsis">...</span>`;
             paginationHtml += `<button class="pagination-btn" onclick="BookSearchDialog.goToPage(${totalPages})">${totalPages}</button>`;
         }
 
-        // 次へボタン
         if (this.currentPage < totalPages) {
             paginationHtml += `<button class="pagination-btn" onclick="BookSearchDialog.goToPage(${this.currentPage + 1})">次へ ›</button>`;
         }
@@ -139,15 +163,11 @@
         this.currentPage = page;
         this.renderPage();
         this.renderPagination();
-
-        // 結果エリアの先頭にスクロール
         document.getElementById('bookSearchResults').scrollIntoView({ behavior: 'smooth', block: 'start' });
     },
 
     select(book) {
-        if (this.callback) {
-            this.callback(book);
-        }
+        if (this.callback) this.callback(book);
         this.close();
     },
 
@@ -158,26 +178,17 @@
         resultItems.forEach(item => {
             const isbn = item.dataset.isbn;
             const bookCover = item.querySelector('.search-result-cover');
-
-            // 画像が既にある場合はスキップ
             if (!bookCover || bookCover.querySelector('img')) return;
-
-            if (!isbnMap.has(isbn)) {
-                isbnMap.set(isbn, []);
-            }
+            if (!isbnMap.has(isbn)) isbnMap.set(isbn, []);
             isbnMap.get(isbn).push(bookCover);
         });
 
-        // ISBNごとに1回だけ画像取得
         const fetchPromises = Array.from(isbnMap.entries()).map(async ([isbn, bookCovers]) => {
             try {
                 const response = await fetch(`/?handler=Image&isbn=${isbn}`);
                 if (!response.ok) return;
-
                 const blob = await response.blob();
                 const imageUrl = URL.createObjectURL(blob);
-
-                // 全ての該当要素に反映
                 bookCovers.forEach(bookCover => {
                     bookCover.innerHTML = `<img src="${imageUrl}" alt="書影" draggable="false">`;
                 });
@@ -190,14 +201,11 @@
     }
 };
 
-// Enterキーで検索
 document.addEventListener('DOMContentLoaded', () => {
     const input = document.getElementById('bookSearchInput');
     if (input) {
         input.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                BookSearchDialog.search();
-            }
+            if (e.key === 'Enter') BookSearchDialog.search();
         });
     }
 });

@@ -1,12 +1,7 @@
 ﻿using BookNote.Scripts;
 using BookNote.Scripts.Login;
-using Markdig;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ViewEngines;
 using Oracle.ManagedDataAccess.Client;
-using System.Configuration;
-using static BookNote.Pages.ReviewDetailsModel;
 
 namespace BookNote.Controllers {
     [ApiController]
@@ -17,13 +12,11 @@ namespace BookNote.Controllers {
             _configuration = configuration;
         }
 
-        // GetLikeStatus メソッド
         [HttpGet("{reviewId}/like")]
         public async Task<IActionResult> GetLikeStatus(int reviewId) {
             var isLiked = false;
             var likeCount = 0;
-
-            var userId = AccountDataGetter.GetUserId();
+            var userId = AccountDataGetter.GetUserId(); // 未ログイン時はnull
 
             using (var connection = new OracleConnection(Keywords.GetDbConnectionString(_configuration))) {
                 await connection.OpenAsync();
@@ -33,17 +26,18 @@ namespace BookNote.Controllers {
                     "SELECT COUNT(*) FROM GoodReview WHERE Review_Id = :reviewId",
                     connection)) {
                     countCmd.Parameters.Add(":reviewId", OracleDbType.Int32).Value = reviewId;
-                    var result = await countCmd.ExecuteScalarAsync();
-                    likeCount = Convert.ToInt32(result);
+                    likeCount = Convert.ToInt32(await countCmd.ExecuteScalarAsync());
                 }
 
-                using (var likeCmd = new OracleCommand(
-                    "SELECT COUNT(*) FROM GoodReview WHERE Review_Id = :reviewId AND User_Id = :userId",
-                    connection)) {
-                    likeCmd.Parameters.Add(":reviewId", OracleDbType.Int32).Value = reviewId;
-                    likeCmd.Parameters.Add(":userId", OracleDbType.Char).Value = userId;
-                    var result = await likeCmd.ExecuteScalarAsync();
-                    isLiked = Convert.ToInt32(result) > 0;
+                // ログイン済みの場合のみいいね済みチェック
+                if (userId != null) {
+                    using (var likeCmd = new OracleCommand(
+                        "SELECT COUNT(*) FROM GoodReview WHERE Review_Id = :reviewId AND User_Id = :userId",
+                        connection)) {
+                        likeCmd.Parameters.Add(":reviewId", OracleDbType.Int32).Value = reviewId;
+                        likeCmd.Parameters.Add(":userId", OracleDbType.Char).Value = userId;
+                        isLiked = Convert.ToInt32(await likeCmd.ExecuteScalarAsync()) > 0;
+                    }
                 }
             }
 
@@ -54,11 +48,28 @@ namespace BookNote.Controllers {
         public async Task<IActionResult> ToggleLike(int reviewId) {
             var userId = AccountDataGetter.GetUserId();
 
+            // 未ログインチェック
+            if (userId == null) {
+                return Unauthorized();
+            }
+
             var isLiked = false;
             var likeCount = 0;
 
             using (var connection = new OracleConnection(Keywords.GetDbConnectionString(_configuration))) {
                 await connection.OpenAsync();
+
+                // 自分のレビューへのいいねを拒否
+                using (var ownerCmd = new OracleCommand(
+                    "SELECT COUNT(*) FROM BookReview WHERE Review_Id = :reviewId AND User_Id = :userId",
+                    connection)) {
+                    ownerCmd.Parameters.Add(":reviewId", OracleDbType.Int32).Value = reviewId;
+                    ownerCmd.Parameters.Add(":userId", OracleDbType.Char).Value = userId;
+                    var isOwner = Convert.ToInt32(await ownerCmd.ExecuteScalarAsync()) > 0;
+                    if (isOwner) {
+                        return StatusCode(403, new { error = "自分のレビューにはいいねできません" });
+                    }
+                }
 
                 // 既存のいいねを確認
                 using (var checkCmd = new OracleCommand(
@@ -69,7 +80,6 @@ namespace BookNote.Controllers {
                     var exists = Convert.ToInt32(await checkCmd.ExecuteScalarAsync()) > 0;
 
                     if (exists) {
-                        // いいねを削除
                         using (var deleteCmd = new OracleCommand(
                             "DELETE FROM GoodReview WHERE Review_Id = :reviewId AND User_Id = :userId",
                             connection)) {
@@ -79,7 +89,6 @@ namespace BookNote.Controllers {
                         }
                         isLiked = false;
                     } else {
-                        // いいねを追加
                         using (var insertCmd = new OracleCommand(
                             "INSERT INTO GoodReview (User_Id, Review_Id) VALUES (:userId, :reviewId)",
                             connection)) {
@@ -91,7 +100,6 @@ namespace BookNote.Controllers {
                     }
                 }
 
-                // 更新後の総数を取得
                 using (var countCmd = new OracleCommand(
                     "SELECT COUNT(*) FROM GoodReview WHERE Review_Id = :reviewId",
                     connection)) {

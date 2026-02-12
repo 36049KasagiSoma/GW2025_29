@@ -36,21 +36,30 @@
                         <div class="review-text">
                             @Html.Raw(Model.ReviewHtml)
                         </div>
-                        <button class="like-button @(Scripts.Login.AccountDataGetter.IsAuthenticated() ? "" : "disabled")"
+                        @{
+                            var currentPublicId = Scripts.Login.AccountDataGetter.IsAuthenticated()
+                            ? await Scripts.Login.AccountDataGetter.GetDbUserPublicIdAsync()
+                            : null;
+                            var isOwner = currentPublicId != null && currentPublicId == Model.UserPublicId;
+                        }
+                        <button class="like-button @(Scripts.Login.AccountDataGetter.IsAuthenticated() && !isOwner ? "" : "disabled")"
                                 data-review-id="@Model.ReviewId"
+                                data-owner="@isOwner.ToString().ToLower()"
                                 type="button"
-                                @(Scripts.Login.AccountDataGetter.IsAuthenticated() ? "" : "disabled")>
+                                @(Scripts.Login.AccountDataGetter.IsAuthenticated() && !isOwner ? "" : "disabled")>
                             <span class="heart-icon"></span>
                             <span class="like-count">0</span>
                         </button>
                         @if (!Scripts.Login.AccountDataGetter.IsAuthenticated()) {
                             <script>
                                 window.isUserAuthenticated = false;
+                                window.reviewOwnerPublicId = '@Model.UserPublicId';
                             </script>
                         } else {
                             <script>
                                 window.isUserAuthenticated = true;
-                                window.currentUserPublicId = '@await Scripts.Login.AccountDataGetter.GetDbUserPublicIdAsync()';
+                                window.currentUserPublicId = '@currentPublicId';
+                                window.reviewOwnerPublicId = '@Model.UserPublicId';
                             </script>
                         }
                         <div class="reviewer-info">
