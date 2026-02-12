@@ -173,17 +173,28 @@ function displayComments(comments, totalCount, reviewId) {
 // コメント要素作成
 function createCommentElement(comment, reviewId) {
     const div = document.createElement('div');
-    div.className = 'comment-item';
     div.setAttribute('data-comment-id', comment.commentId);
 
     const formattedTime = formatPostingTime(new Date(comment.postingTime));
     const isOwnComment = window.currentUserPublicId === comment.userPublicId;
+
+    // レビュー投稿者のコメントかどうか判定
+    const isReviewAuthor = window.reviewOwnerPublicId && comment.userPublicId === window.reviewOwnerPublicId;
+
+    // 投稿者の場合は専用クラスを付与
+    div.className = isReviewAuthor ? 'comment-item review-author-comment' : 'comment-item';
+
+    // 投稿者バッジのHTML（投稿者のみ表示）
+    const authorBadgeHtml = isReviewAuthor
+        ? `<span class="author-badge">投稿者</span>`
+        : '';
 
     div.innerHTML = `
         <div class="comment-header">
             <div class="user-info">
                 <div class="reviewer-icon" data-public-id="${comment.userPublicId}"></div>
                 <a href="/user/UserProfile/${comment.userPublicId}" class="user-name">${comment.userName}</a>
+                ${authorBadgeHtml}
                 <span class="post-time">${formattedTime}</span>
             </div>
             ${isOwnComment ? `<button class="delete-comment-btn" data-comment-id="${comment.commentId}">削除</button>` : ''}
@@ -197,7 +208,6 @@ function createCommentElement(comment, reviewId) {
         deleteBtn.addEventListener('click', () => deleteComment(reviewId, comment.commentId));
     }
 
-    // アイコン読み込みは後でまとめて行う
     return div;
 }
 

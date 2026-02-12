@@ -292,6 +292,38 @@
     line-height: 1.8;
 }
 
+/* 編集モード通知バナー */
+.alert-message.edit-mode-notice {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: #E3F2FD;
+    border-color: #64B5F6;
+    color: #1565C0;
+}
+
+.notice-icon {
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+    stroke: #1565C0;
+}
+
+/* 無効化セクション（評価星エリア） */
+.disabled-section {
+    opacity: 0.5;
+    pointer-events: none;
+    cursor: not-allowed;
+}
+
+/* キャンセルボタン（リンク形式） */
+.btn-link-back {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+}
+
 /* レスポンシブ対応 */
 @media (max-width: 768px) {
     .write-review-page .main-content {

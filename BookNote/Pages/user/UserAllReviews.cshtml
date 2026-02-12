@@ -1,176 +1,176 @@
 ﻿@page "{userId?}"
 @model BookNote.Pages.Users.UserAllReviewsModel
 @{
-    ViewData["Title"] = $"{Model.UserName}のすべてのレビュー";
+	ViewData["Title"] = $"{Model.UserName}のすべてのレビュー";
 }
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BookNote - @ViewData["Title"]</title>
-    <link type="text/css" rel="stylesheet" href="~/css/site.css">
-    <link type="text/css" rel="stylesheet" href="~/css/user_profile.css">
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>BookNote - @ViewData["Title"]</title>
+	<link type="text/css" rel="stylesheet" href="~/css/site.css">
+	<link type="text/css" rel="stylesheet" href="~/css/user_profile.css">
 </head>
 <body class="user-profile-page">
-    <div class="main-content">
-        @if (Model.UserExists) {
-            <!-- ページヘッダー -->
-            <div class="profile-header" style="margin-bottom: 30px;">
-                @if (Model.IconImageData != null && Model.IconImageData.Length > 0) {
-                    var base64 = Convert.ToBase64String(Model.IconImageData);
-                    var imgSrc = $"data:image/png;base64,{base64}";
-                    <img src="@imgSrc" alt="プロフィール画像" class="profile-icon-large" />
-                } else {
-                    <div class="profile-icon-large default-icon"></div>
-                }
-                <div class="profile-info">
-                    <div class="profile-username">@Model.UserName</div>
-                    <div class="profile-userid">@@@Model.UserPublicId</div>
-                    <a href="/UserProfile/@Model.UserPublicId" class="view-all-link" style="margin-top: 12px; display: inline-block;">← プロフィールに戻る</a>
-                </div>
-            </div>
+	<div class="main-content">
+		@if (Model.UserExists) {
+			<!-- ページヘッダー -->
+			<div class="profile-header" style="margin-bottom: 30px;">
+				@if (Model.IconImageData != null && Model.IconImageData.Length > 0) {
+					var base64 = Convert.ToBase64String(Model.IconImageData);
+					var imgSrc = $"data:image/png;base64,{base64}";
+					<img src="@imgSrc" alt="プロフィール画像" class="profile-icon-large" />
+				} else {
+					<div class="profile-icon-large default-icon"></div>
+				}
+				<div class="profile-info">
+					<div class="profile-username">@Model.UserName</div>
+					<div class="profile-userid">@@@Model.UserPublicId</div>
+					<a href="/UserProfile/@Model.UserPublicId" class="view-all-link" style="margin-top: 12px; display: inline-block;">← プロフィールに戻る</a>
+				</div>
+			</div>
 
-            <div class="profile-section">
-                <div class="section-header">
-                    <h2 class="section-title">すべてのレビュー</h2>
-                </div>
+			<div class="profile-section">
+				<div class="section-header">
+					<h2 class="section-title">すべてのレビュー</h2>
+				</div>
 
-                <div class="review-tabs">
-                    <button class="tab-button active" data-tab="all">すべて</button>
-                    @if (Model.IsHighRatedReviewsPublic) {
-                        <button class="tab-button" data-tab="high-rated">高評価</button>
-                    }
-                </div>
+				<div class="review-tabs">
+					<button class="tab-button active" data-tab="all">すべて</button>
+					@if (Model.IsHighRatedReviewsPublic) {
+						<button class="tab-button" data-tab="high-rated">高評価</button>
+					}
+				</div>
 
-                <div class="tab-content active" id="all-reviews-tab">
-                    @if (Model.AllReviews != null && Model.AllReviews.Any()) {
-                        <div class="reviews-grid">
-                            @foreach (var review in Model.AllReviews) {
-                                <div class="review-card-large" data-isbn="@review.Isbn" data-review-id="@review.ReviewId">
-                                    <div class="book-cover-large">
-                                        <span>NoImage</span>
-                                    </div>
-                                    <div class="review-content-large">
-                                        <div class="review-title">@review.Title</div>
-                                        <div class="book-title">@review.Book.Title</div>
-                                        <div class="rating">
-                                            評価: @review.Rating/ 5
-                                        </div>
-                                        @if (review.IsSpoilers == 1) {
-                                            <div class="spoiler-warning">
-                                                ⚠️ ネタバレ注意
-                                            </div>
-                                        }
-                                        <div class="review-text">
-                                            @Scripts.StaticEvent.TrimReview(review.Review, 80)
-                                        </div>
-                                        <div class="reviewer-info">
-                                            <div class="reviewer-icon" data-public-id="@Model.UserPublicId"></div>
-                                            <span class="reviewer-name">@Model.UserName</span>
-                                            <span class="post-time">@review.PostingTime</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            }
-                        </div>
+				<div class="tab-content active" id="all-reviews-tab">
+					@if (Model.AllReviews != null && Model.AllReviews.Any()) {
+						<div class="reviews-grid">
+							@foreach (var review in Model.AllReviews) {
+								<div class="review-card-large" data-isbn="@review.Isbn" data-review-id="@review.ReviewId">
+									<div class="book-cover-large">
+										<span>NoImage</span>
+									</div>
+									<div class="review-content-large">
+										<div class="review-title">@review.Title</div>
+										<div class="book-title">@review.Book.Title</div>
+										<div class="rating">
+											評価: @review.Rating/ 5
+										</div>
+										@if (review.IsSpoilers == 1) {
+											<div class="spoiler-warning">
+												<img src="/image/warning.png" alt="警告" style="width: 22px; height: 22px; object-fit: contain; flex-shrink: 0;" /> ネタバレ注意
+											</div>
+										}
+										<div class="review-text">
+											@Scripts.StaticEvent.TrimReview(review.Review, 80)
+										</div>
+										<div class="reviewer-info">
+											<div class="reviewer-icon" data-public-id="@Model.UserPublicId"></div>
+											<span class="reviewer-name">@Model.UserName</span>
+											<span class="post-time">@review.PostingTime</span>
+										</div>
+									</div>
+								</div>
+							}
+						</div>
 
-                        <!-- ページネーション -->
-                        @if (Model.TotalPages > 1) {
-                            <div class="pagination">
-                                @if (Model.CurrentPage > 1) {
-                                    <a href="/UserAllReviews/@Model.UserPublicId?page=@(Model.CurrentPage - 1)&tab=all" class="page-link">← 前へ</a>
-                                }
+						<!-- ページネーション -->
+						@if (Model.TotalPages > 1) {
+							<div class="pagination">
+								@if (Model.CurrentPage > 1) {
+									<a href="/UserAllReviews/@Model.UserPublicId?page=@(Model.CurrentPage - 1)&tab=all" class="page-link">← 前へ</a>
+								}
 
-                                <span class="page-info">@Model.CurrentPage / @Model.TotalPages ページ</span>
+								<span class="page-info">@Model.CurrentPage / @Model.TotalPages ページ</span>
 
-                                @if (Model.CurrentPage < Model.TotalPages) {
-                                    <a href="/UserAllReviews/@Model.UserPublicId?page=@(Model.CurrentPage + 1)&tab=all" class="page-link">次へ →</a>
-                                }
-                            </div>
-                        }
-                    } else {
-                        <p class="empty-message">レビューがありません。</p>
-                    }
-                </div>
+								@if (Model.CurrentPage < Model.TotalPages) {
+									<a href="/UserAllReviews/@Model.UserPublicId?page=@(Model.CurrentPage + 1)&tab=all" class="page-link">次へ →</a>
+								}
+							</div>
+						}
+					} else {
+						<p class="empty-message">レビューがありません。</p>
+					}
+				</div>
 
-                @if (Model.IsHighRatedReviewsPublic) {
-                    <div class="tab-content" id="high-rated-reviews-tab">
-                        @if (Model.HighRatedReviews != null && Model.HighRatedReviews.Any()) {
-                            <div class="reviews-grid">
-                                @foreach (var review in Model.HighRatedReviews) {
-                                    <div class="review-card-large" data-isbn="@review.Isbn" data-review-id="@review.ReviewId">
-                                        <div class="book-cover-large">
-                                            <span>NoImage</span>
-                                        </div>
-                                        <div class="review-content-large">
-                                            <div class="review-title">@review.Title</div>
-                                            <div class="book-title">@review.Book.Title</div>
-                                            <div class="rating">
-                                                評価: @review.Rating / 5
-                                            </div>
-                                            @if (review.IsSpoilers == 1) {
-                                                <div class="spoiler-warning">
-                                                    ⚠️ ネタバレ注意
-                                                </div>
-                                            }
-                                            <div class="review-text">
-                                                @Scripts.StaticEvent.TrimReview(review.Review, 80)
-                                            </div>
-                                            <div class="reviewer-info">
-                                                <div class="reviewer-icon" data-public-id="@Model.UserPublicId"></div>
-                                                <span class="reviewer-name">@Model.UserName</span>
-                                                <span class="post-time">@review.PostingTime</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                }
-                            </div>
+				@if (Model.IsHighRatedReviewsPublic) {
+					<div class="tab-content" id="high-rated-reviews-tab">
+						@if (Model.HighRatedReviews != null && Model.HighRatedReviews.Any()) {
+							<div class="reviews-grid">
+								@foreach (var review in Model.HighRatedReviews) {
+									<div class="review-card-large" data-isbn="@review.Isbn" data-review-id="@review.ReviewId">
+										<div class="book-cover-large">
+											<span>NoImage</span>
+										</div>
+										<div class="review-content-large">
+											<div class="review-title">@review.Title</div>
+											<div class="book-title">@review.Book.Title</div>
+											<div class="rating">
+												評価: @review.Rating / 5
+											</div>
+											@if (review.IsSpoilers == 1) {
+												<div class="spoiler-warning">
+													<img src="/image/warning.png" alt="警告" style="width: 22px; height: 22px; object-fit: contain; flex-shrink: 0;" /> ネタバレ注意
+												</div>
+											}
+											<div class="review-text">
+												@Scripts.StaticEvent.TrimReview(review.Review, 80)
+											</div>
+											<div class="reviewer-info">
+												<div class="reviewer-icon" data-public-id="@Model.UserPublicId"></div>
+												<span class="reviewer-name">@Model.UserName</span>
+												<span class="post-time">@review.PostingTime</span>
+											</div>
+										</div>
+									</div>
+								}
+							</div>
 
-                            <!-- ページネーション -->
-                            @if (Model.HighRatedTotalPages > 1) {
-                                <div class="pagination">
-                                    @if (Model.HighRatedCurrentPage > 1) {
-                                        <a href="/UserAllReviews/@Model.UserPublicId?page=@(Model.HighRatedCurrentPage - 1)&tab=high-rated" class="page-link">← 前へ</a>
-                                    }
+							<!-- ページネーション -->
+							@if (Model.HighRatedTotalPages > 1) {
+								<div class="pagination">
+									@if (Model.HighRatedCurrentPage > 1) {
+										<a href="/UserAllReviews/@Model.UserPublicId?page=@(Model.HighRatedCurrentPage - 1)&tab=high-rated" class="page-link">← 前へ</a>
+									}
 
-                                    <span class="page-info">@Model.HighRatedCurrentPage / @Model.HighRatedTotalPages ページ</span>
+									<span class="page-info">@Model.HighRatedCurrentPage / @Model.HighRatedTotalPages ページ</span>
 
-                                    @if (Model.HighRatedCurrentPage < Model.HighRatedTotalPages) {
-                                        <a href="/UserAllReviews/@Model.UserPublicId?page=@(Model.HighRatedCurrentPage + 1)&tab=high-rated" class="page-link">次へ →</a>
-                                    }
-                                </div>
-                            }
-                        } else {
-                            <p class="empty-message">高評価のレビューがありません。</p>
-                        }
-                    </div>
-                }
-            </div>
-        } else {
-            <p class="empty-message">ユーザが見つかりませんでした。</p>
-        }
-    </div>
-    <script type="text/javascript" src="~/js/site.js"></script>
-    <script type="text/javascript" src="~/js/load_image.js"></script>
-    <script type="text/javascript" src="~/js/user_profile.js"></script>
+									@if (Model.HighRatedCurrentPage < Model.HighRatedTotalPages) {
+										<a href="/UserAllReviews/@Model.UserPublicId?page=@(Model.HighRatedCurrentPage + 1)&tab=high-rated" class="page-link">次へ →</a>
+									}
+								</div>
+							}
+						} else {
+							<p class="empty-message">高評価のレビューがありません。</p>
+						}
+					</div>
+				}
+			</div>
+		} else {
+			<p class="empty-message">ユーザが見つかりませんでした。</p>
+		}
+	</div>
+	<script type="text/javascript" src="~/js/site.js"></script>
+	<script type="text/javascript" src="~/js/load_image.js"></script>
+	<script type="text/javascript" src="~/js/user_profile.js"></script>
 </body>
 </html>
 
 
 <div class="review-tabs">
-    <button class="tab-button @(Model.CurrentTab == "all" ? "active" : "")" data-tab="all">すべて</button>
-    @if (Model.IsHighRatedReviewsPublic) {
-        <button class="tab-button @(Model.CurrentTab == "high-rated" ? "active" : "")" data-tab="high-rated">高評価</button>
-    }
+	<button class="tab-button @(Model.CurrentTab == "all" ? "active" : "")" data-tab="all">すべて</button>
+	@if (Model.IsHighRatedReviewsPublic) {
+		<button class="tab-button @(Model.CurrentTab == "high-rated" ? "active" : "")" data-tab="high-rated">高評価</button>
+	}
 </div>
 
 <div class="tab-content @(Model.CurrentTab == "all" ? "active" : "")" id="all-reviews-tab">
-    <!-- すべてのレビューの内容 -->
+	<!-- すべてのレビューの内容 -->
 </div>
 
 @if (Model.IsHighRatedReviewsPublic) {
-    <div class="tab-content @(Model.CurrentTab == "high-rated" ? "active" : "")" id="high-rated-reviews-tab">
-        <!-- 高評価レビューの内容 -->
-    </div>
+	<div class="tab-content @(Model.CurrentTab == "high-rated" ? "active" : "")" id="high-rated-reviews-tab">
+		<!-- 高評価レビューの内容 -->
+	</div>
 }

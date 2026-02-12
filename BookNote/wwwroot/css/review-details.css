@@ -83,7 +83,9 @@
 
 /* ネタバレ警告 */
 .spoiler-warning {
-    display: inline-block;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
     padding: 8px 16px;
     background: #FFF3CD;
     border: 2px solid #FFC107;
@@ -92,6 +94,161 @@
     font-size: 14px;
     font-weight: 600;
     margin-bottom: 12px;
+}
+
+.spoiler-warning-icon {
+    width: 22px;
+    height: 22px;
+    object-fit: contain;
+    flex-shrink: 0;
+}
+
+/* ===========================
+   ネタバレ確認オーバーレイ
+   =========================== */
+.spoiler-overlay {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 16px auto 24px;
+    min-height: 260px;
+    width: 100%;
+}
+
+.spoiler-overlay-content {
+    background: linear-gradient(135deg, #fffbf0 0%, #fff8e1 100%);
+    border: 2px solid #FFC107;
+    border-radius: 16px;
+    padding: 36px 40px;
+    text-align: center;
+    /*    max-width: 480px;*/
+    width: 100%;
+    box-shadow: 0 4px 20px rgba(255, 193, 7, 0.2);
+}
+
+.spoiler-overlay-icon {
+    margin-bottom: 12px;
+    animation: warningPulse 2s ease-in-out infinite;
+    display: flex;
+    justify-content: center
+}
+
+.spoiler-overlay-warning-icon {
+    width: 56px;
+    height: 56px;
+    object-fit: contain;
+    display: block;
+}
+
+.spoiler-overlay-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: #654321;
+    margin-bottom: 12px;
+    line-height: 1.5;
+}
+
+.spoiler-overlay-desc {
+    font-size: 14px;
+    color: #856404;
+    line-height: 1.8;
+    margin-bottom: 28px;
+}
+
+.spoiler-overlay-buttons {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+}
+
+.spoiler-btn-cancel {
+    padding: 10px 24px;
+    background: #FFFFFF;
+    border: 2px solid #D2B48C;
+    border-radius: 8px;
+    color: #8B6F47;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+    .spoiler-btn-cancel:hover {
+        background: #F5E6D3;
+        border-color: #A0826D;
+    }
+
+.spoiler-btn-confirm {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 24px;
+    background: linear-gradient(135deg, #654321, #8B6F47);
+    border: none;
+    border-radius: 8px;
+    color: #FFFFFF;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 8px rgba(101, 67, 33, 0.3);
+}
+
+    .spoiler-btn-confirm:hover {
+        background: linear-gradient(135deg, #8B6F47, #A0826D);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(101, 67, 33, 0.4);
+    }
+
+    .spoiler-btn-confirm:active {
+        transform: translateY(0);
+    }
+
+.spoiler-btn-icon {
+    font-size: 16px;
+}
+
+/* ネタバレ本文フェードイン */
+.spoiler-content.fade-in {
+    animation: revealContent 0.5s ease forwards;
+}
+
+/* オーバーレイフェードアウト */
+.spoiler-overlay.fade-out {
+    animation: overlayFadeOut 0.3s ease forwards;
+}
+
+@keyframes warningPulse {
+    0%, 100% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.1);
+    }
+}
+
+@keyframes revealContent {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes overlayFadeOut {
+    from {
+        opacity: 1;
+    }
+
+    to {
+        opacity: 0;
+    }
 }
 
 /* レビュー本文 */
@@ -343,6 +500,9 @@
     gap: 16px;
 }
 
+/* ===========================
+   コメントアイテム（通常）
+   =========================== */
 .comment-item {
     background: #FFFFFF;
     border: 1px solid #E8D4C0;
@@ -354,6 +514,50 @@
     .comment-item:hover {
         box-shadow: 0 2px 8px rgba(101, 67, 33, 0.1);
     }
+
+    /* ===========================
+   レビュー投稿者のコメント装飾
+   =========================== */
+    .comment-item.review-author-comment {
+        background: linear-gradient(135deg, #fffdf7 0%, #fdf5e8 100%);
+        border: 2px solid #D2A85A;
+        border-radius: 12px;
+        padding: 16px;
+        position: relative;
+        box-shadow: 0 2px 12px rgba(210, 168, 90, 0.2);
+    }
+
+        .comment-item.review-author-comment::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #D2A85A, #F0C876, #D2A85A);
+            border-radius: 12px 12px 0 0;
+        }
+
+        .comment-item.review-author-comment:hover {
+            box-shadow: 0 4px 16px rgba(210, 168, 90, 0.3);
+        }
+
+/* 投稿者バッジ */
+.author-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 10px;
+    background: linear-gradient(135deg, #654321, #8B6F47);
+    border-radius: 20px;
+    color: #FFFFFF;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    margin-left: 8px;
+    vertical-align: middle;
+    box-shadow: 0 1px 4px rgba(101, 67, 33, 0.3);
+}
 
 .comment-header {
     display: flex;
@@ -383,11 +587,17 @@
     flex-shrink: 0;
 }
 
-    .comment-item .reviewer-icon img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-    }
+/* 投稿者アイコンに金枠 */
+.comment-item.review-author-comment .reviewer-icon {
+    border: 2px solid #D2A85A;
+    box-shadow: 0 0 0 2px rgba(210, 168, 90, 0.3);
+}
+
+.comment-item .reviewer-icon img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
 
 .comment-item .user-name {
     font-weight: 600;
@@ -399,6 +609,10 @@
     .comment-item .user-name:hover {
         color: #A0826D;
     }
+
+.comment-item.review-author-comment .user-name {
+    color: #5a3610;
+}
 
 .comment-item .post-time {
     font-size: 13px;
@@ -464,6 +678,191 @@
     flex-shrink: 0;
 }
 
+/* ===========================
+   オーナー操作ボタン
+   =========================== */
+.owner-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+    padding-top: 16px;
+    border-top: 1px solid #E8D4C0;
+}
+
+.btn-edit,
+.btn-delete {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 9px 20px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    text-decoration: none;
+    border: none;
+}
+
+.btn-edit {
+    background: #FFF9F0;
+    color: #8B6F47;
+    border: 2px solid #E8D4C0;
+}
+
+    .btn-edit:hover {
+        background: #F5E6D3;
+        border-color: #A0826D;
+        color: #654321;
+        transform: translateY(-1px);
+    }
+
+.btn-delete {
+    background: #FFF5F5;
+    color: #C62828;
+    border: 2px solid #FFCDD2;
+}
+
+    .btn-delete:hover {
+        background: #FFEBEE;
+        border-color: #EF9A9A;
+        transform: translateY(-1px);
+    }
+
+.btn-icon {
+    width: 15px;
+    height: 15px;
+    flex-shrink: 0;
+}
+
+/* ===========================
+   削除確認モーダル
+   =========================== */
+.delete-modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(30, 15, 5, 0.55);
+    backdrop-filter: blur(3px);
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    animation: overlayFadeIn 0.2s ease;
+}
+
+@keyframes overlayFadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+.delete-modal {
+    background: #fff;
+    border-radius: 20px;
+    padding: 40px 36px 32px;
+    max-width: 420px;
+    width: 100%;
+    text-align: center;
+    box-shadow: 0 20px 60px rgba(101, 67, 33, 0.25);
+    animation: modalSlideUp 0.25s ease;
+}
+
+@keyframes modalSlideUp {
+    from {
+        transform: translateY(20px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.delete-modal-icon {
+    width: 56px;
+    height: 56px;
+    margin: 0 auto 16px;
+    background: #FFEBEE;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+    .delete-modal-icon svg {
+        width: 28px;
+        height: 28px;
+        stroke: #C62828;
+    }
+
+.delete-modal-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: #2D1A0E;
+    margin-bottom: 12px;
+}
+
+.delete-modal-desc {
+    font-size: 14px;
+    color: #6D4C41;
+    line-height: 1.75;
+    margin-bottom: 28px;
+}
+
+.delete-modal-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+}
+
+.delete-modal-cancel {
+    padding: 11px 28px;
+    background: #FFF9F0;
+    border: 2px solid #E8D4C0;
+    border-radius: 10px;
+    color: #8B6F47;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    flex: 1;
+}
+
+    .delete-modal-cancel:hover {
+        background: #F5E6D3;
+        border-color: #A0826D;
+    }
+
+.delete-modal-confirm {
+    padding: 11px 28px;
+    background: linear-gradient(135deg, #C62828, #E53935);
+    border: none;
+    border-radius: 10px;
+    color: #fff;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 12px rgba(198, 40, 40, 0.35);
+    flex: 1;
+}
+
+    .delete-modal-confirm:hover {
+        background: linear-gradient(135deg, #E53935, #EF5350);
+        transform: translateY(-1px);
+        box-shadow: 0 6px 16px rgba(198, 40, 40, 0.45);
+    }
+
+    .delete-modal-confirm:active {
+        transform: translateY(0);
+    }
+
 /* レスポンシブ対応 */
 @media (max-width: 768px) {
     .page-title {
@@ -482,6 +881,7 @@
     .review-text {
         font-size: 14px;
     }
+
     .comments-section {
         margin-top: 30px;
         padding-top: 20px;
@@ -521,5 +921,31 @@
 
     .comment-text {
         font-size: 14px;
+    }
+
+    .spoiler-overlay-content {
+        padding: 24px 20px;
+    }
+
+    .spoiler-overlay-title {
+        font-size: 16px;
+    }
+
+    .spoiler-overlay-buttons {
+        flex-direction: column;
+    }
+
+    .spoiler-btn-cancel,
+    .spoiler-btn-confirm {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .delete-modal {
+        padding: 28px 20px 24px;
+    }
+
+    .delete-modal-actions {
+        flex-direction: column;
     }
 }

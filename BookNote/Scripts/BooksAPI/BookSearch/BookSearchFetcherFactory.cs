@@ -8,7 +8,7 @@ namespace BookNote.Scripts.BooksAPI.BookSearch {
         /// </summary>
         public static IBookSearchFetcher Create(BookSearchSource source) {
             return source switch {
-                BookSearchSource.GoogleBooks => new GoogleBooksBookSearchrFetcher("AIzaSyD-2r-CAE_yMGjlNc0iZMqdZ8NhtvjzEB4"),
+                BookSearchSource.GoogleBooks => new GoogleBooksBookSearchrFetcher("AIzaSyC8iV4KdNYgWNdisRz3LRO5z_jtcj9GHuk"),
                 BookSearchSource.Racuten => new RakutenBooksBookSearchFetcher("1034198535573888291"),
                 _ => throw new ArgumentException($"未対応のソース: {source}", nameof(source))
             };

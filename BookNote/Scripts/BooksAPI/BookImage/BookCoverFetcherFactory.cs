@@ -9,7 +9,7 @@ namespace BookNote.Scripts.BooksAPI.BookImage {
             return source switch {
                 BookCoverSource.Ndl => new NdlBookCoverFetcher(),
                 BookCoverSource.Racuten => new RakutenBooksBookCoverFetcher("1034198535573888291"),
-                BookCoverSource.GoogleBooks => new GoogleBooksBookCoverFetcher("AIzaSyD-2r-CAE_yMGjlNc0iZMqdZ8NhtvjzEB4"),
+                BookCoverSource.GoogleBooks => new GoogleBooksBookCoverFetcher("AIzaSyC8iV4KdNYgWNdisRz3LRO5z_jtcj9GHuk"),
                 _ => throw new ArgumentException($"未対応のソース: {source}", nameof(source))
             };
         }

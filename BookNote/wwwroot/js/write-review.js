@@ -1,5 +1,4 @@
-﻿
-// Quillエディタの初期化
+﻿// Quillエディタの初期化
 const quill = new Quill('#editor-container', {
     theme: 'snow',
     placeholder: 'レビューを入力してください...',
@@ -20,12 +19,18 @@ const stars = document.querySelectorAll('.star');
 
 stars.forEach(star => {
     star.addEventListener('click', function () {
+        // 公開済みレビューの場合はクリック無効
+        if (window.isPublished) return;
+
         selectedRating = parseInt(this.getAttribute('data-rating'));
         document.getElementById('rating-value').value = selectedRating;
         updateStars();
     });
 
     star.addEventListener('mouseenter', function () {
+        // 公開済みレビューの場合はホバー無効
+        if (window.isPublished) return;
+
         const rating = parseInt(this.getAttribute('data-rating'));
         highlightStars(rating);
     });
@@ -172,13 +177,14 @@ window.addEventListener('DOMContentLoaded', function () {
 
         // 評価を設定
         if (window.existingReview.rating > 0) {
-            updateStars(window.existingReview.rating);
+            selectedRating = window.existingReview.rating;
+            updateStars();
         }
 
         // エディタコンテンツを設定
         if (window.existingReview.contentHtml) {
             quill.root.innerHTML = window.existingReview.contentHtml;
-            initialContent = window.existingReview.contentHtml; 
+            initialContent = window.existingReview.contentHtml;
         }
     }
 
@@ -205,39 +211,61 @@ window.addEventListener('DOMContentLoaded', function () {
         document.getElementById('selected-book').style.display = 'flex';
     }
 
-    // 書籍検索ダイアログを開く
-    document.getElementById('book-search-button')?.addEventListener('click', function () {
-        BookSearchDialog.open((book) => {
-            // 選択された書籍情報を設定
-            document.querySelector('.book-title-display').textContent = book.title;
-            document.querySelector('.book-author').textContent = book.author || '著者不明';
-            document.getElementById('hidden-book-isbn').value = book.isbn;
-            document.getElementById('hidden-book-title').value = book.title;
-            document.getElementById('hidden-book-author').value = book.author || '';
-            document.getElementById('hidden-book-publisher').value = book.publisher || '';
+    // 書籍検索ダイアログを開く（公開済みレビューでない場合のみ）
+    if (!window.isPublished) {
+        document.getElementById('book-search-button')?.addEventListener('click', function () {
+            BookSearchDialog.open((book) => {
+                // 選択された書籍情報を設定
+                document.querySelector('.book-title-display').textContent = book.title;
+                document.querySelector('.book-author').textContent = book.author || '著者不明';
+                document.getElementById('hidden-book-isbn').value = book.isbn;
+                document.getElementById('hidden-book-title').value = book.title;
+                document.getElementById('hidden-book-author').value = book.author || '';
+                document.getElementById('hidden-book-publisher').value = book.publisher || '';
 
+                // 書籍画像の表示
+                const bookImage = document.getElementById('selected-book-image');
+                const noImage = document.getElementById('selected-book-noimage');
+                if (book.imageUrl) {
+                    bookImage.src = book.imageUrl;
+                    bookImage.alt = book.title;
+                    bookImage.style.display = 'block';
+                    noImage.style.display = 'none';
+                } else {
+                    bookImage.style.display = 'none';
+                    noImage.style.display = 'block';
+                }
 
-            // 書籍画像の表示
-            const bookImage = document.getElementById('selected-book-image');
-            const noImage = document.getElementById('selected-book-noimage');
-            if (book.imageUrl) {
-                bookImage.src = book.imageUrl;
-                bookImage.alt = book.title;
-                bookImage.style.display = 'block';
-                noImage.style.display = 'none';
-            } else {
-                bookImage.style.display = 'none';
+                document.getElementById('selected-book').style.display = 'flex';
+
+                const imageElement = document.getElementById('selected-book-image');
                 noImage.style.display = 'block';
-            }
+                imageElement.style.display = 'none';
 
-            document.getElementById('selected-book').style.display = 'flex';
-
-            const imageElement = document.getElementById('selected-book-image');
-            noImage.style.display = 'block';
-            imageElement.style.display = 'none';
-
-            fetchSelectedBookImage(book.isbn);
+                fetchSelectedBookImage(book.isbn);
+            });
         });
-    });
-});
+    }
 
+    // 公開済みレビューの場合、星・書籍検索・タイトルなどを操作不可にする
+    if (window.isPublished) {
+        // 星をクリック不可に（ポインターイベントを無効化）
+        document.querySelectorAll('.star').forEach(star => {
+            star.style.pointerEvents = 'none';
+            star.style.cursor = 'not-allowed';
+        });
+
+        // タイトル入力を念のためJS側でも無効化
+        const titleInput = document.querySelector('input[name="ReviewInput.Title"]');
+        if (titleInput) {
+            titleInput.disabled = true;
+            titleInput.readOnly = true;
+        }
+
+        // 書籍情報の各hidden inputを無効化（念のため）
+        document.getElementById('hidden-book-isbn').disabled = true;
+        document.getElementById('hidden-book-title').disabled = true;
+        document.getElementById('hidden-book-author').disabled = true;
+        document.getElementById('hidden-book-publisher').disabled = true;
+    }
+});
