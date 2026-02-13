@@ -11,7 +11,7 @@ using static System.Net.Mime.MediaTypeNames;
 namespace BookNote.Scripts {
     public class StaticEvent {
         private StaticEvent() { }
-        public static string ToPlainText(string html, bool deleteLineBreak = true) {
+        public static string ToPlainText(string? html, bool deleteLineBreak = true) {
             if (string.IsNullOrWhiteSpace(html))
                 return string.Empty;
             var text = html;

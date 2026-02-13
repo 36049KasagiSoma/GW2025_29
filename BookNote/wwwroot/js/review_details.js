@@ -223,12 +223,12 @@ async function submitComment(reviewId) {
 
     const commentText = input.value.trim();
     if (!commentText) {
-        alert('コメントを入力してください');
+        showCommentError('コメントを入力してください');
         return;
     }
 
     if (commentText.length > 1000) {
-        alert('コメントは1000文字以内で入力してください');
+        showCommentError('コメントは1000文字以内で入力してください');
         return;
     }
 
@@ -242,7 +242,7 @@ async function submitComment(reviewId) {
         });
 
         if (response.status === 401) {
-            alert('コメントを投稿するにはログインが必要です');
+            showCommentError('コメントを投稿するにはログインが必要です');
             return;
         }
 
@@ -252,14 +252,16 @@ async function submitComment(reviewId) {
             if (charCount) {
                 charCount.textContent = '0 / 1000';
             }
+            // エラーメッセージをクリア
+            clearCommentError();
             await loadComments(reviewId);
         } else {
             const error = await response.json();
-            alert(error.error || 'コメントの投稿に失敗しました');
+            showCommentError(error.error || 'コメントの投稿に失敗しました');
         }
     } catch (error) {
         console.error('コメント投稿エラー:', error);
-        alert('通信エラーが発生しました');
+        showCommentError('通信エラーが発生しました');
     }
 }
 
@@ -287,6 +289,36 @@ async function deleteComment(reviewId, commentId) {
         alert('通信エラーが発生しました');
     }
 }
+
+// コメントエラー表示
+function showCommentError(message) {
+    // 既存のエラーメッセージを削除
+    clearCommentError();
+
+    const commentForm = document.querySelector('.comment-form');
+    if (!commentForm) return;
+
+    const errorDiv = document.createElement('div');
+    errorDiv.className = 'comment-error-message';
+    errorDiv.innerHTML = `
+        <svg class="error-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10" />
+            <line x1="12" y1="8" x2="12" y2="12" />
+            <line x1="12" y1="16" x2="12.01" y2="16" />
+        </svg>
+        ${escapeHtml(message)}
+    `;
+    commentForm.insertBefore(errorDiv, commentForm.firstChild);
+}
+
+// コメントエラーをクリア
+function clearCommentError() {
+    const existingError = document.querySelector('.comment-error-message');
+    if (existingError) {
+        existingError.remove();
+    }
+}
+
 
 // ユーザーアイコン読み込み
 function loadUserIcon(iconElement, publicId) {

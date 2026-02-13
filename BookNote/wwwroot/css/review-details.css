@@ -862,6 +862,40 @@
     .delete-modal-confirm:active {
         transform: translateY(0);
     }
+/* コメントエラーメッセージ */
+.comment-error-message {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 16px;
+    background: #FFEBEE;
+    border: 2px solid #EF5350;
+    border-radius: 8px;
+    color: #C62828;
+    font-size: 14px;
+    font-weight: 500;
+    margin-bottom: 12px;
+    animation: slideDown 0.3s ease;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.error-icon {
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+    stroke: #C62828;
+}
 
 /* レスポンシブ対応 */
 @media (max-width: 768px) {

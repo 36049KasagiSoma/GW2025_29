@@ -38,6 +38,13 @@
     margin-bottom: 24px;
 }
 
+    /* エラーメッセージ */
+    .alert-message.error-message {
+        background: #FFEBEE;
+        border-color: #EF5350;
+        color: #C62828;
+    }
+
 /* バリデーションエラー */
 .text-danger {
     display: block;

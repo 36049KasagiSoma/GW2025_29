@@ -75,7 +75,7 @@ namespace BookNote {
                 app.UseExceptionHandler("/Error");
                 app.UseHsts();
             }
-
+            app.UseExceptionHandler("/error/Error500");
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseStatusCodePagesWithReExecute("/error/Error{0}");

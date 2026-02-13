@@ -1,5 +1,6 @@
 ﻿using BookNote.Scripts.ActivityTrace;
 using BookNote.Scripts.Login;
+using BookNote.Scripts.BooksAPI.Moderation;
 using Microsoft.AspNetCore.Mvc;
 using Oracle.ManagedDataAccess.Client;
 using System.Data;
@@ -9,9 +10,14 @@ namespace BookNote.Controllers {
     [ApiController]
     public class ReviewCommentController : ControllerBase {
         private readonly OracleConnection _conn;
+        private readonly IConfiguration _configuration;
+        private readonly ILogger<ReviewCommentController> _logger;
 
-        public ReviewCommentController(OracleConnection conn) {
+
+        public ReviewCommentController(OracleConnection conn, IConfiguration configuration, ILogger<ReviewCommentController> logger) {
             _conn = conn;
+            _configuration = configuration;
+            _logger = logger;
         }
 
         // コメント一覧取得（レビューページ用 - 最新5件）
@@ -87,6 +93,7 @@ namespace BookNote.Controllers {
 
         // コメント投稿
         [HttpPost]
+        [HttpPost]
         public async Task<IActionResult> PostComment(int reviewId, [FromBody] CommentRequest request) {
             // 認証チェック
             if (!AccountDataGetter.IsAuthenticated()) {
@@ -99,6 +106,25 @@ namespace BookNote.Controllers {
 
             if (request.CommentText.Length > 1000) {
                 return BadRequest(new { error = "コメントは1000文字以内で入力してください" });
+            }
+
+            // モデレーションチェック
+            var apiKey = _configuration["OpenAI:ApiKey"];
+            if (apiKey != null) {
+                try {
+                    ModerationClient moderationClient = new(apiKey);
+                    ModerationResponse response = await moderationClient.CheckAsync(request.CommentText);
+                    ModerationJudger judger = new();
+                    if (!judger.IsContentSafe(response)) {
+                        _logger.LogWarning("コメント内容がモデレーションにより拒否されました - ReviewId: {ReviewId}", reviewId);
+                        return BadRequest(new { error = "コメント内容に不適切な表現が含まれているため、投稿できません。内容を修正してください。" });
+                    }
+                } catch (Exception ex) {
+                    _logger.LogError(ex, "モデレーションチェックエラー");
+                    // モデレーションエラーは続行（投稿を妨げない）
+                }
+            } else {
+                _logger.LogWarning("OpenAI APIキーが設定されていません。コメントのモデレーションチェックをスキップします。");
             }
 
             try {
@@ -133,7 +159,7 @@ namespace BookNote.Controllers {
                 }
 
                 var userName = await AccountDataGetter.GetDbUserNameAsync();
-                var userPublicId = AccountDataGetter.GetDbUserPublicIdAsync();
+                var userPublicId = await AccountDataGetter.GetDbUserPublicIdAsync();
                 if (AccountDataGetter.IsAuthenticated())
                     ActivityTracer.LogActivity(ActivityType.WRITE_COMMENT, AccountDataGetter.GetUserId(), reviewId.ToString());
 
@@ -145,7 +171,8 @@ namespace BookNote.Controllers {
                     userPublicId
                 });
             } catch (Exception ex) {
-                return StatusCode(500, new { error = ex.Message });
+                _logger.LogError(ex, "コメント投稿エラー");
+                return StatusCode(500, new { error = "コメントの投稿に失敗しました" });
             }
         }
 

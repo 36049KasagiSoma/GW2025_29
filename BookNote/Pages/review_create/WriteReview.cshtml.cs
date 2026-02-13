@@ -1,4 +1,6 @@
-﻿using BookNote.Scripts.ActivityTrace;
+﻿using BookNote.Scripts;
+using BookNote.Scripts.ActivityTrace;
+using BookNote.Scripts.BooksAPI.Moderation;
 using BookNote.Scripts.Login;
 using Ganss.Xss;
 using Microsoft.AspNetCore.Mvc;
@@ -175,7 +177,7 @@ public class WriteReviewModel : PageModel {
     }
 
     private async Task<bool> SaveReviewAsync(bool isDraft) {
-        if (!ModelState.IsValid) {
+        if (!ModelState.IsValid || ReviewInput == null) {
             return false;
         }
 
@@ -183,6 +185,22 @@ public class WriteReviewModel : PageModel {
             _logger.LogInformation("=== 下書き保存 ===");
             _logger.LogInformation("ContentHtml: {ContentHtml}", ReviewInput.ContentHtml);
             _logger.LogInformation("==================");
+        } else {
+            //公開時は適切な内容かをチェック
+            var plainText = StaticEvent.ToPlainText(ReviewInput.ContentHtml) ?? "";
+            var apiKey = _configuration["OpenAI:ApiKey"];
+            if (apiKey == null) {
+                _logger.LogWarning("OpenAI APIキーが設定されていません。モデレーションチェックをスキップします。");
+            } else {
+                ModerationClient moderationClient = new(apiKey);
+                ModerationResponse response = await moderationClient.CheckAsync(plainText);
+                ModerationJudger judger = new();
+                if (!judger.IsContentSafe(response)) {
+                    _logger.LogWarning("レビュー内容がモデレーションにより拒否されました");
+                    TempData["Error"] = "レビュー内容に不適切な表現が含まれているため、投稿できません。内容を修正してください。";
+                    return false;
+                }
+            }
         }
 
         try {
@@ -272,7 +290,7 @@ public class WriteReviewModel : PageModel {
             return true;
         } catch (Exception ex) {
             _logger.LogError(ex, "レビュー登録エラー");
-            ModelState.AddModelError(string.Empty, "レビューの投稿に失敗しました");
+            TempData["Error"] = "レビューの投稿に失敗しました";
             return false;
         }
     }
@@ -306,17 +324,17 @@ public class WriteReviewModel : PageModel {
         // 投稿時のバリデーション（新規投稿または下書きからの投稿の場合のみ）
         if (!isPublishedReview) {
             if (string.IsNullOrWhiteSpace(ReviewInput.BookIsbn) || ReviewInput.BookIsbn == "0000000000000") {
-                ModelState.AddModelError("ReviewInput.BookTitle", "書籍を選択してください");
+                TempData["Error"] = "書籍を選択してください";
             }
             if (string.IsNullOrWhiteSpace(ReviewInput.Title)) {
-                ModelState.AddModelError("ReviewInput.Title", "レビュータイトルを入力してください");
+                TempData["Error"] = "レビュータイトルを入力してください";
             }
             if (ReviewInput.Rating < 1 || ReviewInput.Rating > 5) {
-                ModelState.AddModelError("ReviewInput.Rating", "評価を選択してください");
+                TempData["Error"] = "評価を選択してください";
             }
         }
         if (string.IsNullOrWhiteSpace(ReviewInput.ContentHtml)) {
-            ModelState.AddModelError("ReviewInput.ContentHtml", "レビュー本文を入力してください");
+            TempData["Error"] = "レビュー本文を入力してください";
         }
 
         if (!ModelState.IsValid) {

@@ -1,11 +1,14 @@
-using BookNote.Scripts;
+Ôªøusing BookNote.Scripts;
 using BookNote.Scripts.BooksAPI.BookImage;
 using BookNote.Scripts.BooksAPI.BookSearch;
 using BookNote.Scripts.BooksAPI.BookSearch.Fetcher;
+using BookNote.Scripts.BooksAPI.Moderation;
 using BookNote.Scripts.Login;
 using BookNote.Scripts.Models;
 using BookNote.Scripts.SelectBookReview;
 using BookNote.Scripts.UserControl;
+using Microsoft.AspNetCore.Components.Forms;
+using Microsoft.AspNetCore.DataProtection.KeyManagement;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -22,17 +25,20 @@ namespace BookNote.Pages {
         private readonly OracleConnection _conn;
         private readonly BookImageController _bookImageController;
         private readonly UserIconGetter _userIconGetter;
+        private readonly IConfiguration _config;
+
 
         public List<BookReview> PopularityReviews { get; set; }
         public List<BookReview> RecommentedReviews { get; set; }
 
 
 
-        public IndexModel(ILogger<IndexModel> logger, OracleConnection conn) {
+        public IndexModel(ILogger<IndexModel> logger, OracleConnection conn, IConfiguration config) {
             _logger = logger;
             _conn = conn;
             _bookImageController = new BookImageController();
             _userIconGetter = new UserIconGetter();
+            _config = config;
         }
 
         public async Task OnGetAsync() {
@@ -45,17 +51,18 @@ namespace BookNote.Pages {
                 RecommentedBook rb = new RecommentedBook(_conn, myid);
                 PopularityReviews = await pb.GetReview(6);
                 RecommentedReviews = await rb.GetReview(6);
-            } catch (Exception ex) {
-                _logger.LogError(ex, "ÉIÉXÉXÉÅéÊìæÉGÉâÅ[");
+            } catch (Exception ex) when (ex is OracleException) {
+                _logger.LogError(ex, "„Ç™„Çπ„Çπ„É°ÂèñÂæó„Ç®„É©„Éº");
                 PopularityReviews = [];
                 RecommentedReviews = [];
+                throw;
             }
         }
 
         public async Task<IActionResult> OnGetImageAsync(string isbn) {
             byte[]? imageData = await _bookImageController.GetBookImageData(isbn);
             if (imageData != null && imageData.Length > 0) {
-                return File(imageData, "image/jpeg"); // Ç‹ÇΩÇÕ "image/png"
+                return File(imageData, "image/jpeg"); // „Åæ„Åü„ÅØ "image/png"
             }
 
             return NotFound();
@@ -64,7 +71,7 @@ namespace BookNote.Pages {
         public async Task<IActionResult> OnGetUserIconAsync(string publicId) {
             byte[]? imageData = await _userIconGetter.GetIconImageData(publicId, UserIconGetter.IconSize.SMALL);
             if (imageData != null && imageData.Length > 0) {
-                return File(imageData, "image/jpeg"); // Ç‹ÇΩÇÕ "image/png"
+                return File(imageData, "image/jpeg"); // „Åæ„Åü„ÅØ "image/png"
             }
 
             return NotFound();
