@@ -19,9 +19,9 @@ namespace BookNote.Pages
             }
 
             try {
-                var cognitoDomain = _configuration["AWS:Domain"];
-                var clientId = _configuration["AWS:ClientId"];
-                var callbackUrl = _configuration["AWS:CallbackUrl"];
+                var cognitoDomain = _configuration["BookNoteKeys:AWS:Domain"];
+                var clientId = _configuration["BookNoteKeys:AWS:ClientId"];
+                var callbackUrl = _configuration["BookNoteKeys:AWS:CallbackUrl"];
 
                 // 認可コードをトークンに交換
                 var tokenUrl = $"https://{cognitoDomain}/oauth2/token";

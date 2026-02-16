@@ -11,9 +11,13 @@ using System.Data;
 namespace BookNote.Pages.user {
     public class SettingsModel : PageModel {
         private readonly OracleConnection _conn;
+        private readonly IConfiguration _configuration;
+        private readonly UserIconGetter _iconGetter;
 
-        public SettingsModel(OracleConnection conn) {
+        public SettingsModel(OracleConnection conn, IConfiguration configuration) {
             _conn = conn;
+            _configuration = configuration;
+            _iconGetter = new UserIconGetter(configuration);
         }
 
         public string UserPublicId { get; set; } = string.Empty;
@@ -64,8 +68,7 @@ namespace BookNote.Pages.user {
             }
 
             // アイコン画像データを取得
-            IconImageData = await new UserIconGetter()
-                .GetIconImageData(UserPublicId, UserIconGetter.IconSize.LARGE);
+            IconImageData = await _iconGetter.GetIconImageData(UserPublicId, UserIconGetter.IconSize.LARGE);
 
 
             return Page();
@@ -92,8 +95,7 @@ namespace BookNote.Pages.user {
 
             if (!ModelState.IsValid) {
                 // バリデーションエラー時の処理
-                IconImageData = await new UserIconGetter()
-                    .GetIconImageData(UserPublicId, UserIconGetter.IconSize.LARGE);
+                IconImageData = await _iconGetter.GetIconImageData(UserPublicId, UserIconGetter.IconSize.LARGE);
                 return Page();
             }
 
@@ -114,12 +116,11 @@ namespace BookNote.Pages.user {
                     Console.WriteLine($"64×64サイズ: {icon64.Length} bytes");
 
                     // S3にアップロード
-                    var iconGetter = new UserIconGetter();
-                    var uploadSuccess = await iconGetter.UploadIconAsync(UserPublicId, icon256, icon64);
+                    var uploadSuccess = await _iconGetter.UploadIconAsync(UserPublicId, icon256, icon64);
 
                     if (!uploadSuccess) {
                         ModelState.AddModelError("IconBase64", "アイコンのアップロードに失敗しました");
-                        IconImageData = await iconGetter
+                        IconImageData = await _iconGetter
                             .GetIconImageData(UserPublicId, UserIconGetter.IconSize.LARGE);
                         return Page();
                     }
@@ -130,7 +131,7 @@ namespace BookNote.Pages.user {
                     Console.WriteLine($"アイコン処理エラー: {ex.Message}");
                     ModelState.AddModelError("IconBase64", "画像の処理に失敗しました");
 
-                    IconImageData = await new UserIconGetter()
+                    IconImageData = await _iconGetter
                         .GetIconImageData(UserPublicId, UserIconGetter.IconSize.LARGE);
                     return Page();
                 }

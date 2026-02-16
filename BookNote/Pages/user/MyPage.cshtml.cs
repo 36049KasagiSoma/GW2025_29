@@ -11,8 +11,10 @@ using System.Security.Claims;
 namespace BookNote.Pages.user {
     public class MyPageModel : PageModel {
         private readonly OracleConnection _conn;
-        public MyPageModel(OracleConnection conn) {
+        private IConfiguration _configuration;
+        public MyPageModel(OracleConnection conn, IConfiguration configuration) {
             _conn = conn;
+            _configuration = configuration;
         }
 
         public string UserPublicId { get; set; } = string.Empty;
@@ -76,7 +78,7 @@ namespace BookNote.Pages.user {
                 }
             }
 
-            IconImageData = await new UserIconGetter()
+            IconImageData = await new UserIconGetter(_configuration)
                 .GetIconImageData(UserPublicId, UserIconGetter.IconSize.LARGE);
 
             return Page();

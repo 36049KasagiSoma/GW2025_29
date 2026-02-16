@@ -16,15 +16,14 @@ namespace BookNote.Scripts.BooksAPI.BookImage {
         private string _bucketName = "";             // S3のバケット名
         private AmazonS3Client _s3Client;            // S3接続用クライアント
         private CloudFrontFetcher _clientFetcher;    // CloudFront書影取得サポートクラス
+        private readonly IConfiguration _configuration;
 
-        public BookImageController() {
-            var config = new ConfigurationBuilder()
-            .AddJsonFile("appsettings.json", false)
-            .Build();
+        public BookImageController(IConfiguration configuration) {
+            _configuration = configuration;
 
             _clientFetcher = new CloudFrontFetcher();
 
-            var s3c = config.GetSection("S3Config");
+            var s3c = _configuration.GetSection("BookNoteKeys:S3Config");
 
             var s3config = new AmazonS3Config {
                 RegionEndpoint = Amazon.RegionEndpoint.USEast1 // バージニア北部

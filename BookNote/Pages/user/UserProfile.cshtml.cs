@@ -33,10 +33,12 @@ namespace BookNote.Pages.Users {
         private readonly OracleConnection _conn;
         private readonly ILogger<UserProfileModel> _logger;
         private UserIconGetter _iconGetter;
+        private readonly IConfiguration _configuration;
 
-        public UserProfileModel(ILogger<UserProfileModel> logger, OracleConnection conn) {
+        public UserProfileModel(ILogger<UserProfileModel> logger, OracleConnection conn, IConfiguration configuration) {
             _logger = logger;
-            _iconGetter = new UserIconGetter();
+            _configuration = configuration;
+            _iconGetter = new UserIconGetter(_configuration);
             _conn = conn;
         }
 

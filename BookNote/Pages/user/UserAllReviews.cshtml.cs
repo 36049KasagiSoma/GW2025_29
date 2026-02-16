@@ -34,10 +34,12 @@ namespace BookNote.Pages.Users {
 
         public string CurrentTab { get; set; }
         private readonly ILogger<UserAllReviewsModel> _logger;
+        private readonly IConfiguration _configuration;
 
-        public UserAllReviewsModel(ILogger<UserAllReviewsModel> logger, OracleConnection conn) {
+        public UserAllReviewsModel(ILogger<UserAllReviewsModel> logger, OracleConnection conn, IConfiguration configuration) {
             _logger = logger;
-            _userIconGetter = new UserIconGetter();
+            _configuration = configuration;
+            _userIconGetter = new UserIconGetter(_configuration);
             _conn = conn;
         }
 

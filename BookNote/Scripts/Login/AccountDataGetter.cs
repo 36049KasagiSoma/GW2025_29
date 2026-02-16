@@ -10,13 +10,15 @@ using System.Threading.Tasks;
 
 namespace BookNote.Scripts.Login {
     public class AccountDataGetter {
-        private static IHttpContextAccessor _staticHttpContextAccessor;
+        private static IHttpContextAccessor? _staticHttpContextAccessor;
+        private static IConfiguration? _configuration;
 
         private AccountDataGetter() {
         }
 
-        public static void Initialize(IHttpContextAccessor httpContextAccessor) {
+        public static void Initialize(IHttpContextAccessor httpContextAccessor,IConfiguration configration) {
             _staticHttpContextAccessor = httpContextAccessor;
+            _configuration = configration;
         }
 
         // ========== ログイン情報取得用メソッド ==========

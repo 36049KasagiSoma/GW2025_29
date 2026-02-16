@@ -36,12 +36,15 @@ namespace BookNote.Pages {
         public IndexModel(ILogger<IndexModel> logger, OracleConnection conn, IConfiguration config) {
             _logger = logger;
             _conn = conn;
-            _bookImageController = new BookImageController();
-            _userIconGetter = new UserIconGetter();
             _config = config;
+            _bookImageController = new BookImageController(_config);
+            _userIconGetter = new UserIconGetter(_config);
+
         }
 
         public async Task OnGetAsync() {
+            ModerationClient client = new ModerationClient(_config["BookNoteKeys:OpenAI:ApiKey"]);
+
             try {
                 if (_conn.State != ConnectionState.Open) {
                     await _conn.OpenAsync();

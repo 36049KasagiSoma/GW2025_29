@@ -19,9 +19,9 @@ namespace BookNote.Pages
             // セッションをクリア
             HttpContext.Session.Clear();
 
-            var cognitoDomain = _configuration["AWS:Domain"];
-            var clientId = _configuration["AWS:ClientId"];
-            var logoutUrl = _configuration["AWS:LogoutUrl"];
+            var cognitoDomain = _configuration["BookNoteKeys:AWS:Domain"];
+            var clientId = _configuration["BookNoteKeys:AWS:ClientId"];
+            var logoutUrl = _configuration["BookNoteKeys:AWS:LogoutUrl"];
 
             // Cognitoからもログアウト
             var cognitoLogoutUrl = $"https://{cognitoDomain}/logout?" +

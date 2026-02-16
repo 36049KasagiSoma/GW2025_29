@@ -6,7 +6,7 @@ namespace BookNote.Scripts {
         public static string GetDbConnectionString(IConfiguration configuration) {
             StringBuilder sb = new StringBuilder();
 
-            var rds = configuration.GetSection("RdsConfig");
+            var rds = configuration.GetSection("BookNoteKeys:RdsConfig");
             sb.Append($"User Id={rds["UserId"]};");
             sb.Append($"Password={rds["Password"]};");
             sb.Append("Data Source=");

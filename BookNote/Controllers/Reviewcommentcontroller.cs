@@ -109,7 +109,7 @@ namespace BookNote.Controllers {
             }
 
             // モデレーションチェック
-            var apiKey = _configuration["OpenAI:ApiKey"];
+            var apiKey = _configuration["BookNoteKeys:OpenAI:ApiKey"];
             if (apiKey != null) {
                 try {
                     ModerationClient moderationClient = new(apiKey);

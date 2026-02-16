@@ -31,10 +31,13 @@ namespace BookNote.Pages {
         public bool IsDraft { get; set; } = false;
         private readonly HtmlSanitizer _sanitizer;
 
+        private IConfiguration _configuration;
 
-        public ReviewDetailsModel(OracleConnection conn) {
-            _bookImageController = new BookImageController();
-            _userIconGetter = new UserIconGetter();
+
+        public ReviewDetailsModel(OracleConnection conn, IConfiguration configuration) {
+            _configuration = configuration;
+            _bookImageController = new BookImageController(_configuration);
+            _userIconGetter = new UserIconGetter(_configuration);
             _conn = conn;
             _sanitizer = new HtmlSanitizer();
             SetupSabutizer();

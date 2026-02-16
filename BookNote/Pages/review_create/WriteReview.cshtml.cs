@@ -188,7 +188,7 @@ public class WriteReviewModel : PageModel {
         } else {
             //公開時は適切な内容かをチェック
             var plainText = StaticEvent.ToPlainText(ReviewInput.ContentHtml) ?? "";
-            var apiKey = _configuration["OpenAI:ApiKey"];
+            var apiKey = _configuration["BookNoteKeys:OpenAI:ApiKey"];
             if (apiKey == null) {
                 _logger.LogWarning("OpenAI APIキーが設定されていません。モデレーションチェックをスキップします。");
             } else {

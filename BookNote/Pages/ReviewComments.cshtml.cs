@@ -9,6 +9,7 @@ namespace BookNote.Pages {
     public class ReviewCommentsModel : PageModel {
         private readonly OracleConnection _conn;
         private readonly UserIconGetter _userIconGetter;
+        private readonly IConfiguration _configuration;
 
         public int ReviewId { get; set; }
         public string ReviewTitle { get; set; } = string.Empty;
@@ -18,9 +19,10 @@ namespace BookNote.Pages {
         public int TotalPages { get; set; }
         public int PageSize { get; set; } = 20;
 
-        public ReviewCommentsModel(OracleConnection conn) {
+        public ReviewCommentsModel(OracleConnection conn, IConfiguration configuration) {
             _conn = conn;
-            _userIconGetter = new UserIconGetter();
+            _configuration = configuration;
+            _userIconGetter = new UserIconGetter(_configuration);
         }
 
         public async Task<IActionResult> OnGetAsync(int reviewId, int page = 1) {

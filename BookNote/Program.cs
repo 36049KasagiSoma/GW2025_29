@@ -2,6 +2,7 @@ using Amazon;
 using Amazon.CognitoIdentityProvider;
 using Amazon.Extensions.NETCore.Setup;
 using Amazon.Runtime;
+using AWSSecretsManager.Provider;
 using BookNote.Scripts;
 using BookNote.Scripts.ActivityTrace;
 using BookNote.Scripts.Login;
@@ -17,7 +18,9 @@ namespace BookNote {
     public class Program {
         public static void Main(string[] args) {
             var builder = WebApplication.CreateBuilder(args);
-
+            builder.WebHost.ConfigureKestrel(options => {
+                options.ListenAnyIP(5000);
+            });
             // HttpClientFactoryを追加
             builder.Services.AddHttpClient();
             builder.Services.AddHttpContextAccessor();
@@ -36,6 +39,10 @@ namespace BookNote {
                     options.Cookie.Name = "BookNote.Auth";  // クッキー名
                 });
 
+            builder.Configuration.AddSecretsManager(
+                region: RegionEndpoint.APNortheast1
+            );
+
             builder.Services.AddAuthorization();
 
             // セッション設定
@@ -49,6 +56,7 @@ namespace BookNote {
             builder.Services.AddScoped<OracleConnection>(sp => {
                 var conStr = Keywords.GetDbConnectionString(
                         sp.GetRequiredService<IConfiguration>());
+                Console.WriteLine(conStr);
                 ActivityTracer.Initialize(conStr);
                 return new OracleConnection(conStr);
             });
@@ -67,7 +75,7 @@ namespace BookNote {
             // AccountControllerを初期化
             using (var scope = app.Services.CreateScope()) {
                 var httpContextAccessor = scope.ServiceProvider.GetRequiredService<IHttpContextAccessor>();
-                AccountDataGetter.Initialize(httpContextAccessor);
+                AccountDataGetter.Initialize(httpContextAccessor, builder.Configuration);
             }
 
             // Configure the HTTP request pipeline.

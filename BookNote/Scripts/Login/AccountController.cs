@@ -23,7 +23,7 @@ namespace BookNote.Scripts.Login {
         public AccountController(IConfiguration configuration, IHttpClientFactory httpClientFactory, IHttpContextAccessor httpContextAccessor, OracleConnection conn) {
             _configuration = configuration;
             _httpClient = httpClientFactory.CreateClient();
-            AccountDataGetter.Initialize(httpContextAccessor);
+            AccountDataGetter.Initialize(httpContextAccessor, _configuration);
             _conn = conn;
         }
 
@@ -31,9 +31,9 @@ namespace BookNote.Scripts.Login {
 
         [HttpGet("Login")]
         public IActionResult Login(string returnUrl = null) {
-            var cognitoDomain = _configuration["AWS:Domain"];
-            var clientId = _configuration["AWS:ClientId"];
-            var callbackUrl = _configuration["AWS:CallbackUrl"];
+            var cognitoDomain = _configuration["BookNoteKeys:AWS:Domain"];
+            var clientId = _configuration["BookNoteKeys:AWS:ClientId"];
+            var callbackUrl = _configuration["BookNoteKeys:AWS:CallbackUrl"];
             var state = !string.IsNullOrEmpty(returnUrl) ? returnUrl : "/";
 
             var loginUrl = $"https://{cognitoDomain}/login?" +

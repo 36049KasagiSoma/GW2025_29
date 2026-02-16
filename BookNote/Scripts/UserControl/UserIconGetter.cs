@@ -16,32 +16,22 @@ namespace BookNote.Scripts.UserControl {
         private AmazonS3Client _s3Client;            // S3接続用クライアント
         private HttpClient _httpClient;
         private AmazonCloudFrontClient _cloudFrontClient;
+        private IConfiguration _configuration;
 
-        public UserIconGetter() {
-            var config = new ConfigurationBuilder()
-           .AddJsonFile("appsettings.json", false)
-           .Build();
+        public UserIconGetter(IConfiguration configuration) {
+            _configuration = configuration;
 
-            var s3c = config.GetSection("S3Config");
+            var s3c = _configuration.GetSection("BookNoteKeys:S3Config");
 
             var s3config = new AmazonS3Config {
                 RegionEndpoint = Amazon.RegionEndpoint.USEast1 // バージニア北部
             };
 
-            // ============================================
-            //var credentials = new BasicAWSCredentials(
-            //    s3c["Ak"],
-            //    s3c["Sk"]
-            //);
-            //_s3Client = new AmazonS3Client(credentials, s3config);
-            //_cloudFrontClient = new AmazonCloudFrontClient(credentials, Amazon.RegionEndpoint.USEast1);
-            // ============================================
             _s3Client = new AmazonS3Client(s3config);
             _cloudFrontClient = new AmazonCloudFrontClient(Amazon.RegionEndpoint.USEast1);
-            //=============================================
+
             _httpClient = new HttpClient();
             _bucketName = s3c["BucketName"] ?? "";
-
         }
 
         public async Task<byte[]?> GetIconImageData(string id, IconSize size) {

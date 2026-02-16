@@ -9,17 +9,19 @@ namespace BookNote.ViewComponents {
     public class UserIconViewComponent : ViewComponent {
         private readonly OracleConnection _conn;
         private readonly ILogger<UserIconViewComponent> _logger;
+        private readonly IConfiguration _configuration;
 
-        public UserIconViewComponent(OracleConnection conn, ILogger<UserIconViewComponent> logger) {
+        public UserIconViewComponent(OracleConnection conn, ILogger<UserIconViewComponent> logger, IConfiguration configuration) {
             _conn = conn;
             _logger = logger;
+            _configuration = configuration;
         }
 
         public async Task<IViewComponentResult> InvokeAsync() {
             var publicId = await AccountDataGetter.GetDbUserPublicIdAsync(_conn);
             byte[]? iconData = null;
             if (publicId != null)
-                iconData = await new UserIconGetter().GetIconImageData(publicId, UserIconGetter.IconSize.SMALL);
+                iconData = await new UserIconGetter(_configuration).GetIconImageData(publicId, UserIconGetter.IconSize.SMALL);
             
             if (iconData != null && iconData.Length > 0) {
                 var base64 = Convert.ToBase64String(iconData);

@@ -13,6 +13,7 @@ namespace BookNote.Pages {
     public class ReviewsModel : PageModel {
         private readonly OracleConnection _conn;
         private readonly UserIconGetter _userIconGetter;
+        private readonly IConfiguration _configuration;
 
         public List<BookReview> LatestReviews { get; set; } = new();
         public List<BookReview> PopularReviews { get; set; } = new();
@@ -22,10 +23,11 @@ namespace BookNote.Pages {
 
         private readonly ILogger<ReviewsModel> _logger;
 
-        public ReviewsModel(ILogger<ReviewsModel> logger, OracleConnection conn) {
+        public ReviewsModel(ILogger<ReviewsModel> logger, OracleConnection conn, IConfiguration configuration) {
             _logger = logger;
-            _userIconGetter = new UserIconGetter();
             _conn = conn;
+            _configuration = configuration;
+            _userIconGetter = new UserIconGetter(_configuration);
         }
 
         public async Task OnGetAsync() {

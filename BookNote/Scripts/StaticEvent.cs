@@ -53,9 +53,14 @@ namespace BookNote.Scripts {
             if (text == null) return string.Empty;
             var pt = ToPlainText(text);
             pt = Regex.Replace(pt, @"[\p{Z}\p{C}]", "");
-            if (pt.Length <= cnt) return pt;
+            return TrimText(pt, cnt);
+        }
 
-            return pt.Substring(0, cnt - 1) + "…";
+        public static string TrimText(string? text, int cnt) {
+            if (text == null) return string.Empty;
+            if (text.Length <= cnt) return text;
+
+            return text.Substring(0, cnt - 1) + "…";
         }
 
         public static string FormatPostingTime(DateTime postingTime) {
