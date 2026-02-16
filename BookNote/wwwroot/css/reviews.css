@@ -195,6 +195,25 @@
     padding: 60px 20px;
 }
 
+/* ローディングGIF用スタイルを追加 */
+.book-cover-large,
+.book-cover-small {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.loading-gif {
+    width: 32px;
+    height: 32px;
+    object-fit: contain;
+}
+
+.reviewer-icon .loading-gif {
+    width: 16px;
+    height: 16px;
+}
+
 /* レスポンシブ対応 */
 @media (max-width: 768px) {
     .page-title {

@@ -13,6 +13,7 @@ using System;
 using System.Data;
 using System.Diagnostics;
 using System.Text.Json;
+using Microsoft.AspNetCore.HttpOverrides;
 
 namespace BookNote {
     public class Program {
@@ -84,9 +85,22 @@ namespace BookNote {
                 app.UseHsts();
             }
             app.UseExceptionHandler("/error/Error500");
+            // HTTPSí êM
             app.UseHttpsRedirection();
+
+
             app.UseStaticFiles();
             app.UseStatusCodePagesWithReExecute("/error/Error{0}");
+
+            var forwardOptions = new ForwardedHeadersOptions {
+                ForwardedHeaders = ForwardedHeaders.XForwardedFor |
+                       ForwardedHeaders.XForwardedProto
+            };
+
+            forwardOptions.KnownNetworks.Clear();
+            forwardOptions.KnownProxies.Clear();
+
+            app.UseForwardedHeaders(forwardOptions);
 
             app.UseRouting();
 

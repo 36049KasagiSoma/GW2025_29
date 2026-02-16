@@ -54,8 +54,9 @@
             <div class="reviews-grid">
                 @foreach (var review in Model.LatestReviews) {
                     <div class="review-card-large" data-review-id="@review.ReviewId" data-isbn="@review.Isbn">
-                        <div class="book-cover-large">書影</div>
-                        <div class="review-content-large">
+                        <div class="book-cover-large">
+                            <img src="/image/loadimage.gif" alt="読み込み中" class="loading-gif" draggable="false">
+                        </div>                        <div class="review-content-large">
                             <div class="review-title">@review.Title</div>
                             <div class="book-title">@review.Book.Title</div>
                             <div class="review-text">
@@ -101,7 +102,9 @@
                 <div class="reviews-grid">
                     @foreach (var review in Model.FollowingReviews) {
                         <div class="review-card-large" data-review-id="@review.ReviewId" data-isbn="@review.Isbn">
-                            <div class="book-cover-large">書影</div>
+                            <div class="reviewer-icon" data-public-id="@review.User.UserPublicId">
+                                <img src="/image/loadimage.gif" alt="読み込み中" class="loading-gif" draggable="false">
+                            </div>
                             <div class="review-content-large">
                                 <div class="review-title">@review.Title</div>
                                 <div class="book-title">@review.Book.Title</div>
@@ -126,7 +129,9 @@
                 <div class="reviews-grid">
                     @foreach (var review in Model.MyReviews) {
                         <div class="review-card-large" data-review-id="@review.ReviewId" data-isbn="@review.Isbn">
-                            <div class="book-cover-large">書影</div>
+                            <div class="reviewer-icon" data-public-id="@review.User.UserPublicId">
+                                <img src="/image/loadimage.gif" alt="読み込み中" class="loading-gif" draggable="false">
+                            </div>
                             <div class="review-content-large">
                                 <div class="review-title">@review.Title</div>
                                 <div class="book-title">@review.Book.Title</div>
