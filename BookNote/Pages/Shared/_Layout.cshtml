@@ -16,7 +16,7 @@
     <div class="drawer">
         <div class="drawer-content">
             <a href="~/Reviews" class="drawer-item">レビュー一覧</a>
-            <div class="drawer-item">あなたにオススメ</div>
+            @* <div class="drawer-item">あなたにオススメ</div> *@
             <a href="~/review_create/SelectType" class="drawer-item">レビューを書く</a>
             <div class="drawer-spacer"></div>
             <a href="~/Policy" class="drawer-item">About・Policy</a>
@@ -53,10 +53,7 @@
                     </div>
                     <span class="username-display">@await Component.InvokeAsync("UserName")</span>
                 </a>
-                <form method="post" action="/Account/Logout" style="margin: 0;">
-                    @Html.AntiForgeryToken()
-                    <button type="submit" class="auth-button auth-button-logout">ログアウト</button>
-                </form>
+                <a href="/Logout" class="auth-button auth-button-logout">ログアウト</a>
             </div>
         } else {
             <!-- 未ログインの場合 -->

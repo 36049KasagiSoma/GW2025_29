@@ -1,7 +1,7 @@
-﻿
-
-// スクロール時のアップバー変化
+﻿// スクロール時のアップバー変化（PC のみ）
 window.addEventListener('scroll', () => {
+    if (window.innerWidth <= 768) return;
+
     const appbar = document.querySelector('.appbar');
     const hamburger = document.querySelector('.hamburger');
 
@@ -11,6 +11,14 @@ window.addEventListener('scroll', () => {
     } else {
         appbar.classList.remove('scrolled');
         hamburger.classList.remove('scrolled');
+    }
+});
+
+// リサイズ時にスマホ幅になったら scrolled クラスを除去
+window.addEventListener('resize', () => {
+    if (window.innerWidth <= 768) {
+        document.querySelector('.appbar')?.classList.remove('scrolled');
+        document.querySelector('.hamburger')?.classList.remove('scrolled');
     }
 });
 

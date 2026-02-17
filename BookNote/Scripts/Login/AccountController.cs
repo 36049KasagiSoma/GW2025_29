@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Security.Claims;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace BookNote.Scripts.Login {
@@ -55,9 +56,9 @@ namespace BookNote.Scripts.Login {
             }
 
             try {
-                var cognitoDomain = _configuration["AWS:Domain"];
-                var clientId = _configuration["AWS:ClientId"];
-                var callbackUrl = _configuration["AWS:CallbackUrl"];
+                var cognitoDomain = _configuration["BookNoteKeys:AWS:Domain"];
+                var clientId = _configuration["BookNoteKeys:AWS:ClientId"];
+                var callbackUrl = _configuration["BookNoteKeys:AWS:CallbackUrl"];
 
                 // 認可コードをトークンに交換
                 var tokenUrl = $"https://{cognitoDomain}/oauth2/token";
@@ -73,7 +74,6 @@ namespace BookNote.Scripts.Login {
                 var responseContent = await response.Content.ReadAsStringAsync();
 
                 if (!response.IsSuccessStatusCode) {
-                    Console.WriteLine($"ERROR: Token request failed - {responseContent}");
                     return BadRequest($"トークン取得に失敗しました: {responseContent}");
                 }
 
@@ -101,8 +101,8 @@ namespace BookNote.Scripts.Login {
 
                 // クッキー認証
                 try {
-                    var userName = await AccountDataGetter.GetDbUserNameAsync(_conn);
-                    var userPublicId = await AccountDataGetter.GetDbUserPublicIdAsync(_conn);
+                    var userName = await AccountDataGetter.GetDbUserNameAsync();
+                    var userPublicId = await AccountDataGetter.GetDbUserPublicIdAsync();
 
                     var claims = new List<Claim>
                     {
@@ -112,7 +112,7 @@ namespace BookNote.Scripts.Login {
                         new Claim("access_token", tokenResponse.access_token),
                         new Claim("id_token", tokenResponse.id_token),
                         new Claim("refresh_token", tokenResponse.refresh_token),
-                        new Claim("db_username", userName ?? ""),
+                        new Claim("db_username", userName ?? "名無しユーザー"),
                         new Claim("user_public_id", userPublicId ?? ""),
                     };
 
@@ -129,8 +129,6 @@ namespace BookNote.Scripts.Login {
 
                 } catch (Exception ex) {
                     Console.WriteLine($"ERROR: SignInAsync failed - {ex.Message}");
-                    Console.WriteLine($"ERROR: StackTrace - {ex.StackTrace}");
-                    // セッション認証は成功しているので続行
                 }
 
                 if (AccountDataGetter.IsAuthenticated())
@@ -146,14 +144,13 @@ namespace BookNote.Scripts.Login {
                 }
             } catch (Exception ex) {
                 Console.WriteLine($"ERROR: Callback failed - {ex.Message}");
-                Console.WriteLine($"ERROR: StackTrace - {ex.StackTrace}");
                 return BadRequest($"ログイン処理に失敗しました: {ex.Message}");
             }
         }
 
         private async Task<UserInfo> GetUserInfoAsync(string accessToken) {
             try {
-                var cognitoDomain = _configuration["AWS:Domain"];
+                var cognitoDomain = _configuration["BookNoteKeys:AWS:Domain"];
                 var userInfoUrl = $"https://{cognitoDomain}/oauth2/userInfo";
 
                 var request = new HttpRequestMessage(HttpMethod.Get, userInfoUrl);
@@ -175,9 +172,9 @@ namespace BookNote.Scripts.Login {
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
             HttpContext.Session.Clear();
 
-            var cognitoDomain = _configuration["AWS:Domain"];
-            var clientId = _configuration["AWS:ClientId"];
-            var logoutUrl = _configuration["AWS:LogoutUrl"];
+            var cognitoDomain = _configuration["BookNoteKeys:AWS:Domain"];
+            var clientId = _configuration["BookNoteKeys:AWS:ClientId"];
+            var logoutUrl = _configuration["BookNoteKeys:AWS:LogoutUrl"];
 
             var cognitoLogoutUrl = $"https://{cognitoDomain}/logout?" +
                                   $"client_id={clientId}&" +
@@ -198,9 +195,16 @@ namespace BookNote.Scripts.Login {
         }
 
         private class UserInfo {
+            [JsonPropertyName("sub")]
             public string sub { get; set; }
+
+            [JsonPropertyName("email")]
             public string email { get; set; }
+
+            [JsonPropertyName("username")]
             public string username { get; set; }
+
+            [JsonPropertyName("name")]
             public string name { get; set; }
         }
     }

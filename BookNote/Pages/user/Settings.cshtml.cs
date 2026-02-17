@@ -2,11 +2,14 @@ using BookNote.Scripts;
 using BookNote.Scripts.ActivityTrace;
 using BookNote.Scripts.Login;
 using BookNote.Scripts.UserControl;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Oracle.ManagedDataAccess.Client;
 using System.ComponentModel.DataAnnotations;
 using System.Data;
+using System.Security.Claims;
 
 namespace BookNote.Pages.user {
     public class SettingsModel : PageModel {
@@ -151,6 +154,26 @@ namespace BookNote.Pages.user {
 
                 await command.ExecuteNonQueryAsync();
             }
+
+            // Cookie のクレームを更新して再発行
+            var existingClaims = User.Claims.ToList();
+            var newClaims = existingClaims
+                .Where(c => c.Type != "db_username")
+                .ToList();
+            newClaims.Add(new Claim("db_username", UserName));
+
+            var claimsIdentity = new ClaimsIdentity(newClaims, CookieAuthenticationDefaults.AuthenticationScheme);
+            var authProperties = new AuthenticationProperties {
+                IsPersistent = true,
+                ExpiresUtc = DateTimeOffset.UtcNow.AddDays(7)
+            };
+            await HttpContext.SignInAsync(
+                CookieAuthenticationDefaults.AuthenticationScheme,
+                new ClaimsPrincipal(claimsIdentity),
+                authProperties);
+
+            // セッションも更新
+            HttpContext.Session.SetString("Name", UserName);
 
             if (AccountDataGetter.IsAuthenticated())
                 ActivityTracer.LogActivity(ActivityType.CUSTOM_PROFILE, AccountDataGetter.GetUserId());

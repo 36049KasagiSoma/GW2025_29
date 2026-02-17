@@ -16,6 +16,11 @@
 <body>
     <!-- メインコンテンツ -->
     <div class="main-content">
+        <!-- ロゴ画像（PC版のみ表示） -->
+        <div class="hero-logo">
+            <img src="/image/Logo_big.png" alt="BookNote Logo" />
+        </div>
+
         <!-- あなたにオススメ（横スクロール） -->
         <h2 class="section-title">人気のレビュー</h2>
         <div class="horizontal-scroll">
@@ -26,7 +31,7 @@
                             @if (!string.IsNullOrEmpty(review.Book.ImageUrl)) {
                                 <img src="@review.Book.ImageUrl" alt="@review.Book.Title" draggable="false" />
                             } else {
-                                <span>書影</span>
+                                <span></span>
                             }
                         </div>
                         <div class="review-content-small">
@@ -59,7 +64,7 @@
                             @if (!string.IsNullOrEmpty(review.Book.ImageUrl)) {
                                 <img src="@review.Book.ImageUrl" alt="@review.Book.Title" />
                             } else {
-                                <span>書影</span>
+                                <span></span>
                             }
                         </div>
                         <div class="review-content-large">

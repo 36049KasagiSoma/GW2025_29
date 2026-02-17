@@ -16,7 +16,7 @@ namespace BookNote.Scripts.Login {
         private AccountDataGetter() {
         }
 
-        public static void Initialize(IHttpContextAccessor httpContextAccessor,IConfiguration configration) {
+        public static void Initialize(IHttpContextAccessor httpContextAccessor, IConfiguration configration) {
             _staticHttpContextAccessor = httpContextAccessor;
             _configuration = configration;
         }
@@ -28,7 +28,8 @@ namespace BookNote.Scripts.Login {
         /// </summary>
         public static bool IsAuthenticated() {
             var httpContext = _staticHttpContextAccessor?.HttpContext;
-            return httpContext?.User?.Identity?.IsAuthenticated ?? false;
+            var isAuth = httpContext?.User?.Identity?.IsAuthenticated ?? false;
+            return isAuth;
         }
 
         /// <summary>
@@ -36,23 +37,36 @@ namespace BookNote.Scripts.Login {
         /// </summary>
         public static string GetUserName() {
             var httpContext = _staticHttpContextAccessor?.HttpContext;
-            if (httpContext?.User?.Identity?.IsAuthenticated != true) return null;
-            return httpContext.User.FindFirst(ClaimTypes.Name)?.Value;
+            if (httpContext?.User?.Identity?.IsAuthenticated != true) {
+                return null;
+            }
+            var userName = httpContext.User.FindFirst(ClaimTypes.Name)?.Value;
+            return userName;
         }
 
         /// <summary>
         /// ユーザー名を取得(DB)
         /// </summary>
         public static async Task<string?> GetDbUserNameAsync() {
-            var config = new ConfigurationBuilder()
-            .AddJsonFile("appsettings.json", false)
-            .Build();
             try {
-                using (var connection = new OracleConnection(Keywords.GetDbConnectionString(config))) {
-                    return await GetDbUserNameAsync(connection);
+                var userId = GetUserId();
+
+                if (string.IsNullOrEmpty(userId)) {
+                    Console.WriteLine("ERROR: GetDbUserNameAsync() - UserId is null or empty");
+                    return null;
+                }
+
+                var connString = Keywords.GetDbConnectionString(_configuration);
+
+                using (var connection = new OracleConnection(connString)) {
+                    await connection.OpenAsync();
+
+                    var result = await GetDbUserNameAsync(connection);
+                    return result;
                 }
             } catch (Exception ex) {
-                Console.WriteLine(ex.Message);
+                Console.WriteLine($"ERROR: GetDbUserNameAsync() - {ex.Message}");
+                Console.WriteLine($"ERROR: GetDbUserNameAsync() - StackTrace: {ex.StackTrace}");
             }
             return null;
         }
@@ -61,6 +75,7 @@ namespace BookNote.Scripts.Login {
         /// ユーザー公開IDを取得
         /// </summary>
         public static async Task<string?> GetDbUserPublicIdAsync(OracleConnection conn) {
+
             // まずClaimから取得を試みる
             var httpContext = _staticHttpContextAccessor?.HttpContext;
             if (httpContext?.User?.Identity?.IsAuthenticated == true) {
@@ -72,15 +87,24 @@ namespace BookNote.Scripts.Login {
 
             // ClaimになければDBから取得
             var id = GetUserId();
+
             try {
                 if (conn.State != ConnectionState.Open) {
                     await conn.OpenAsync();
                 }
                 UserGetter userGetter = new UserGetter(conn);
+
                 var user = await userGetter.GetUserToSub(id);
-                return user != null ? user.UserPublicId : null;
+
+                if (user != null) {
+                    return user.UserPublicId;
+                } else {
+                    Console.WriteLine("ERROR: GetDbUserPublicIdAsync(conn) - User not found in DB");
+                    return null;
+                }
             } catch (Exception ex) {
-                Console.WriteLine(ex.Message);
+                Console.WriteLine($"ERROR: GetDbUserPublicIdAsync(conn) - {ex.Message}");
+                Console.WriteLine($"ERROR: GetDbUserPublicIdAsync(conn) - StackTrace: {ex.StackTrace}");
             }
             return null;
         }
@@ -89,6 +113,7 @@ namespace BookNote.Scripts.Login {
         /// ユーザー名を取得
         /// </summary>
         public static async Task<string?> GetDbUserNameAsync(OracleConnection conn) {
+
             // まずClaimから取得を試みる
             var httpContext = _staticHttpContextAccessor?.HttpContext;
             if (httpContext?.User?.Identity?.IsAuthenticated == true) {
@@ -100,29 +125,48 @@ namespace BookNote.Scripts.Login {
 
             // ClaimになければDBから取得
             var id = GetUserId();
+
             try {
                 if (conn.State != ConnectionState.Open) {
                     await conn.OpenAsync();
                 }
                 UserGetter userGetter = new UserGetter(conn);
+
                 var user = await userGetter.GetUserToSub(id);
-                return user != null ? user.UserName : null;
+
+                if (user != null) {
+                    return user.UserName;
+                } else {
+                    Console.WriteLine("ERROR: GetDbUserNameAsync(conn) - User not found in DB");
+                    return null;
+                }
             } catch (Exception ex) {
-                Console.WriteLine(ex.Message);
+                Console.WriteLine($"ERROR: GetDbUserNameAsync(conn) - {ex.Message}");
+                Console.WriteLine($"ERROR: GetDbUserNameAsync(conn) - StackTrace: {ex.StackTrace}");
             }
             return null;
         }
 
         public static async Task<string?> GetDbUserPublicIdAsync() {
-            var config = new ConfigurationBuilder()
-            .AddJsonFile("appsettings.json", false)
-            .Build();
             try {
-                using (var connection = new OracleConnection(Keywords.GetDbConnectionString(config))) {
-                    return await GetDbUserPublicIdAsync(connection);
+                var userId = GetUserId();
+
+                if (string.IsNullOrEmpty(userId)) {
+                    Console.WriteLine("ERROR: GetDbUserPublicIdAsync() - UserId is null or empty");
+                    return null;
+                }
+
+                var connString = Keywords.GetDbConnectionString(_configuration);
+
+                using (var connection = new OracleConnection(connString)) {
+                    await connection.OpenAsync();
+
+                    var result = await GetDbUserPublicIdAsync(connection);
+                    return result;
                 }
             } catch (Exception ex) {
-                Console.WriteLine(ex.Message);
+                Console.WriteLine($"ERROR: GetDbUserPublicIdAsync() - {ex.Message}");
+                Console.WriteLine($"ERROR: GetDbUserPublicIdAsync() - StackTrace: {ex.StackTrace}");
             }
             return null;
         }
@@ -132,8 +176,11 @@ namespace BookNote.Scripts.Login {
         /// </summary>
         public static string GetEmail() {
             var httpContext = _staticHttpContextAccessor?.HttpContext;
-            if (httpContext?.User?.Identity?.IsAuthenticated != true) return null;
-            return httpContext.User.FindFirst(ClaimTypes.Email)?.Value;
+            if (httpContext?.User?.Identity?.IsAuthenticated != true) {
+                return null;
+            }
+            var email = httpContext.User.FindFirst(ClaimTypes.Email)?.Value;
+            return email;
         }
 
         /// <summary>
@@ -141,7 +188,7 @@ namespace BookNote.Scripts.Login {
         /// </summary>
         public static string GetUserId() {
             var httpContext = _staticHttpContextAccessor?.HttpContext;
-            var userId = httpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var userId = httpContext?.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             return userId;
         }
 
@@ -150,8 +197,11 @@ namespace BookNote.Scripts.Login {
         /// </summary>
         public static string GetAccessToken() {
             var httpContext = _staticHttpContextAccessor?.HttpContext;
-            if (httpContext?.User?.Identity?.IsAuthenticated != true) return null;
-            return httpContext.User.FindFirst("access_token")?.Value;
+            if (httpContext?.User?.Identity?.IsAuthenticated != true) {
+                return null;
+            }
+            var token = httpContext.User.FindFirst("access_token")?.Value;
+            return token;
         }
 
         /// <summary>
@@ -159,8 +209,11 @@ namespace BookNote.Scripts.Login {
         /// </summary>
         public static string GetIdToken() {
             var httpContext = _staticHttpContextAccessor?.HttpContext;
-            if (httpContext?.User?.Identity?.IsAuthenticated != true) return null;
-            return httpContext.User.FindFirst("id_token")?.Value;
+            if (httpContext?.User?.Identity?.IsAuthenticated != true) {
+                return null;
+            }
+            var token = httpContext.User.FindFirst("id_token")?.Value;
+            return token;
         }
 
         /// <summary>
@@ -168,8 +221,11 @@ namespace BookNote.Scripts.Login {
         /// </summary>
         public static string GetRefreshToken() {
             var httpContext = _staticHttpContextAccessor?.HttpContext;
-            if (httpContext?.User?.Identity?.IsAuthenticated != true) return null;
-            return httpContext.User.FindFirst("refresh_token")?.Value;
+            if (httpContext?.User?.Identity?.IsAuthenticated != true) {
+                return null;
+            }
+            var token = httpContext.User.FindFirst("refresh_token")?.Value;
+            return token;
         }
 
         /// <summary>
@@ -177,9 +233,11 @@ namespace BookNote.Scripts.Login {
         /// </summary>
         public static UserInfoData GetUserInfo() {
             var httpContext = _staticHttpContextAccessor?.HttpContext;
-            if (httpContext?.User?.Identity?.IsAuthenticated != true) return null;
+            if (httpContext?.User?.Identity?.IsAuthenticated != true) {
+                return null;
+            }
 
-            return new UserInfoData {
+            var info = new UserInfoData {
                 UserId = GetUserId(),
                 Name = GetUserName(),
                 Email = GetEmail(),
@@ -187,6 +245,7 @@ namespace BookNote.Scripts.Login {
                 IdToken = GetIdToken(),
                 RefreshToken = GetRefreshToken()
             };
+            return info;
         }
 
         // ========== 内部クラス ==========

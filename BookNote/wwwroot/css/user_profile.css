@@ -11,6 +11,13 @@
     height: 35px;
 }
 
+@media (max-width: 768px) {
+    .user-profile-page .logo-link {
+        left: 50%;
+        transform: translateX(-50%);
+    }
+}
+
 .user-profile-page .logo {
     height: 35px;
 }

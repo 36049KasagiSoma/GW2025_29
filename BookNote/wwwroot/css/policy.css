@@ -11,6 +11,13 @@
     height: 35px;
 }
 
+@media (max-width: 768px) {
+    .policy-page .logo-link {
+        left: 50%;
+        transform: translateX(-50%);
+    }
+}
+
 .policy-page .logo {
     height: 35px;
 }

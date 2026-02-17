@@ -1,8 +1,12 @@
+using BookNote.Scripts.ActivityTrace;
+using BookNote.Scripts.Login;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using System.Diagnostics;
 
-namespace BookNote.Pages
-{
+namespace BookNote.Pages {
     [IgnoreAntiforgeryToken]
     public class LogoutModel : PageModel {
         private readonly IConfiguration _configuration;
@@ -11,11 +15,19 @@ namespace BookNote.Pages
             _configuration = configuration;
         }
 
-        public IActionResult OnGet() {
-            return OnPost();
+        public async Task<IActionResult> OnGet() {
+            return await OnPostAsync();
         }
 
-        public IActionResult OnPost() {
+        public async Task<IActionResult> OnPostAsync() {
+            // アクティビティログを記録（ログアウト前に）
+            if (AccountDataGetter.IsAuthenticated()) {
+                ActivityTracer.LogActivity(Scripts.ActivityTrace.ActivityType.LOGOUT, AccountDataGetter.GetUserId());
+            }
+
+            // クッキー認証からサインアウト
+            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+
             // セッションをクリア
             HttpContext.Session.Clear();
 

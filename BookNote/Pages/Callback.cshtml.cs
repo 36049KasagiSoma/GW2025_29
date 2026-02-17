@@ -70,7 +70,7 @@ namespace BookNote.Pages
 
         private async Task<UserInfo> GetUserInfoAsync(string accessToken) {
             try {
-                var cognitoDomain = _configuration["AWS:Domain"];
+                var cognitoDomain = _configuration["BookNoteKeys:AWS:Domain"];
                 var userInfoUrl = $"https://{cognitoDomain}/oauth2/userInfo";
 
                 var request = new HttpRequestMessage(HttpMethod.Get, userInfoUrl);

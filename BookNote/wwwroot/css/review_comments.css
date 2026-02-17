@@ -11,6 +11,13 @@
     height: 35px;
 }
 
+@media (max-width: 768px) {
+    .review-comments-page .logo-link {
+        left: 50%;
+        transform: translateX(-50%);
+    }
+}
+
 .review-comments-page .logo {
     height: 35px;
 }

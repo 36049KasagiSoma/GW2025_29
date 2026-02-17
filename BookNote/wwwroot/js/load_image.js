@@ -3,7 +3,7 @@ function insertLoadingGif(element) {
     element.style.display = 'flex';
     element.style.alignItems = 'center';
     element.style.justifyContent = 'center';
-    element.innerHTML = `<img src="/image/loadimage.gif"
+    element.innerHTML = `<img src="/image/loadImage.gif"
         alt="読み込み中"
         class="loading-gif"
         draggable="false"
@@ -18,7 +18,7 @@ function insertLoadingIconGif(element) {
     element.style.display = 'flex';
     element.style.alignItems = 'center';
     element.style.justifyContent = 'center';
-    element.innerHTML = `<img src="/image/loadimage.gif"
+    element.innerHTML = `<img src="/image/loadImage.gif"
         alt="読み込み中"
         class="loading-gif"
         draggable="false"

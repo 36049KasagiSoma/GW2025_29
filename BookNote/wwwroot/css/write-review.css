@@ -10,6 +10,13 @@
     height: 35px;
 }
 
+@media (max-width: 768px) {
+    .write-review-page .logo-link {
+        left: 50%;
+        transform: translateX(-50%);
+    }
+}
+
 .write-review-page .logo {
     height: 35px;
 }

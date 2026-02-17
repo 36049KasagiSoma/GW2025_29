@@ -10,6 +10,13 @@
     height: 35px;
 }
 
+@media (max-width: 768px) {
+    .mypage-page .logo-link {
+        left: 50%;
+        transform: translateX(-50%);
+    }
+}
+
 .mypage-page .logo {
     height: 35px;
 }
@@ -65,11 +72,11 @@
     overflow: hidden;
 }
 
-.profile-icon-large img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
+    .profile-icon-large img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
 
 .profile-info {
     flex: 1;
@@ -97,9 +104,9 @@
     margin-bottom: 32px;
 }
 
-.profile-section:last-child {
-    margin-bottom: 0;
-}
+    .profile-section:last-child {
+        margin-bottom: 0;
+    }
 
 .section-title {
     font-size: 18px;
@@ -166,13 +173,49 @@
     border-radius: 8px;
     font-weight: 600;
     transition: all 0.3s ease;
+    border: none;
 }
 
-.btn-primary:hover {
-    background: #8B6F47;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(101, 67, 33, 0.2);
+    .btn-primary:hover {
+        background: #8B6F47;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(101, 67, 33, 0.2);
+    }
+
+.btn-logout {
+    display: inline-block;
+    padding: 12px 32px;
+    background: white;
+    color: #654321;
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    border: 2px solid #D2B48C;
+    cursor: pointer;
+    font-size: 14px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin-left: 12px;
 }
+
+    .btn-logout:hover {
+        background: #F5E6D3;
+        border-color: #A0826D;
+        color: #654321;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(101, 67, 33, 0.15);
+    }
+
+    .btn-logout:disabled {
+        background: #F0F0F0;
+        color: #A0A0A0;
+        border-color: #D0D0D0;
+        cursor: not-allowed;
+        transform: none;
+        box-shadow: none;
+        opacity: 0.65;
+        pointer-events: none;
+    }
 
 /* レスポンシブ対応 */
 @media (max-width: 768px) {
@@ -210,5 +253,16 @@
 
     .profile-footer {
         padding: 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .btn-primary,
+    .btn-logout {
+        padding: 10px 24px;
+        font-size: 14px;
+        margin-left: 0;
+        width: 100%;
     }
 }
