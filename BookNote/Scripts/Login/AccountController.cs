@@ -101,8 +101,11 @@ namespace BookNote.Scripts.Login {
 
                 // クッキー認証
                 try {
-                    var userName = await AccountDataGetter.GetDbUserNameAsync();
-                    var userPublicId = await AccountDataGetter.GetDbUserPublicIdAsync();
+                    // 修正: userInfo.subを直接使ってDBから取得
+                    UserGetter userGetter = new UserGetter(_conn);
+                    var dbUser = await userGetter.GetUserToSub(userInfo?.sub);
+                    var userName = dbUser?.UserName;
+                    var userPublicId = dbUser?.UserPublicId;
 
                     var claims = new List<Claim>
                     {

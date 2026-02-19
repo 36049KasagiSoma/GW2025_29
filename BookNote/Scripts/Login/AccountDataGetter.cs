@@ -115,13 +115,13 @@ namespace BookNote.Scripts.Login {
         public static async Task<string?> GetDbUserNameAsync(OracleConnection conn) {
 
             // まずClaimから取得を試みる
-            var httpContext = _staticHttpContextAccessor?.HttpContext;
-            if (httpContext?.User?.Identity?.IsAuthenticated == true) {
-                var cachedValue = httpContext.User.FindFirst("db_username")?.Value;
-                if (!string.IsNullOrEmpty(cachedValue)) {
-                    return cachedValue;
-                }
-            }
+            //var httpContext = _staticHttpContextAccessor?.HttpContext;
+            //if (httpContext?.User?.Identity?.IsAuthenticated == true) {
+            //    var cachedValue = httpContext.User.FindFirst("db_username")?.Value;
+            //    if (!string.IsNullOrEmpty(cachedValue)) {
+            //        return cachedValue;
+            //    }
+            //}
 
             // ClaimになければDBから取得
             var id = GetUserId();
