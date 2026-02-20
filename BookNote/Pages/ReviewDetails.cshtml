@@ -14,6 +14,12 @@
 </head>
 <body class="review-detail-page">
     <div class="main-content">
+        <button class="back-button" onclick="history.back()" type="button">
+            <svg class="back-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="15 18 9 12 15 6" />
+            </svg>
+            <span>戻る</span>
+        </button>
         @if (Model.Review != null && !Model.IsDraft) {
             <div class="reviews-grid">
                 <div class="review-card-large" data-isbn="@Model.Isbn">
@@ -76,6 +82,10 @@
                             <span class="heart-icon"></span>
                             <span class="like-count">0</span>
                         </button>
+                        <div id="similar-reviews-section" style="display:none;">
+                            <h3 class="similar-reviews-title">このレビューに似たレビュー</h3>
+                            <div class="horizontal-scroll similar-reviews-scroll" id="similar-reviews-list"></div>
+                        </div>
                         @if (!Scripts.Login.AccountDataGetter.IsAuthenticated()) {
                             <script>
                                 window.isUserAuthenticated = false;

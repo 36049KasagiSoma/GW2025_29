@@ -24,7 +24,7 @@ namespace BookNote.Scripts.SelectBookReview {
                 SELECT R.REVIEW_ID, R.USER_ID, U.USER_NAME,U.USER_PUBLICID, R.ISBN,
                        B.TITLE, B.AUTHOR, B.PUBLISHER,
                        R.RATING, R.ISSPOILERS, R.POSTINGTIME,
-                       R.TITLE AS REVIEW_TITLE, R.REVIEW
+                       R.TITLE AS REVIEW_TITLE, R.REVIEW, R.EMBEDDING
                 FROM BOOKREVIEW R
                 JOIN USERS U ON R.USER_ID = U.USER_ID
                 JOIN BOOKS B ON R.ISBN = B.ISBN

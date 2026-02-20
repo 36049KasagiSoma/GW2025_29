@@ -60,7 +60,7 @@ namespace BookNote.Pages {
                         rc.PostingTime,
                         u.User_Name,
                         u.User_PublicId,
-                        ROW_NUMBER() OVER (ORDER BY rc.PostingTime ASC) AS rn
+                        ROW_NUMBER() OVER (ORDER BY rc.PostingTime DESC) AS rn
                     FROM ReviewComment rc
                     INNER JOIN Users u ON rc.User_Id = u.User_Id
                     WHERE rc.Review_Id = :ReviewId

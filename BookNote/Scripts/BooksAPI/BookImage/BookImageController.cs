@@ -68,25 +68,32 @@ namespace BookNote.Scripts.BooksAPI.BookImage {
         /// <returns>画像Byte配列 存在しない場合は NULL</returns>
         public async Task<byte[]?> GetBookImageData(string isbn) {
             if (!isbn.StartsWith("978")) {
-                return null;
+                return await GetNoImage();
             }
             bool isExist = await ExistsInS3Async(isbn);
 
             if (!isExist) {
                 Console.WriteLine($"{isbn}:キャッシュヒットしなかったためAPIから取得");
                 var image = await GetBookImage(isbn);
-                if (image != null)
+                if (image != null) {
                     await PutObjectAsync(isbn, image);
-                return image;
+                    return image;
+                }
+                return await GetNoImage();
             }
-
 
             var getImage = await _clientFetcher.GetCoverImageAsync(isbn);
             if (getImage != null) {
                 return getImage;
             }
 
-            return null;
+            return await GetNoImage();
+        }
+
+        private async Task<byte[]?> GetNoImage() {
+            var path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "image", "noimage_cover.png");
+            if (!File.Exists(path)) return null;
+            return await File.ReadAllBytesAsync(path);
         }
 
         private async Task<byte[]?> GetBookImage(string isbn) {

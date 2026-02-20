@@ -62,9 +62,6 @@ namespace BookNote.Controllers {
                     }
                 }
 
-                // 最新順にソート（ROWNUM後に逆順にする）
-                comments.Reverse();
-
                 return Ok(comments);
             } catch (Exception ex) {
                 return StatusCode(500, new { error = ex.Message });

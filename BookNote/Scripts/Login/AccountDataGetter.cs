@@ -35,7 +35,7 @@ namespace BookNote.Scripts.Login {
         /// <summary>
         /// ユーザー名を取得
         /// </summary>
-        public static string GetUserName() {
+        private static string GetUserName() {
             var httpContext = _staticHttpContextAccessor?.HttpContext;
             if (httpContext?.User?.Identity?.IsAuthenticated != true) {
                 return null;
@@ -77,13 +77,13 @@ namespace BookNote.Scripts.Login {
         public static async Task<string?> GetDbUserPublicIdAsync(OracleConnection conn) {
 
             // まずClaimから取得を試みる
-            var httpContext = _staticHttpContextAccessor?.HttpContext;
-            if (httpContext?.User?.Identity?.IsAuthenticated == true) {
-                var cachedValue = httpContext.User.FindFirst("user_public_id")?.Value;
-                if (!string.IsNullOrEmpty(cachedValue)) {
-                    return cachedValue;
-                }
-            }
+            //var httpContext = _staticHttpContextAccessor?.HttpContext;
+            //if (httpContext?.User?.Identity?.IsAuthenticated == true) {
+            //    var cachedValue = httpContext.User.FindFirst("user_public_id")?.Value;
+            //    if (!string.IsNullOrEmpty(cachedValue)) {
+            //        return cachedValue;
+            //    }
+            //}
 
             // ClaimになければDBから取得
             var id = GetUserId();

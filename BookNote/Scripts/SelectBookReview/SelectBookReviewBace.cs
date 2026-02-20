@@ -34,6 +34,7 @@ namespace BookNote.Scripts.SelectBookReview {
                     PostingTime = reader.GetDateTime("POSTINGTIME"),
                     Title = reader.IsDBNull("REVIEW_TITLE") ? null : reader.GetString("REVIEW_TITLE"),
                     Review = reader.IsDBNull("REVIEW") ? null : reader.GetString("REVIEW"),
+                    Embedding = reader.IsDBNull("EMBEDDING") ? null : reader.GetString("EMBEDDING"),
                     User = new User {
                         UserId = reader.GetString("USER_ID").Trim(),
                         UserPublicId = reader.GetString(reader.GetOrdinal("USER_PUBLICID")).Trim(),

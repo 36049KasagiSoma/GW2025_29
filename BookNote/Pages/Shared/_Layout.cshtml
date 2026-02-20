@@ -16,6 +16,7 @@
     <div class="drawer">
         <div class="drawer-content">
             <a href="~/Reviews" class="drawer-item">レビュー一覧</a>
+            <a href="~/Users" class="drawer-item">ユーザーを見つける</a>
             @* <div class="drawer-item">あなたにオススメ</div> *@
             <a href="~/review_create/SelectType" class="drawer-item">レビューを書く</a>
             <div class="drawer-spacer"></div>
@@ -34,14 +35,14 @@
             <img src="~/image/Logo_home.png" alt="BookNote" class="logo logo-fixed">
         </a>
         @using BookNote.Scripts.Login
+        @inject Oracle.ManagedDataAccess.Client.OracleConnection _conn
         @{
-            // セッションとクッキー認証の両方をチェック
             var isSessionAuth = !string.IsNullOrEmpty(Context.Session.GetString("AccessToken"));
             var isCookieAuth = AccountDataGetter.IsAuthenticated();
-            var userName = Context.Session.GetString("Name")
-            ?? Context.Session.GetString("Username")
-            ?? AccountDataGetter.GetUserName()
-            ?? "ユーザー";
+            string userName = "ユーザー";
+            if (isSessionAuth || isCookieAuth) {
+                userName = await AccountDataGetter.GetDbUserNameAsync(_conn) ?? "ユーザー";
+            }
         }
 
         @if (isSessionAuth || isCookieAuth) {

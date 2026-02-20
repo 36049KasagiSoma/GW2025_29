@@ -57,7 +57,7 @@
                 @if (Model.RecentReviews != null && Model.RecentReviews.Any()) {
                     <div class="reviews-grid">
                         @foreach (var review in Model.RecentReviews) {
-                            <div class="review-card-large" @Model.UserPublicId data-isbn="@review.Isbn">
+                            <div class="review-card-large" data-review-id="@review.ReviewId" data-isbn="@review.Isbn">
                                 <div class="book-cover-large">
                                     <span>NoImage</span>
                                 </div>
@@ -76,8 +76,8 @@
                                         @Scripts.StaticEvent.TrimReview(review.Review, 80)
                                     </div>
                                     <div class="reviewer-info">
-                                        <div class="reviewer-icon" data-public-id="@Model.UserPublicId"></div>
-                                        <span class="reviewer-name">@Model.UserName</span>
+                                        <div class="reviewer-icon" data-public-id="@review.User.UserPublicId"></div>
+                                        <span class="reviewer-name">@review.User.UserName</span>
                                         <span class="post-time">@review.PostingTime</span>
                                     </div>
                                 </div>
@@ -118,8 +118,8 @@
                                             @Scripts.StaticEvent.TrimReview(review.Review, 80)
                                         </div>
                                         <div class="reviewer-info">
-                                            <div class="reviewer-icon" data-public-id="@Model.UserPublicId"></div>
-                                            <span class="reviewer-name">@Model.UserName</span>
+                                            <div class="reviewer-icon" data-public-id="@review.User.UserPublicId"></div>
+                                            <span class="reviewer-name">@review.User.UserName</span>
                                             <span class="post-time">@review.PostingTime</span>
                                         </div>
                                     </div>

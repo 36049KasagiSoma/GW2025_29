@@ -13,7 +13,7 @@ namespace BookNote.Scripts.SelectBookReview {
         }
         public async Task<List<BookReview>> GetReview(int limit) {
             const string sql = @"
-                SELECT R.REVIEW_ID, R.USER_ID, U.USER_NAME, U.USER_PUBLICID, R.ISBN, B.TITLE, B.AUTHOR, B.PUBLISHER, R.RATING, R.ISSPOILERS, R.POSTINGTIME, R.TITLE AS REVIEW_TITLE, R.REVIEW
+                SELECT R.REVIEW_ID, R.USER_ID, U.USER_NAME, U.USER_PUBLICID, R.ISBN, B.TITLE, B.AUTHOR, B.PUBLISHER, R.RATING, R.ISSPOILERS, R.POSTINGTIME, R.TITLE AS REVIEW_TITLE, R.REVIEW, R.EMBEDDING
                 FROM BOOKREVIEW R, USERS U, BOOKS B
                 WHERE R.USER_ID = U.USER_ID 
                   AND R.ISBN = B.ISBN 

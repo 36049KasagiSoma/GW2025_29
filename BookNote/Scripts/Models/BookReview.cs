@@ -39,6 +39,9 @@ namespace BookNote.Scripts.Models {
         [Column("REVIEW")]
         public string? Review { get; set; }
 
+        [Column("EMBEDDING")]
+        public string? Embedding { get; set; }
+
         /* ---  オプション --- */
 
         [ForeignKey(nameof(UserId))]

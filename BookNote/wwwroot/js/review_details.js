@@ -71,7 +71,6 @@ async function toggleLike(reviewId, button) {
     }
 }
 
-// ボタンの表示更新
 function updateLikeButton(button, isLiked, count, animate = false) {
     const heartIcon = button.querySelector('.heart-icon');
     const likeCount = button.querySelector('.like-count');
@@ -82,12 +81,131 @@ function updateLikeButton(button, isLiked, count, animate = false) {
     }
     if (animate && isLiked) {
         heartIcon.classList.add('animate');
-        setTimeout(() => {
-            heartIcon.classList.remove('animate');
-        }, 300);
+        setTimeout(() => heartIcon.classList.remove('animate'), 300);
+
+        // いいね時に類似レビューを表示
+        const reviewId = button.getAttribute('data-review-id');
+        loadSimilarReviews(reviewId);
     }
     likeCount.textContent = count;
 }
+
+// 類似レビュー読み込み
+async function loadSimilarReviews(reviewId) {
+    try {
+        const response = await fetch(`/ReviewDetails/${reviewId}?handler=SimilarReviews`);
+        if (!response.ok) return;
+        const reviews = await response.json();
+        if (!reviews.length) return;
+
+        const section = document.getElementById('similar-reviews-section');
+        const list = document.getElementById('similar-reviews-list');
+        if (!section || !list) return;
+
+        list.innerHTML = '';
+        reviews.forEach(r => {
+            const card = document.createElement('div');
+            card.className = 'review-card-small';
+            card.setAttribute('data-review-id', r.reviewId);
+            card.setAttribute('data-isbn', r.isbn);
+
+            card.innerHTML = `
+                <div class="book-cover-small"></div>
+                <div class="review-content-small">
+                    <div>
+                        <div class="review-title">${escapeHtml((r.reviewTitle ?? '無題').substring(0, 15))}</div>
+                        <div class="book-title">${escapeHtml(r.bookTitle ?? '')}</div>
+                    </div>
+                    <div>
+                        <div class="reviewer-info">
+                            <div class="reviewer-icon" data-public-id="${escapeHtml(r.userPublicId ?? '')}"></div>
+                            <span class="reviewer-name">${escapeHtml(r.userName ?? '')}</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            list.appendChild(card);
+        });
+
+        // 書影をReviewDetailsハンドラーから取得（load_image.jsのURLを上書き）
+        const bookCoverEls = list.querySelectorAll('.book-cover-small');
+        bookCoverEls.forEach(async (bookCover) => {
+            const card = bookCover.closest('.review-card-small');
+            const isbn = card.getAttribute('data-isbn');
+            if (!isbn) return;
+            insertLoadingGif(bookCover);
+            try {
+                const response = await fetch(`/Index?handler=Image&isbn=${encodeURIComponent(isbn)}`);
+                if (!response.ok) { bookCover.innerHTML = ''; return; }
+                const blob = await response.blob();
+                bookCover.innerHTML = `<img src="${URL.createObjectURL(blob)}" alt="書影" draggable="false"/>`;
+            } catch {
+                bookCover.innerHTML = '';
+            }
+        });
+
+        if (typeof loadUserIcons === 'function') {
+            loadUserIcons('#similar-reviews-list');
+        }
+
+        // ドラッグスクロール処理（home.jsと同等）
+        initDragScroll(list);
+
+        section.style.display = 'block';
+        section.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    } catch (e) {
+        console.error('類似レビュー読み込みエラー:', e);
+    }
+}
+
+function initDragScroll(container) {
+    let isDown = false;
+    let startX;
+    let scrollLeft;
+    let hasMoved = false;
+    const dragThreshold = 5;
+
+    container.addEventListener('mousedown', (e) => {
+        isDown = true;
+        hasMoved = false;
+        startX = e.pageX - container.offsetLeft;
+        scrollLeft = container.scrollLeft;
+    });
+
+    container.addEventListener('mouseleave', () => {
+        isDown = false;
+        container.classList.remove('dragging');
+    });
+
+    container.addEventListener('mouseup', () => {
+        isDown = false;
+        container.classList.remove('dragging');
+    });
+
+    container.addEventListener('mousemove', (e) => {
+        if (!isDown) return;
+        const x = e.pageX - container.offsetLeft;
+        const distance = Math.abs(x - startX);
+        if (distance > dragThreshold) {
+            e.preventDefault();
+            hasMoved = true;
+            container.classList.add('dragging');
+            container.scrollLeft = scrollLeft - (x - startX) * 2;
+        }
+    });
+
+    // カードクリック（ドラッグ中は無効）
+    container.querySelectorAll('.review-card-small').forEach(card => {
+        card.addEventListener('click', () => {
+            if (!hasMoved) {
+                window.location.href = `/ReviewDetails/${card.getAttribute('data-review-id')}`;
+            }
+        });
+    });
+}
+
+
 
 // ========== コメント機能 ==========
 
@@ -326,26 +444,6 @@ function loadUserIcon(iconElement, publicId) {
 
     // load_image.jsの関数を活用する場合
     iconElement.setAttribute('data-public-id', publicId);
-
-    // または直接実装
-    //fetch(`/ReviewDetails/OnGetUserIcon?publicId=${publicId}`)
-    //    .then(response => {
-    //        if (!response.ok) throw new Error('Failed to load icon');
-    //        return response.blob();
-    //    })
-    //    .then(blob => {
-    //        const imageUrl = URL.createObjectURL(blob);
-    //        const img = document.createElement('img');
-    //        img.src = imageUrl;
-    //        img.alt = 'User Icon';
-    //        img.setAttribute('draggable', 'false');
-    //        iconElement.innerHTML = '';
-    //        iconElement.appendChild(img);
-    //    })
-    //    .catch(error => {
-    //        console.error('Icon load error:', error);
-    //        iconElement.textContent = publicId.substring(0, 2).toUpperCase();
-    //    });
 }
 
 // 日時フォーマット（既存のStaticEvent.FormatPostingTimeと同等の処理）

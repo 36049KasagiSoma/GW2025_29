@@ -885,6 +885,18 @@
     animation: slideDown 0.3s ease;
 }
 
+#similar-reviews-section .review-title {
+    font-size: 12px;
+}
+
+#similar-reviews-section .book-title {
+    font-size: 11px;
+}
+
+#similar-reviews-section .reviewer-name {
+    font-size: 11px;
+}
+
 @keyframes slideDown {
     from {
         opacity: 0;
@@ -989,4 +1001,37 @@
     .delete-modal-actions {
         flex-direction: column;
     }
+}
+
+/* ===========================
+   戻るボタン
+   =========================== */
+.back-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    margin-bottom: 20px;
+    padding: 8px 16px 8px 10px;
+    background: transparent;
+    border: 2px solid #D2B48C;
+    border-radius: 999px;
+    color: #8B6F47;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    line-height: 1;
+}
+
+    .back-button:hover {
+        background: #F5E6D3;
+        border-color: #A0826D;
+        color: #654321;
+        transform: translateX(-2px);
+    }
+
+.back-icon {
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
 }

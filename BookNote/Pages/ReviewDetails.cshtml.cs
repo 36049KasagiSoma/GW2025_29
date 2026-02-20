@@ -2,6 +2,7 @@ using BookNote.Scripts;
 using BookNote.Scripts.ActivityTrace;
 using BookNote.Scripts.BooksAPI.BookImage;
 using BookNote.Scripts.Login;
+using BookNote.Scripts.SelectBookReview;
 using BookNote.Scripts.UserControl;
 using Ganss.Xss;
 using Microsoft.AspNetCore.Mvc;
@@ -132,6 +133,25 @@ namespace BookNote.Pages {
 
 
         public class ReviewData { }
+
+        public async Task<IActionResult> OnGetSimilarReviewsAsync(int reviewId) {
+            if (_conn.State != ConnectionState.Open)
+                await _conn.OpenAsync();
+            var myId = AccountDataGetter.IsAuthenticated() ? AccountDataGetter.GetUserId() : null;
+            var selector = new SelectSimilarReview(_conn, myId);
+            var reviews = await selector.GetReview(6, reviewId);
+            var result = reviews.Select(r => new {
+                reviewId = r.ReviewId,
+                reviewTitle = r.Title,
+                bookTitle = r.Book?.Title,
+                userName = r.User?.UserName,
+                userPublicId = r.User?.UserPublicId,
+                rating = r.Rating,
+                isbn = r.Isbn,
+                postingTime = r.PostingTime
+            });
+            return new JsonResult(result);
+        }
 
         public async Task<IActionResult> OnGetImageAsync(string isbn) {
             byte[]? imageData = await _bookImageController.GetBookImageData(isbn);

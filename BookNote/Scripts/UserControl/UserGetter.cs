@@ -36,7 +36,7 @@ namespace BookNote.Scripts.UserControl {
                         UserProfile = R_Profile,
                     };
                     user.BookReviews = await GetUserReviews(UserPublicId);  // ← ここを削除
-                } catch (Exception ex) {
+                } catch (Exception) {
                     throw;
                 }
 
@@ -77,7 +77,7 @@ namespace BookNote.Scripts.UserControl {
                         UserName = R_Name,
                         UserProfile = R_Profile,
                     };
-                } catch (Exception ex) {
+                } catch (Exception) {
                     throw;
                 }
             }
@@ -122,7 +122,7 @@ namespace BookNote.Scripts.UserControl {
                         },
                     });
                 }
-            }catch(Exception ex) {
+            }catch(Exception) {
                 throw;            }
             return list;
         }
@@ -131,10 +131,14 @@ namespace BookNote.Scripts.UserControl {
             if (_connection.State != ConnectionState.Open)
                 await _connection.OpenAsync();
             const string sql = @"
-                SELECT R.REVIEW_ID, R.USER_ID, U.USER_NAME, R.ISBN, B.TITLE, B.AUTHOR,B.PUBLISHER, R.RATING, R.ISSPOILERS, R.POSTINGTIME, R.TITLE AS REVIEW_TITLE, R.REVIEW
-                FROM BOOKREVIEW R, USERS U, BOOKS B, GoodReview G
-                WHERE R.USER_ID = U.USER_ID AND R.ISBN = B.ISBN AND G.USER_ID = R.USER_ID AND R.REVIEW_ID = G.REVIEW_ID AND R.POSTINGTIME IS NOT NULL AND U.USER_PUBLICID = :UserPublicId
-                ORDER BY POSTINGTIME DESC";
+                SELECT R.REVIEW_ID, R.USER_ID, U.USER_NAME, U.USER_PUBLICID, R.ISBN, B.TITLE, B.AUTHOR, B.PUBLISHER, R.RATING, R.ISSPOILERS, R.POSTINGTIME, R.TITLE AS REVIEW_TITLE, R.REVIEW
+                FROM BOOKREVIEW R
+                JOIN USERS U ON R.USER_ID = U.USER_ID
+                JOIN BOOKS B ON R.ISBN = B.ISBN
+                JOIN GoodReview G ON G.REVIEW_ID = R.REVIEW_ID
+                JOIN USERS GU ON G.USER_ID = GU.USER_ID
+                WHERE R.POSTINGTIME IS NOT NULL AND GU.USER_PUBLICID = :UserPublicId
+                ORDER BY R.POSTINGTIME DESC";
             try {
                 using var cmd = new OracleCommand(sql, _connection);
                 cmd.Parameters.Add(":UserPublicId", OracleDbType.Char).Value = UserPublicId;
@@ -152,6 +156,7 @@ namespace BookNote.Scripts.UserControl {
                         User = new User() {
                             UserId = reader.GetString(reader.GetOrdinal("USER_ID")).Trim(),
                             UserName = reader.GetString(reader.GetOrdinal("USER_NAME")).Trim(),
+                            UserPublicId = reader.GetString(reader.GetOrdinal("USER_PUBLICID")).Trim(), // 追加
                         },
                         Book = new Book() {
                             Title = reader.GetString(reader.GetOrdinal("TITLE")).Trim(),
@@ -160,7 +165,7 @@ namespace BookNote.Scripts.UserControl {
                         },
                     });
                 }
-            } catch (Exception ex) {
+            } catch (Exception) {
                 throw;
             }
             return list;
