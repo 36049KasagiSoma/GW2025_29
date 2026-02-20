@@ -13,6 +13,8 @@ namespace BookNote.Pages {
 
         public LoginModel(IConfiguration configuration) {
             _configuration = configuration;
+
+
         }
 
         public IActionResult OnGet(string returnUrl = null) {

@@ -153,7 +153,12 @@ async function loadSimilarReviews(reviewId) {
         initDragScroll(list);
 
         section.style.display = 'block';
-        section.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+                section.classList.add('visible');
+                section.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            });
+        });
     } catch (e) {
         console.error('類似レビュー読み込みエラー:', e);
     }

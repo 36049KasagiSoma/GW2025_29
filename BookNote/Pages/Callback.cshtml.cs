@@ -2,8 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.Text.Json;
 
-namespace BookNote.Pages
-{
+namespace BookNote.Pages {
     public class CallbackModel : PageModel {
         private readonly IConfiguration _configuration;
         private readonly HttpClient _httpClient;
@@ -20,8 +19,8 @@ namespace BookNote.Pages
 
             try {
                 var cognitoDomain = _configuration["BookNoteKeys:AWS:Domain"];
-                var clientId = _configuration["BookNoteKeys:AWS:ClientId"];
-                var callbackUrl = _configuration["BookNoteKeys:AWS:CallbackUrl"];
+                var clientId = _configuration["BookNoteKeys:AWS:ClientId"] ?? "";
+                var callbackUrl = _configuration["BookNoteKeys:AWS:CallbackUrl"] ?? "";
 
                 // 認可コードをトークンに交換
                 var tokenUrl = $"https://{cognitoDomain}/oauth2/token";
@@ -42,17 +41,18 @@ namespace BookNote.Pages
 
                 var tokenResponse = JsonSerializer.Deserialize<TokenResponse>(responseContent);
 
-                // セッションにトークンを保存
-                HttpContext.Session.SetString("AccessToken", tokenResponse.access_token);
-                HttpContext.Session.SetString("IdToken", tokenResponse.id_token);
-                HttpContext.Session.SetString("RefreshToken", tokenResponse.refresh_token);
-
-                // ユーザー情報を取得してセッションに保存
-                var userInfo = await GetUserInfoAsync(tokenResponse.access_token);
-                if (userInfo != null) {
-                    HttpContext.Session.SetString("Username", userInfo.username ?? userInfo.email ?? "");
-                    if (!string.IsNullOrEmpty(userInfo.name)) {
-                        HttpContext.Session.SetString("Name", userInfo.name);
+                if (tokenResponse != null) {
+                    // セッションにトークンを保存
+                    HttpContext.Session.SetString("AccessToken", tokenResponse.access_token);
+                    HttpContext.Session.SetString("IdToken", tokenResponse.id_token);
+                    HttpContext.Session.SetString("RefreshToken", tokenResponse.refresh_token);
+                    // ユーザー情報を取得してセッションに保存
+                    var userInfo = await GetUserInfoAsync(tokenResponse.access_token);
+                    if (userInfo != null) {
+                        HttpContext.Session.SetString("Username", userInfo.username ?? userInfo.email ?? "");
+                        if (!string.IsNullOrEmpty(userInfo.name)) {
+                            HttpContext.Session.SetString("Name", userInfo.name);
+                        }
                     }
                 }
 
@@ -68,7 +68,7 @@ namespace BookNote.Pages
             }
         }
 
-        private async Task<UserInfo> GetUserInfoAsync(string accessToken) {
+        private async Task<UserInfo?> GetUserInfoAsync(string accessToken) {
             try {
                 var cognitoDomain = _configuration["BookNoteKeys:AWS:Domain"];
                 var userInfoUrl = $"https://{cognitoDomain}/oauth2/userInfo";
@@ -87,18 +87,18 @@ namespace BookNote.Pages
         }
 
         private class TokenResponse {
-            public string access_token { get; set; }
-            public string id_token { get; set; }
-            public string refresh_token { get; set; }
+            public string access_token { get; set; } = string.Empty;
+            public string id_token { get; set; } = string.Empty;
+            public string refresh_token { get; set; } = string.Empty;
             public int expires_in { get; set; }
-            public string token_type { get; set; }
+            public string token_type { get; set; } = string.Empty;
         }
 
         private class UserInfo {
-            public string sub { get; set; }
-            public string email { get; set; }
-            public string username { get; set; }
-            public string name { get; set; }
+            public string sub { get; set; } = string.Empty;
+            public string email { get; set; } = string.Empty;
+            public string username { get; set; } = string.Empty;
+            public string name { get; set; } = string.Empty;
         }
     }
 }

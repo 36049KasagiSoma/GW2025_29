@@ -39,10 +39,10 @@ namespace BookNote.Pages {
                 LatestReviews.AddRange(await new LatestBook(_conn, myid).GetReview(20));
                 PopularReviews.AddRange(await new PopularityBook(_conn, myid).GetReview(20));
                 if (AccountDataGetter.IsAuthenticated() && myid != null) {
-                    MyReviews.AddRange(await new MyBookReview(_conn).GetReview(myid, 20));
+                    MyReviews.AddRange(await new MyBookReview(_conn, myid).GetReview(20));
                 }
                 if (AccountDataGetter.IsAuthenticated()) {
-                    FollowingReviews.AddRange(await new FollowingUserBook(_conn).GetReview(AccountDataGetter.GetUserId()));
+                    FollowingReviews.AddRange(await new FollowingUserBook(_conn, AccountDataGetter.GetUserId()).GetReview());
                 }
             } catch (Exception ex) {
                 _logger.LogInformation(ex, "オススメ取得エラー");
