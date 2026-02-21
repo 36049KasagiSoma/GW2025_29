@@ -1,4 +1,5 @@
 ﻿using BookNote.Scripts;
+using BookNote.Scripts.ActivityTrace;
 using BookNote.Scripts.Login;
 using Microsoft.AspNetCore.Mvc;
 using Oracle.ManagedDataAccess.Client;
@@ -87,6 +88,7 @@ namespace BookNote.Controllers {
                             deleteCmd.Parameters.Add(":userId", OracleDbType.Char).Value = userId;
                             await deleteCmd.ExecuteNonQueryAsync();
                         }
+                        ActivityTracer.LogActivity(ActivityType.UN_GOOD_THE_REVIEW, userId, reviewId.ToString());
                         isLiked = false;
                     } else {
                         using (var insertCmd = new OracleCommand(
@@ -96,6 +98,7 @@ namespace BookNote.Controllers {
                             insertCmd.Parameters.Add(":reviewId", OracleDbType.Int32).Value = reviewId;
                             await insertCmd.ExecuteNonQueryAsync();
                         }
+                        ActivityTracer.LogActivity(ActivityType.GOOD_THE_REVIEW, userId, reviewId.ToString());
                         isLiked = true;
                     }
                 }

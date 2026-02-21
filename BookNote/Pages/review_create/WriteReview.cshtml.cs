@@ -1,4 +1,7 @@
-﻿using BookNote.Scripts;
+﻿using Amazon;
+using Amazon.BedrockRuntime;
+using Amazon.BedrockRuntime.Model;
+using BookNote.Scripts;
 using BookNote.Scripts.ActivityTrace;
 using BookNote.Scripts.BooksAPI.Moderation;
 using BookNote.Scripts.Login;
@@ -9,6 +12,7 @@ using Oracle.ManagedDataAccess.Client;
 using System.ComponentModel.DataAnnotations;
 using System.Data;
 using System.Text;
+using System.Text.Json;
 
 public class WriteReviewModel : PageModel {
     private readonly ILogger<WriteReviewModel> _logger;
@@ -71,7 +75,7 @@ public class WriteReviewModel : PageModel {
             var userId = AccountDataGetter.GetUserId();
 
             var sql = @"SELECT R.REVIEW_ID, R.USER_ID, R.ISBN, B.TITLE, B.AUTHOR, B.PUBLISHER,
-                               R.RATING, R.ISSPOILERS, R.TITLE AS REVIEW_TITLE, R.REVIEW, R.POSTINGTIME
+                               R.RATING, R.ISSPOILERS, R.TITLE AS REVIEW_TITLE, R.REVIEW, R.POSTINGTIME, R.STATUS_ID
                         FROM BOOKREVIEW R
                         LEFT JOIN BOOKS B ON R.ISBN = B.ISBN
                         WHERE R.REVIEW_ID = :ReviewId";
@@ -87,8 +91,7 @@ public class WriteReviewModel : PageModel {
                             return;
                         }
 
-                        // PostingTimeがnullでない場合は公開済み
-                        IsPublished = !reader.IsDBNull(reader.GetOrdinal("POSTINGTIME"));
+                        IsPublished = !reader.IsDBNull(reader.GetOrdinal("STATUS_ID")) && Convert.ToInt32(reader["STATUS_ID"]) == 2;
 
                         var isbn = reader.GetString(reader.GetOrdinal("ISBN")).Trim();
                         // 仮のISBNの場合は書籍情報をすべて空にする
@@ -176,6 +179,57 @@ public class WriteReviewModel : PageModel {
         }
     }
 
+    /// <summary>
+    /// タイトルとHTML本文からプレーンテキストを成形し、Bedrockでベクトル化してJSON文字列を返す
+    /// </summary>
+    private async Task<string?> GenerateEmbeddingJsonAsync(string? title, string? contentHtml) {
+        try {
+            var plainText = StaticEvent.ToPlainText(contentHtml) ?? "";
+            var inputText = string.IsNullOrWhiteSpace(title)
+                ? plainText
+                : $"{title}\n{plainText}";
+            inputText = inputText.Trim();
+
+            if (string.IsNullOrEmpty(inputText)) return null;
+
+            // Titan Embed Text v2 の入力上限は8192トークン（約8000文字を目安に切り詰め）
+            if (inputText.Length > 8000) {
+                inputText = inputText.Substring(0, 8000);
+            }
+
+            using var bedrockClient = new AmazonBedrockRuntimeClient(RegionEndpoint.APNortheast1);
+
+            var requestBody = JsonSerializer.Serialize(new { inputText });
+            using var requestStream = new MemoryStream(System.Text.Encoding.UTF8.GetBytes(requestBody));
+
+            var request = new InvokeModelRequest {
+                ModelId = "amazon.titan-embed-text-v2:0",
+                ContentType = "application/json",
+                Accept = "application/json",
+                Body = requestStream
+            };
+
+            var response = await bedrockClient.InvokeModelAsync(request);
+
+            using var responseReader = new StreamReader(response.Body);
+            var responseJson = await responseReader.ReadToEndAsync();
+
+            using var doc = JsonDocument.Parse(responseJson);
+            var embeddingArray = doc.RootElement.GetProperty("embedding");
+
+            // float[] としてJSONシリアライズして返す
+            var values = embeddingArray.EnumerateArray()
+                .Select(e => e.GetSingle())
+                .ToArray();
+
+            return JsonSerializer.Serialize(values);
+
+        } catch (Exception ex) {
+            _logger.LogError(ex, "Embedding生成エラー");
+            return null;
+        }
+    }
+
     private async Task<bool> SaveReviewAsync(bool isDraft) {
         if (!ModelState.IsValid || ReviewInput == null) {
             return false;
@@ -229,8 +283,10 @@ public class WriteReviewModel : PageModel {
                            WHERE Review_Id = :ReviewId";
                 } else {
                     sql = @"UPDATE BookReview 
-                           SET ISBN = :ISBN, Rating = :Rating, ISSPOILERS = :IsSpoilers, Title = :Title, Review = :Review, PostingTime = SYSTIMESTAMP AT TIME ZONE 'Asia/Tokyo'
-                           WHERE Review_Id = :ReviewId";
+                               SET ISBN = :ISBN, Rating = :Rating, ISSPOILERS = :IsSpoilers, Title = :Title, Review = :Review,
+                                   PostingTime = SYSTIMESTAMP AT TIME ZONE 'Asia/Tokyo', Embedding = :Embedding,
+                                   STATUS_ID = 2
+                               WHERE Review_Id = :ReviewId";
                 }
             } else {
                 // 新規レビューの作成
@@ -241,9 +297,9 @@ public class WriteReviewModel : PageModel {
                            (:UserId, :ISBN, :Rating, :IsSpoilers, :Title, :Review, NULL)";
                 } else {
                     sql = @"INSERT INTO BookReview 
-                               (USER_ID, ISBN, RATING, ISSPOILERS, TITLE, REVIEW, POSTINGTIME) 
+                               (USER_ID, ISBN, RATING, ISSPOILERS, TITLE, REVIEW, POSTINGTIME, EMBEDDING, STATUS_ID) 
                                VALUES 
-                               (:UserId, :ISBN, :Rating, :IsSpoilers, :Title, :Review, SYSTIMESTAMP AT TIME ZONE 'Asia/Tokyo')";
+                               (:UserId, :ISBN, :Rating, :IsSpoilers, :Title, :Review, SYSTIMESTAMP AT TIME ZONE 'Asia/Tokyo', :Embedding, 2)";
                 }
             }
 
@@ -266,6 +322,13 @@ public class WriteReviewModel : PageModel {
 
                 command.Parameters.Add(":Review", OracleDbType.Clob).Value =
                     string.IsNullOrEmpty(ReviewInput.ContentHtml) ? DBNull.Value : ReviewInput.ContentHtml;
+
+                // 投稿時のみEmbedding生成
+                if (!isDraft) {
+                    var embeddingJson = await GenerateEmbeddingJsonAsync(ReviewInput.Title, ReviewInput.ContentHtml);
+                    command.Parameters.Add(":Embedding", OracleDbType.Clob).Value =
+                        embeddingJson != null ? (object)embeddingJson : DBNull.Value;
+                }
 
                 if (ReviewId.HasValue) {
                     // UPDATE時もISBNパラメータを追加
@@ -437,11 +500,11 @@ public class WriteReviewModel : PageModel {
     private async Task<bool> CheckIfPublishedAsync(int reviewId) {
         try {
             if (_conn.State != ConnectionState.Open) await _conn.OpenAsync();
-            var sql = "SELECT POSTINGTIME FROM BOOKREVIEW WHERE REVIEW_ID = :ReviewId";
+            var sql = "SELECT STATUS_ID FROM BOOKREVIEW WHERE REVIEW_ID = :ReviewId";
             using var cmd = new OracleCommand(sql, _conn);
             cmd.Parameters.Add(":ReviewId", OracleDbType.Int32).Value = reviewId;
             var result = await cmd.ExecuteScalarAsync();
-            return result != null && result != DBNull.Value;
+            return result != null && result != DBNull.Value && Convert.ToInt32(result) == 2;
         } catch (Exception ex) {
             _logger.LogError(ex, "公開状態確認エラー");
             return false;

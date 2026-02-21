@@ -13,6 +13,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<PackageReference Include="AWSSDK.BedrockRuntime" Version="4.0.16" />
 		<PackageReference Include="AWSSDK.CloudFront" Version="4.0.12" />
 		<PackageReference Include="AWSSDK.CognitoIdentity" Version="4.0.2.15" />
 		<PackageReference Include="AWSSDK.CognitoIdentityProvider" Version="4.0.5.1" />

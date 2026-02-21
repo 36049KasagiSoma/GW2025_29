@@ -6,7 +6,7 @@ using System.Data;
 
 namespace BookNote.Scripts.SelectBookReview {
     public class RecommendedBook : SelectBookReviewBase {
-        public RecommendedBook(OracleConnection conn,string? myId) : base(conn, myId) {
+        public RecommendedBook(OracleConnection conn, string? myId) : base(conn, myId) {
         }
         public override async Task<List<BookReview>> GetReview() {
             return await GetReview(10);
@@ -18,7 +18,7 @@ namespace BookNote.Scripts.SelectBookReview {
             var ssr = new SelectSimilarReview(_conn, _myId);
 
             // 1. データの並列・一括取得
-            var reviews = await GetAllReviews();
+            var reviews = await GetAllReviews(30 * 5); //過去5ヶ月分のレビューを取得
             var viewedIdsList = await GetViewedReviewIds();
             var goodedIdsList = await GetGoodedReviewIds();
             var followedIdsList = await GetFollowedUsersReviewIds();
@@ -38,8 +38,14 @@ namespace BookNote.Scripts.SelectBookReview {
 
             var followedSsr = ssr.SortBySimilarity(reviews, followedIds.ToList(), limit);
 
+            var rtn = new List<BookReview>();
+
+            rtn.AddRange(InterleaveReviews(limit, viewSsr, goodSsr, followedSsr));
+            if(rtn.Count < limit) {
+                rtn.AddRange((await GetRecentShuffledReviews(limit)).ToList());
+            }
             // 4. ラウンドロビン方式で結合
-            return InterleaveReviews(limit, viewSsr, goodSsr, followedSsr);
+            return rtn;
         }
 
         ///　<summary> 複数のレビューリストをラウンドロビン方式で結合します。</summary>
@@ -61,7 +67,7 @@ namespace BookNote.Scripts.SelectBookReview {
         /// <summary>
         /// ユーザーが閲覧（View）したレビューのIdリストを返します。
         /// </summary>
-        private async Task<List<int>> GetViewedReviewIds() {
+        public async Task<List<int>> GetViewedReviewIds() {
             const string sql = @"
                 SELECT TO_NUMBER(A.TARGET_ID) AS REVIEW_ID
                 FROM USERACTIVITY A
@@ -76,13 +82,21 @@ namespace BookNote.Scripts.SelectBookReview {
         /// <summary>
         /// ユーザーがいいね（GoodTheReview）したレビューのIdリストを返します。
         /// </summary>
-        private async Task<List<int>> GetGoodedReviewIds() {
+        public async Task<List<int>> GetGoodedReviewIds() {
             const string sql = @"
                 SELECT TO_NUMBER(A.TARGET_ID) AS REVIEW_ID
                 FROM USERACTIVITY A
                 WHERE A.USER_ID = :userId
-                  AND A.ACTIVITY_ID = 4
                   AND A.TARGET_ID IS NOT NULL
+                  AND A.ACTIVITY_ID IN (4, 11)
+                  AND A.TIMESTAMP = (
+                      SELECT MAX(A2.TIMESTAMP)
+                      FROM USERACTIVITY A2
+                      WHERE A2.USER_ID = :userId
+                        AND A2.TARGET_ID = A.TARGET_ID
+                        AND A2.ACTIVITY_ID IN (4, 11)
+                  )
+                  AND A.ACTIVITY_ID = 4
                 ORDER BY A.TIMESTAMP ASC";
             return await FetchReviewIds(sql);
         }
@@ -91,19 +105,30 @@ namespace BookNote.Scripts.SelectBookReview {
         /// ユーザーがフォロー（FollowUser）したユーザーのレビューIdリストを返します。
         /// フォロー操作の時系列順（古い順）で、各フォローユーザーの公開レビューIdを返します。
         /// </summary>
-        private async Task<List<int>> GetFollowedUsersReviewIds() {
+        public async Task<List<int>> GetFollowedUsersReviewIds() {
             const string sql = @"
                 SELECT R.REVIEW_ID
-                FROM USERACTIVITY A
-                INNER JOIN BOOKREVIEW R ON R.USER_ID = A.TARGET_ID
+                FROM BOOKREVIEW R
                 INNER JOIN USERS U ON U.USER_ID = R.USER_ID
-                WHERE A.USER_ID = :userId
-                  AND A.ACTIVITY_ID = 5
-                  AND A.TARGET_ID IS NOT NULL
-                  AND R.POSTINGTIME IS NOT NULL
+                WHERE R.POSTINGTIME IS NOT NULL
                   AND R.STATUS_ID = 2
                   AND U.USER_STATUSID = 1
-                ORDER BY A.TIMESTAMP ASC, R.POSTINGTIME ASC";
+                  AND R.USER_ID IN (
+                      SELECT A.TARGET_ID
+                      FROM USERACTIVITY A
+                      WHERE A.USER_ID = :userId
+                        AND A.TARGET_ID IS NOT NULL
+                        AND A.ACTIVITY_ID IN (5, 12)
+                        AND A.TIMESTAMP = (
+                            SELECT MAX(A2.TIMESTAMP)
+                            FROM USERACTIVITY A2
+                            WHERE A2.USER_ID = :userId
+                              AND A2.TARGET_ID = A.TARGET_ID
+                              AND A2.ACTIVITY_ID IN (5, 12)
+                        )
+                        AND A.ACTIVITY_ID = 5
+                  )
+                ORDER BY R.POSTINGTIME ASC";
 
             return await FetchReviewIds(sql);
         }
@@ -125,26 +150,6 @@ namespace BookNote.Scripts.SelectBookReview {
             }
 
             return list;
-        }
-
-        /// <summary>
-        /// 未ログインユーザー向け：直近30日のレビューをランダムに取得します。
-        /// </summary>
-        private async Task<List<BookReview>> GetRecentShuffledReviews(int limit) {
-            // DBMS_RANDOM.VALUE を使うことで、Oracle 側で高速にシャッフルできます
-            string sql = $@"
-        {CommonSelectSql}
-        WHERE R.POSTINGTIME >= SYSTIMESTAMP - INTERVAL '30' DAY
-          AND {BlockFilterSql}
-        ORDER BY DBMS_RANDOM.VALUE
-        FETCH FIRST :limit ROWS ONLY";
-
-            using var cmd = new OracleCommand(sql, _conn);
-            cmd.BindByName = true;
-            cmd.Parameters.Add(":limit", OracleDbType.Int32).Value = limit;
-            AddLoginUserIdParam(cmd); // :loginUserId に null(DBNull) を渡す
-
-            return await GetListFromSql(cmd);
         }
     }
 }

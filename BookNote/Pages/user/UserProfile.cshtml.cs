@@ -1,4 +1,5 @@
 using BookNote.Scripts;
+using BookNote.Scripts.ActivityTrace;
 using BookNote.Scripts.Login;
 using BookNote.Scripts.Models;
 using BookNote.Scripts.SelectBookReview;
@@ -127,10 +128,12 @@ namespace BookNote.Pages.Users {
                 if (isFollowing) {
                     await UnfollowUser(loginUser.UserId, targetUser.UserId);
                     _logger?.LogInformation($"Unfollowed: {loginUser.UserId} -> {targetUser.UserId}");
+                    ActivityTracer.LogActivity(Scripts.ActivityTrace.ActivityType.UN_FOLLOW_USER, loginUser.UserId, targetUser.UserId);
                     return new JsonResult(new { success = true, isFollowing = false });
                 } else {
                     await FollowUser(loginUser.UserId, targetUser.UserId);
                     _logger?.LogInformation($"Followed: {loginUser.UserId} -> {targetUser.UserId}");
+                    ActivityTracer.LogActivity(Scripts.ActivityTrace.ActivityType.FOLLOW_USER, loginUser.UserId, targetUser.UserId);
                     return new JsonResult(new { success = true, isFollowing = true });
                 }
             } catch (Exception ex) {
@@ -166,11 +169,13 @@ namespace BookNote.Pages.Users {
                 if (isBlocking) {
                     await UnblockUser(loginUser.UserId, targetUser.UserId);
                     _logger?.LogInformation($"Unblocked: {loginUser.UserId} -> {targetUser.UserId}");
+                    ActivityTracer.LogActivity(Scripts.ActivityTrace.ActivityType.UN_BLOCK_USER, loginUser.UserId, targetUser.UserId);
                     return new JsonResult(new { success = true, isBlocking = false });
                 } else {
                     await BlockUser(loginUser.UserId, targetUser.UserId);
                     await UnfollowUser(loginUser.UserId, targetUser.UserId);
                     _logger?.LogInformation($"Blocked: {loginUser.UserId} -> {targetUser.UserId}");
+                    ActivityTracer.LogActivity(Scripts.ActivityTrace.ActivityType.BLOCK_USER, loginUser.UserId, targetUser.UserId);
                     return new JsonResult(new { success = true, isBlocking = true });
                 }
             } catch (Exception ex) {

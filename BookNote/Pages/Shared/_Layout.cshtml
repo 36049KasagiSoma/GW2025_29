@@ -1,79 +1,81 @@
 ﻿<!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - BookNote</title>
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/BookNote.styles.css" asp-append-version="true" />
-    <link rel="icon" type="image/png" href="~/image/Site_icon.png" />
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>@ViewData["Title"] - BookNote</title>
+	<link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+	<link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+	<link rel="stylesheet" href="~/BookNote.styles.css" asp-append-version="true" />
+	<link rel="icon" type="image/png" href="~/image/Site_icon.png" />
 </head>
 <body>
-    <!-- オーバーレイ -->
-    <div class="overlay" onclick="toggleDrawer()"></div>
-    <!-- ナビゲーションドロワー -->
-    <div class="drawer">
-        <div class="drawer-content">
-            <a href="~/Reviews" class="drawer-item">レビュー一覧</a>
-            <a href="~/Users" class="drawer-item">ユーザーを見つける</a>
-            @* <div class="drawer-item">あなたにオススメ</div> *@
-            <a href="~/review_create/SelectType" class="drawer-item">レビューを書く</a>
-            <div class="drawer-spacer"></div>
-            <a href="~/Policy" class="drawer-item">About・Policy</a>
-        </div>
-    </div>
-    <!-- ハンバーガーメニュー -->
-    <div class="hamburger" onclick="toggleDrawer()">
-        <span></span>
-        <span></span>
-        <span></span>
-    </div>
-    <!-- アップバー -->
-    <div class="appbar appbar-fixed">
-        <a href="/" class="logo-link logo-link-fixed">
-            <img src="~/image/Logo_home.png" alt="BookNote" class="logo logo-fixed">
-        </a>
-        @using BookNote.Scripts.Login
-        @inject Oracle.ManagedDataAccess.Client.OracleConnection _conn
-        @{
-            var isSessionAuth = !string.IsNullOrEmpty(Context.Session.GetString("AccessToken"));
-            var isCookieAuth = AccountDataGetter.IsAuthenticated();
-            string userName = "ユーザー";
-            if (isSessionAuth || isCookieAuth) {
-                userName = await AccountDataGetter.GetDbUserNameAsync(_conn) ?? "ユーザー";
-            }
-        }
+	<!-- オーバーレイ -->
+	<div class="overlay" onclick="toggleDrawer()"></div>
+	<!-- ナビゲーションドロワー -->
+	<div class="drawer">
+		<div class="drawer-content">
+			<a href="~/review_create/SelectType" class="drawer-item">レビューを書く</a>
+			<a href="~/Reviews" class="drawer-item">レビュー一覧</a>
+			<a href="~/Users" class="drawer-item">ユーザーを見つける</a>
+			@if (AccountDataGetter.IsAuthenticated()) {
+				<a href="~/Recommend" class="drawer-item">あなたにオススメ</a>
+			}
+			<div class="drawer-spacer"></div>
+			<a href="~/Policy" class="drawer-item">About・Policy</a>
+		</div>
+	</div>
+	<!-- ハンバーガーメニュー -->
+	<div class="hamburger" onclick="toggleDrawer()">
+		<span></span>
+		<span></span>
+		<span></span>
+	</div>
+	<!-- アップバー -->
+	<div class="appbar appbar-fixed">
+		<a href="/" class="logo-link logo-link-fixed">
+			<img src="~/image/Logo_home.png" alt="BookNote" class="logo logo-fixed">
+		</a>
+		@using BookNote.Scripts.Login
+		@inject Oracle.ManagedDataAccess.Client.OracleConnection _conn
+		@{
+			var isSessionAuth = !string.IsNullOrEmpty(Context.Session.GetString("AccessToken"));
+			var isCookieAuth = AccountDataGetter.IsAuthenticated();
+			string userName = "ユーザー";
+			if (isSessionAuth || isCookieAuth) {
+				userName = await AccountDataGetter.GetDbUserNameAsync(_conn) ?? "ユーザー";
+			}
+		}
 
-        @if (isSessionAuth || isCookieAuth) {
-            <!-- ログイン済みの場合 -->
-            <div class="auth-section" style="margin-left: auto;">
-                <a href="/user/MyPage" class="user-display-area">
-                    <div class="user-icon-container">
-                        @await Component.InvokeAsync("UserIcon")
-                    </div>
-                    <span class="username-display">@await Component.InvokeAsync("UserName")</span>
-                </a>
-                <a href="/Logout" class="auth-button auth-button-logout">ログアウト</a>
-            </div>
-        } else {
-            <!-- 未ログインの場合 -->
-            <button class="auth-button" onclick="location.href='/Login'" style="margin-left: auto;">ログイン・新規登録</button>
-        }
-    </div>
-    <div class="container">
-        <main role="main" class="pb-3">
-            @RenderBody()
-        </main>
-    </div>
-    @* <footer class="border-top footer text-muted">
+		@if (isSessionAuth || isCookieAuth) {
+			<!-- ログイン済みの場合 -->
+			<div class="auth-section" style="margin-left: auto;">
+				<a href="/user/MyPage" class="user-display-area">
+					<div class="user-icon-container">
+						@await Component.InvokeAsync("UserIcon")
+					</div>
+					<span class="username-display">@await Component.InvokeAsync("UserName")</span>
+				</a>
+				<a href="/Logout" class="auth-button auth-button-logout">ログアウト</a>
+			</div>
+		} else {
+			<!-- 未ログインの場合 -->
+			<button class="auth-button" onclick="location.href='/Login'" style="margin-left: auto;">ログイン・新規登録</button>
+		}
+	</div>
+	<div class="container">
+		<main role="main" class="pb-3">
+			@RenderBody()
+		</main>
+	</div>
+	@* <footer class="border-top footer text-muted">
         <div class="container">
             &copy; 2025 - BookNoteApp - <a asp-area="" asp-page="/Privacy">Privacy</a>
         </div>
     </footer> *@
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
-    @await RenderSectionAsync("Scripts", required: false)
+	<script src="~/lib/jquery/dist/jquery.min.js"></script>
+	<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+	<script src="~/js/site.js" asp-append-version="true"></script>
+	@await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

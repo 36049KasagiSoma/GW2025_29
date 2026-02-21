@@ -95,8 +95,9 @@ namespace BookNote.Scripts.SelectBookReview {
         /// 基準レビュー群はリストから除外されます。
         /// </summary>
         public List<BookReview> SortBySimilarity(IReadOnlyList<BookReview> source, IReadOnlyList<int> reviewIds, int limit = int.MaxValue, double decayBase = 2.0) {
-            if (reviewIds is null || reviewIds.Count == 0)
+            if (reviewIds is null || reviewIds.Count == 0) {
                 return new List<BookReview>();
+            }
 
             var idSet = reviewIds.ToHashSet();
             var validPairs = reviewIds

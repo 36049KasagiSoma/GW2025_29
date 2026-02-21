@@ -78,7 +78,7 @@ namespace BookNote.Pages {
                                R.RATING, R.ISSPOILERS, R.TITLE AS REVIEW_TITLE, R.REVIEW
                         FROM BOOKREVIEW R
                         LEFT JOIN BOOKS B ON R.ISBN = B.ISBN
-                        WHERE R.USER_ID = :userId AND R.POSTINGTIME IS NULL
+                        WHERE R.USER_ID = :userId AND R.STATUS_ID = 1
                         ORDER BY R.REVIEW_ID DESC";
 
                 using var cmd = new OracleCommand(sql, _conn);

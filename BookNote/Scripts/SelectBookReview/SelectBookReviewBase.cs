@@ -92,15 +92,34 @@ namespace BookNote.Scripts.SelectBookReview {
                 string.IsNullOrEmpty(_myId) ? (object)DBNull.Value : _myId;
         }
 
-        public async Task<List<BookReview>> GetAllReviews() {
+        public async Task<List<BookReview>> GetAllReviews(int? days = null) {
             string sql = $@"
                 {CommonSelectSql}
                 WHERE R.POSTINGTIME IS NOT NULL
-                  AND {BlockFilterSql}";
+                  AND {BlockFilterSql}
+                  {(days.HasValue ? $"AND R.POSTINGTIME >= (SYSTIMESTAMP AT TIME ZONE 'Asia/Tokyo') - NUMTODSINTERVAL({days.Value}, 'DAY')" : "")}
+                ";
 
             using var cmd = new OracleCommand(sql, _conn);
             cmd.BindByName = true;
             AddLoginUserIdParam(cmd);
+            return await GetListFromSql(cmd);
+        }
+
+        public async Task<List<BookReview>> GetRecentShuffledReviews(int limit) {
+            // DBMS_RANDOM.VALUE を使うことで、Oracle 側で高速にシャッフルできます
+            string sql = $@"
+                {CommonSelectSql}
+                WHERE R.POSTINGTIME >= SYSTIMESTAMP - INTERVAL '30' DAY
+                  AND {BlockFilterSql}
+                ORDER BY DBMS_RANDOM.VALUE
+                FETCH FIRST :limit ROWS ONLY";
+
+            using var cmd = new OracleCommand(sql, _conn);
+            cmd.BindByName = true;
+            cmd.Parameters.Add(":limit", OracleDbType.Int32).Value = limit;
+            AddLoginUserIdParam(cmd); // :loginUserId に null(DBNull) を渡す
+
             return await GetListFromSql(cmd);
         }
 

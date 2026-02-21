@@ -10,5 +10,9 @@
         SAVE_DRAFT = 8,
         CUSTOM_PROFILE = 9,
         WRITE_COMMENT = 10,
+        UN_GOOD_THE_REVIEW = 11,
+        UN_FOLLOW_USER = 12,
+        UN_BLOCK_USER = 13,
+
     }
 }

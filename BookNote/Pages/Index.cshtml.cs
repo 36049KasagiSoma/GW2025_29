@@ -27,11 +27,8 @@ namespace BookNote.Pages {
         private readonly UserIconGetter _userIconGetter;
         private readonly IConfiguration _config;
 
-
         public List<BookReview> PopularityReviews { get; set; }
         public List<BookReview> RecommentedReviews { get; set; }
-
-
 
         public IndexModel(ILogger<IndexModel> logger, OracleConnection conn, IConfiguration config) {
             _logger = logger;

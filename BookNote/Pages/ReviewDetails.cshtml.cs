@@ -77,6 +77,7 @@ namespace BookNote.Pages {
                     br.ISBN,
                     br.IsSpoilers,
                     br.PostingTime,
+                    br.Status_Id,
                     b.Title AS BookTitle,
                     b.Author,
                     u.User_Name,
@@ -91,13 +92,12 @@ namespace BookNote.Pages {
 
                 using (var reader = await command.ExecuteReaderAsync()) {
                     if (await reader.ReadAsync()) {
-                        if (!reader.IsDBNull(reader.GetOrdinal("PostingTime"))) {
-                            PostingTime = reader.GetDateTime(reader.GetOrdinal("PostingTime"));
-                            if (PostingTime == null) {
-                                IsDraft = true;
-                                return Page();
+
+                        if (Convert.ToInt32(reader["Status_Id"]) == 2) {
+                            if (!reader.IsDBNull(reader.GetOrdinal("PostingTime"))) {
+                                PostingTime = reader.GetDateTime(reader.GetOrdinal("PostingTime"));
+                                PostingTimeDisplay = StaticEvent.FormatPostingTime(PostingTime.Value);
                             }
-                            PostingTimeDisplay = StaticEvent.FormatPostingTime(PostingTime.Value);
                         } else {
                             IsDraft = true;
                             return Page();

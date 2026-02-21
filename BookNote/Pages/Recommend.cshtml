@@ -1,0 +1,247 @@
+﻿@page
+@model RecommendModel
+@{
+    ViewData["Title"] = "あなたへのおすすめ";
+}
+
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BookNote - あなたへのおすすめ</title>
+    <link type="text/css" rel="stylesheet" href="~/css/site.css">
+    <link type="text/css" rel="stylesheet" href="~/css/recommend.css">
+</head>
+<body class="recommend-page">
+    <div class="main-content">
+
+        <!-- ヒーローヘッダー -->
+        <header class="recommend-hero">
+            <div class="hero-eyebrow">Curated for You</div>
+            <h1 class="hero-title">あなたへの<em>おすすめ</em></h1>
+            <p class="hero-sub">読書の足跡から、あなただけのレビューを。</p>
+            <div class="hero-divider">
+                <span></span><span class="diamond">*</span><span></span>
+            </div>
+        </header>
+
+        <!-- ===== セクション1: 最近見たレビューから ===== -->
+        <section class="recommend-section section-history" id="section-history">
+            <div class="section-header">
+                <div class="section-meta">
+                    <span class="section-number">01</span>
+                    <span class="section-tag">履歴から発見</span>
+                </div>
+                <h2 class="section-title">最近読んだレビューに<br>似たレビュー</h2>
+                <p class="section-desc">あなたが最近チェックしたレビューと似た内容のレビューをピックアップしました。</p>
+            </div>
+
+            <!-- 横スクロール カルーセル形式 -->
+            <div class="carousel-wrapper">
+                <div class="carousel-track" id="history-carousel">
+
+                    @if (Model.HistoryRecommends.Any()) {
+                        @foreach (var review in Model.HistoryRecommends) {
+                            <div class="carousel-card" data-review-id="@review.ReviewId" data-isbn="@review.Isbn">
+                                <div class="carousel-cover">
+                                    <img src="/image/loadImage.gif" alt="読み込み中" class="loading-gif" draggable="false">
+                                </div>
+                                <div class="carousel-body">
+                                    <div class="carousel-book-title">@review.Book.Title</div>
+                                    <div class="carousel-review-title">@review.Title</div>
+                                    <div class="carousel-reviewer">
+                                        <div class="carousel-icon" data-public-id="@review.User.UserPublicId"></div>
+                                        <span>@review.User.UserName</span>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    } else {
+                        <div class="empty-recommend">
+                            <div class="empty-recommend-text">まだ閲覧履歴がありません</div>
+                            <div class="empty-recommend-sub">レビューをいくつか読むと、おすすめが表示されます</div>
+                        </div>
+                    }
+
+                </div>
+                <button class="carousel-btn carousel-btn-prev" data-target="history-carousel">&#8249;</button>
+                <button class="carousel-btn carousel-btn-next" data-target="history-carousel">&#8250;</button>
+            </div>
+        </section>
+
+        <!-- 装飾セパレーター -->
+        <div class="section-separator">
+            <div class="sep-line"></div>
+            <div class="sep-ornament">---</div>
+            <div class="sep-line"></div>
+        </div>
+
+        <!-- ===== セクション2: フォロー中のユーザーから ===== -->
+        <section class="recommend-section section-follow" id="section-follow">
+            <div class="section-layout-split">
+                <div class="section-header">
+                    <div class="section-meta">
+                        <span class="section-number">02</span>
+                        <span class="section-tag">フォローから発見</span>
+                    </div>
+                    <h2 class="section-title">フォロー中のユーザーの<br>レビューに似たレビュー</h2>
+                    <p class="section-desc">フォロー中のユーザーのレビュー傾向をもとに、興味を持ちそうなレビューをご提案します。</p>
+                </div>
+
+                <!-- フィーチャード大カード + サイド小カードのグリッド -->
+                <div class="feature-grid" id="follow-grid">
+
+                    @if (Model.FollowRecommends.Any()) {
+                        var followFirst = true;
+                        foreach (var review in Model.FollowRecommends) {
+                            if (followFirst) {
+                                <div class="featured-card" data-review-id="@review.ReviewId" data-isbn="@review.Isbn">
+                                    <div class="featured-cover">
+                                        <img src="/image/loadImage.gif" alt="読み込み中" class="loading-gif" draggable="false">
+                                    </div>
+                                    <div class="featured-body">
+                                        <div class="featured-book-title">@review.Book.Title</div>
+                                        <div class="featured-review-title">@review.Title</div>
+                                        <div class="featured-text">@Scripts.StaticEvent.TrimReview(review.Review, 80)</div>
+                                        <div class="featured-reviewer">
+                                            <div class="featured-icon" data-public-id="@review.User.UserPublicId"></div>
+                                            <span class="featured-reviewer-name">@review.User.UserName</span>
+                                            <span class="featured-time">@Scripts.StaticEvent.FormatPostingTime(review.PostingTime)</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                followFirst = false;
+                            } else {
+                                <div class="small-card" data-review-id="@review.ReviewId" data-isbn="@review.Isbn">
+                                    <div class="small-cover">
+                                        <img src="/image/loadImage.gif" alt="読み込み中" class="loading-gif" draggable="false">
+                                    </div>
+                                    <div class="small-body">
+                                        <div class="small-book-title">@review.Book.Title</div>
+                                        <div class="small-review-title">@review.Title</div>
+                                        <div class="small-reviewer">
+                                            <div class="small-icon" data-public-id="@review.User.UserPublicId"></div>
+                                            <span>@review.User.UserName</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        }
+                    } else {
+                        <div class="empty-recommend empty-recommend-full">
+                            <div class="empty-recommend-text">フォロー中のユーザーがいません</div>
+                            <div class="empty-recommend-sub">気になるユーザーをフォローすると、その傾向からおすすめが表示されます</div>
+                        </div>
+                    }
+
+                </div>
+            </div>
+        </section>
+
+        <!-- 装飾セパレーター -->
+        <div class="section-separator">
+            <div class="sep-line"></div>
+            <div class="sep-ornament">---</div>
+            <div class="sep-line"></div>
+        </div>
+
+        <!-- ===== セクション3: いいねの傾向から ===== -->
+        <section class="recommend-section section-good" id="section-good">
+            <div class="section-header section-header-center">
+                <div class="section-meta">
+                    <span class="section-number">03</span>
+                    <span class="section-tag">グッドから発見</span>
+                </div>
+                <h2 class="section-title">「いいね」したレビューに<br>似たレビュー</h2>
+                <p class="section-desc">グッドを押したレビューをもとに、あなたの好みに近いレビューをご提案します。</p>
+            </div>
+
+            @if (Model.GoodRecommends.Any()) {
+                <div class="masonry-grid" id="good-grid">
+                    @foreach (var (review, idx) in Model.GoodRecommends.Select((r, i) => (r, i))) {
+                        var size = idx % 5 == 0 ? "large" : idx % 3 == 0 ? "medium" : "small";
+                        <div class="masonry-card" data-size="@size" data-review-id="@review.ReviewId" data-isbn="@review.Isbn">
+                            <div class="masonry-cover">
+                                <img src="/image/loadImage.gif" alt="読み込み中" class="loading-gif" draggable="false">
+                            </div>
+                            <div class="masonry-body">
+                                <div class="masonry-book-title">@review.Book.Title</div>
+                                <div class="masonry-review-title">@review.Title</div>
+                                <div class="masonry-stars" data-rating="@(review.Rating ?? 0)">☆☆☆☆☆</div>
+                                <div class="masonry-reviewer">
+                                    <div class="masonry-icon" data-public-id="@review.User.UserPublicId"></div>
+                                    <span>@review.User.UserName</span>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            } else {
+                <div class="empty-recommend empty-recommend-center">
+                    <div class="empty-recommend-text">まだグッドしたレビューがありません</div>
+                    <div class="empty-recommend-sub">気に入ったレビューにグッドすると、似たレビューをおすすめします</div>
+                </div>
+            }
+        </section>
+
+        <!-- 装飾セパレーター -->
+        <div class="section-separator">
+            <div class="sep-line"></div>
+            <div class="sep-ornament">---</div>
+            <div class="sep-line"></div>
+        </div>
+
+        <!-- ===== セクション4: 自分のレビューから ===== -->
+        <section class="recommend-section section-myreview" id="section-myreview">
+            <div class="section-header">
+                <div class="section-meta">
+                    <span class="section-number">04</span>
+                    <span class="section-tag">あなたの言葉から発見</span>
+                </div>
+                <h2 class="section-title">あなたが書いたレビューと<br>似たレビュー</h2>
+                <p class="section-desc">あなたが書いたレビューの内容・テーマをもとに、似た傾向のレビューをご提案します。</p>
+            </div>
+
+            @if (Model.MyReviewRecommends.Any()) {
+                <div class="ranking-list" id="myreview-list">
+                    @{
+                        int rank = 1;
+                    }
+                    @foreach (var review in Model.MyReviewRecommends) {
+                        <div class="ranking-item" data-review-id="@review.ReviewId" data-isbn="@review.Isbn">
+                            <div class="ranking-num">@(rank++)</div>
+                            <div class="ranking-cover">
+                                <img src="/image/loadImage.gif" alt="読み込み中" class="loading-gif" draggable="false">
+                            </div>
+                            <div class="ranking-body">
+                                <div class="ranking-book-title">@review.Book.Title</div>
+                                <div class="ranking-review-title">@review.Title</div>
+                                <div class="ranking-text">@Scripts.StaticEvent.TrimReview(review.Review, 80)</div>
+                            </div>
+                            <div class="ranking-reviewer">
+                                <div class="ranking-icon" data-public-id="@review.User.UserPublicId"></div>
+                                <span class="ranking-reviewer-name">@review.User.UserName</span>
+                                <span class="ranking-time">@Scripts.StaticEvent.FormatPostingTime(review.PostingTime)</span>
+                            </div>
+                        </div>
+                    }
+                </div>
+            } else {
+                <div class="empty-recommend">
+                    <div class="empty-recommend-text">まだレビューを書いていません</div>
+                    <div class="empty-recommend-sub">レビューを投稿すると、その内容をもとにおすすめが表示されます</div>
+                </div>
+            }
+        </section>
+
+        <!-- フッター余白 -->
+        <div style="height: 80px;"></div>
+
+    </div><!-- /.main-content -->
+
+    <script type="text/javascript" src="~/js/site.js"></script>
+    <script type="text/javascript" src="~/js/load_image.js"></script>
+    <script type="text/javascript" src="~/js/recommend.js"></script>
+</body>
+</html>

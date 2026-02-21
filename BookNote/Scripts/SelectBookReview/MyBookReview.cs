@@ -23,12 +23,13 @@ namespace BookNote.Scripts.SelectBookReview {
                   AND R.STATUS_ID = 2
                 ORDER BY R.POSTINGTIME DESC
                 FETCH FIRST :limit ROWS ONLY";
-
             using var cmd = new OracleCommand(sql, _conn);
             cmd.BindByName = true;
-            cmd.Parameters.Add(":userId", OracleDbType.Varchar2).Value = _myId;
+            cmd.Parameters.Add(":userId", OracleDbType.Char).Value = _myId;
             cmd.Parameters.Add(":limit", OracleDbType.Int32).Value = limit;
-            return await GetListFromSql(cmd);
+            var rtn = await GetListFromSql(cmd);
+            Console.WriteLine($"returncount:{rtn.Count}");
+            return rtn;
         }
 
 
