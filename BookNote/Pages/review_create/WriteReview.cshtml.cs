@@ -90,10 +90,12 @@ public class WriteReviewModel : PageModel {
                             ReviewInput = null;
                             return;
                         }
+                        if (ReviewInput == null) return;
 
                         IsPublished = !reader.IsDBNull(reader.GetOrdinal("STATUS_ID")) && Convert.ToInt32(reader["STATUS_ID"]) == 2;
 
                         var isbn = reader.GetString(reader.GetOrdinal("ISBN")).Trim();
+
                         // 仮のISBNの場合は書籍情報をすべて空にする
                         if (isbn == "0000000000000") {
                             ReviewInput.BookIsbn = "";
@@ -142,6 +144,7 @@ public class WriteReviewModel : PageModel {
                 var count = Convert.ToInt32(await checkCommand.ExecuteScalarAsync());
 
                 if (count == 0) {
+                    if (ReviewInput == null) throw new Exception("ReviewInput is null.");
                     var insertBookSql = @"INSERT INTO Books (Isbn, Title, Author, Publisher) 
                               VALUES (:ISBN, :Title, :Author, :Publisher)";
                     using (var insertBookCommand = new OracleCommand(insertBookSql, connection)) {
@@ -372,6 +375,7 @@ public class WriteReviewModel : PageModel {
 
     public async Task<IActionResult> OnPostPublish() {
         _logger.LogInformation("投稿処理開始 - ReviewId: {ReviewId}", ReviewId);
+        if(ReviewInput == null)throw new ArgumentNullException(nameof(ReviewInput));
 
         // 編集時（ReviewIdがある場合）は、まずDBから公開状態を確認
         bool isPublishedReview = false;
@@ -406,7 +410,6 @@ public class WriteReviewModel : PageModel {
 
         if (await SaveReviewAsync(isDraft: false)) {
             if (isPublishedReview && ReviewId.HasValue) {
-                TempData["Message"] = "レビューを更新しました";
                 return RedirectToPage("/ReviewDetails", new { reviewId = ReviewId.Value });
             }
             return RedirectToPage("/Reviews", new { tab = "myreviews" });
@@ -419,6 +422,7 @@ public class WriteReviewModel : PageModel {
     /// </summary>
     private async Task RestoreNonEditableFieldsAsync(int reviewId) {
         try {
+            if(ReviewInput == null) throw new ArgumentNullException(nameof(ReviewInput));
             if (_conn.State != ConnectionState.Open) await _conn.OpenAsync();
             var sql = @"SELECT R.ISBN, B.TITLE, B.AUTHOR, B.PUBLISHER,
                                R.RATING, R.TITLE AS REVIEW_TITLE

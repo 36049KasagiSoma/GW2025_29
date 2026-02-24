@@ -60,8 +60,14 @@
                 </div>
 
                 <div class="profile-footer">
-                    <a href="/user/Settings" class="btn-primary">設定を変更</a>
-                    <a href="/Logout" class="btn-logout">ログアウト</a>
+                    <div class="footer-btn-group">
+                        <a href="/user/Settings" class="btn-primary">プロフィール設定</a>
+                        <a href="/user/Privacy" class="btn-secondary">プライバシー設定</a>
+                    </div>
+                    <div class="footer-btn-group footer-btn-group--right">
+                        @* <a href="/user/Withdraw" class="btn-danger">退会</a> *@
+                        <button type="button" class="btn-logout" onclick="logout()">ログアウト</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -69,5 +75,10 @@
 
     <script type="text/javascript" src="~/js/site.js"></script>
     <script type="text/javascript" src="~/js/load_image.js"></script>
+    <script>
+        function logout() {
+            window.location.href = '/Logout';
+        }
+    </script>
 </body>
 </html>

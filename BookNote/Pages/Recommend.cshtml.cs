@@ -90,7 +90,8 @@ namespace BookNote.Pages {
         }
 
         private async Task<List<BookReview>> LoadMyReviewRecommendsAsync(List<BookReview> target, SelectSimilarReview selectSimilarReview, MyBookReview myBookReview) {
-            var ids = (await myBookReview.GetReview(15)).Select(r => r.ReviewId).ToList();
+            var reviews = await myBookReview.GetReview(15);
+            var ids = reviews.Select(r => r.ReviewId).ToList();
             List<BookReview> rtn = [];
             rtn.AddRange(selectSimilarReview.SortBySimilarity(target, ids, 5));
             return rtn;

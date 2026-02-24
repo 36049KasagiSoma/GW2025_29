@@ -38,7 +38,7 @@ namespace BookNote.Pages {
             // Cognitoからもログアウト
             var cognitoLogoutUrl = $"https://{cognitoDomain}/logout?" +
                                   $"client_id={clientId}&" +
-                                  $"logout_uri={Uri.EscapeDataString(logoutUrl)}";
+                                  $"logout_uri={Uri.EscapeDataString(logoutUrl??"")}";
 
             return Redirect(cognitoLogoutUrl);
         }

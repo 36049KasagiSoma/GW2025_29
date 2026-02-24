@@ -1,0 +1,135 @@
+﻿@page
+@model BookNote.Pages.user.PrivacyModel
+@{
+    ViewData["Title"] = "プライバシー設定";
+}
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BookNote - @ViewData["Title"]</title>
+    <link type="text/css" rel="stylesheet" href="~/css/site.css">
+    <link type="text/css" rel="stylesheet" href="~/css/mypage.css">
+    <link type="text/css" rel="stylesheet" href="~/css/privacy.css">
+</head>
+<body class="mypage-page">
+    <div class="main-content">
+        @Html.AntiForgeryToken()
+        <a href="/user/MyPage" class="btn-back">← マイページへ戻る</a>
+        <div class="page-header-row">
+            <h1 class="page-title">プライバシー設定</h1>
+        </div>
+
+        <!-- フォロー一覧 -->
+        <div class="privacy-card">
+            <h2 class="section-title">フォロー中のユーザー</h2>
+            @if (Model.FollowingUsers.Count == 0) {
+                <p class="empty-text">フォローしているユーザーはいません</p>
+            } else {
+                <ul class="user-list">
+                    @foreach (var user in Model.FollowingUsers) {
+                        <li class="user-list-item">
+                            <span class="user-icon-small reviewer-icon" data-public-id="@user.UserPublicId">@user.UserName[0]</span>
+                            <div class="user-info">
+                                <a class="user-name" href="/user/UserProfile/@user.UserPublicId">@user.UserName</a>
+                                <span class="user-public-id">ID: @user.UserPublicId</span>
+                            </div>
+                            <form method="post" asp-page-handler="Unfollow">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="targetUserId" value="@user.UserId" />
+                                <button type="submit" class="btn-unfollow">フォロー解除</button>
+                            </form>
+                        </li>
+                    }
+                </ul>
+            }
+        </div>
+
+        <!-- ブロック一覧 -->
+        <div class="privacy-card">
+            <h2 class="section-title">ブロック中のユーザー</h2>
+            @if (Model.BlockedUsers.Count == 0) {
+                <p class="empty-text">ブロックしているユーザーはいません</p>
+            } else {
+                <ul class="user-list">
+                    @foreach (var user in Model.BlockedUsers) {
+                        <li class="user-list-item">
+                            <span class="user-icon-small reviewer-icon" data-public-id="@user.UserPublicId">@user.UserName[0]</span>                            <div class="user-info">
+                                <a class="user-name" href="/user/UserProfile/@user.UserPublicId">@user.UserName</a>
+                                <span class="user-public-id">ID: @user.UserPublicId</span>
+                            </div>
+                            <form method="post" asp-page-handler="Unblock">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="targetUserId" value="@user.UserId" />
+                                <button type="submit" class="btn-unblock">ブロック解除</button>
+                            </form>
+                        </li>
+                    }
+                </ul>
+            }
+        </div>
+
+        <!-- 書籍ミュート -->
+        <div class="privacy-card">
+            <h2 class="section-title">ミュート中の書籍((@Model.MutedBooks.Count)件)</h2>
+            <p class="section-desc">ミュートした書籍のレビューはタイムラインに表示されません。</p>
+
+            <button type="button" class="btn-primary btn-add-mute" onclick="openMuteBookDialog()">書籍を追加</button>
+
+            @if (Model.MutedBooks.Count == 0) {
+                <p class="empty-text" style="margin-top:16px;">ミュートしている書籍はありません</p>
+            } else {
+                <ul class="book-list">
+                    @foreach (var book in Model.MutedBooks) {
+                        <li class="book-list-item">
+                            <div class="book-info">
+                                <span class="book-isbn">ISBN: @book.ISBN</span>
+                            </div>
+                            <form method="post" asp-page-handler="UnmuteBook">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="isbn" value="@book.ISBN" />
+                                <button type="submit" class="btn-unmute">解除</button>
+                            </form>
+                        </li>
+                    }
+                </ul>
+            }
+        </div>
+    </div>
+
+    <!-- 書籍検索ダイアログ（ミュート用） -->
+    <partial name="_BookSearchDialog" />
+
+    <script type="text/javascript" src="~/js/site.js"></script>
+    <script type="text/javascript" src="~/js/load_image.js"></script>
+    <script>
+        // ミュート追加用にダイアログのコールバックを設定
+        function openMuteBookDialog() {
+            BookSearchDialog.open(function (book) {
+                const isbn = book.isbn || book.Isbn;
+                if (!isbn) return;
+
+                const form = document.createElement('form');
+                form.method = 'post';
+                form.action = '?handler=MuteBook';
+
+                const token = document.createElement('input');
+                token.type = 'hidden';
+                token.name = '__RequestVerificationToken';
+                token.value = document.querySelector('input[name="__RequestVerificationToken"]').value;
+
+                const isbnInput = document.createElement('input');
+                isbnInput.type = 'hidden';
+                isbnInput.name = 'isbn';
+                isbnInput.value = isbn;
+
+                form.appendChild(token);
+                form.appendChild(isbnInput);
+                document.body.appendChild(form);
+                form.submit();
+            });
+        }
+    </script>
+</body>
+</html>

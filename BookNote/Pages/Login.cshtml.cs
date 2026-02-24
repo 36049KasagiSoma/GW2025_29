@@ -17,7 +17,7 @@ namespace BookNote.Pages {
 
         }
 
-        public IActionResult OnGet(string returnUrl = null) {
+        public IActionResult OnGet(string returnUrl = "") {
             var cognitoDomain = _configuration["BookNoteKeys:AWS:Domain"];
             var clientId = _configuration["BookNoteKeys:AWS:ClientId"];
             var callbackUrl = _configuration["BookNoteKeys:AWS:CallbackUrl"];

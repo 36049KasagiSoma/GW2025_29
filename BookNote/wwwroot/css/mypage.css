@@ -266,3 +266,85 @@
         width: 100%;
     }
 }
+
+/* === MyPage フッターボタングループ === */
+.profile-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.footer-btn-group {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+
+.footer-btn-group--right {
+    margin-left: auto;
+}
+
+.btn-secondary {
+    display: inline-block;
+    padding: 12px 32px;
+    background: white;
+    color: #654321;
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    border: 2px solid #D2B48C;
+    font-size: 14px;
+}
+
+    .btn-secondary:hover {
+        background: #F5E6D3;
+        border-color: #A0826D;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(101, 67, 33, 0.15);
+    }
+
+.btn-danger {
+    display: inline-block;
+    padding: 12px 24px;
+    background: white;
+    color: #c0392b;
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    border: 2px solid #e8b4b0;
+    font-size: 14px;
+}
+
+    .btn-danger:hover {
+        background: #fdf0ef;
+        border-color: #c0392b;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(192, 57, 43, 0.15);
+    }
+
+@media (max-width: 768px) {
+    .profile-footer {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .footer-btn-group {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .footer-btn-group--right {
+        margin-left: 0;
+    }
+
+    .btn-secondary,
+    .btn-danger {
+        padding: 10px 24px;
+        width: 100%;
+        text-align: center;
+    }
+}

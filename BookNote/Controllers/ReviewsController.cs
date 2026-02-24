@@ -22,7 +22,11 @@ namespace BookNote.Controllers {
                 using (var connection = new OracleConnection(Keywords.GetDbConnectionString(_configuration))) {
                     await connection.OpenAsync();
                     var myid = AccountDataGetter.IsAuthenticated() ? AccountDataGetter.GetUserId() : null;
-                    results = await new SearchBooks(connection,myid).GetReview(keyword, 20, sortOrder);
+                    results = await new SearchReviews(connection, myid).GetReview(keyword, 20, sortOrder);
+
+                    foreach (var review in results) {
+                        review.Review = StaticEvent.TrimReview(review.Review, 80);
+                    }
                 }
             } catch (Exception) {
             }

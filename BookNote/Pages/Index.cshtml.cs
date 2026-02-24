@@ -40,8 +40,6 @@ namespace BookNote.Pages {
         }
 
         public async Task OnGetAsync() {
-            ModerationClient client = new ModerationClient(_config["BookNoteKeys:OpenAI:ApiKey"]);
-
             try {
                 if (_conn.State != ConnectionState.Open) {
                     await _conn.OpenAsync();

@@ -1,0 +1,149 @@
+/* 退会ページ */
+.withdraw-card {
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 4px 12px rgba(101, 67, 33, 0.1);
+    padding: 40px 32px;
+    text-align: center;
+    max-width: 560px;
+    margin: 0 auto;
+}
+
+.withdraw-warning-icon {
+    font-size: 56px;
+    margin-bottom: 16px;
+    line-height: 1;
+}
+
+.withdraw-title {
+    font-size: 22px;
+    font-weight: 700;
+    color: #c0392b;
+    margin-bottom: 12px;
+}
+
+.withdraw-desc {
+    font-size: 15px;
+    color: #5C4033;
+    line-height: 1.7;
+    margin-bottom: 20px;
+}
+
+.withdraw-list {
+    list-style: none;
+    padding: 0;
+    margin: 0 auto 28px;
+    max-width: 360px;
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+    .withdraw-list li {
+        font-size: 14px;
+        color: #5C4033;
+        padding: 8px 14px;
+        background: #fdf0ef;
+        border-left: 3px solid #e8b4b0;
+        border-radius: 0 6px 6px 0;
+    }
+
+.withdraw-confirm-area {
+    border-top: 1px solid #E8D4C0;
+    padding-top: 24px;
+}
+
+.withdraw-btn-row {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.btn-withdraw {
+    display: inline-block;
+    padding: 12px 32px;
+    background: #c0392b;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: inherit;
+}
+
+    .btn-withdraw:hover:not(:disabled) {
+        background: #a93226;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(192, 57, 43, 0.3);
+    }
+
+    .btn-withdraw:disabled {
+        background: #e0a0a0;
+        cursor: not-allowed;
+        transform: none;
+    }
+
+/* 確認オーバーレイ */
+.withdraw-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.withdraw-dialog {
+    background: white;
+    border-radius: 16px;
+    padding: 36px 32px;
+    max-width: 400px;
+    width: 90%;
+    text-align: center;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+}
+
+.withdraw-dialog-text {
+    font-size: 16px;
+    color: #5C4033;
+    line-height: 1.8;
+    margin-bottom: 24px;
+}
+
+.withdraw-dialog-btns {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+}
+
+@media (max-width: 768px) {
+    .withdraw-card {
+        padding: 28px 20px;
+    }
+
+    .withdraw-btn-row {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .btn-withdraw,
+    .withdraw-card .btn-secondary {
+        width: 100%;
+        text-align: center;
+    }
+
+    .withdraw-dialog-btns {
+        flex-direction: column;
+    }
+
+    .withdraw-dialog-btns .btn-secondary,
+    .withdraw-dialog-btns .btn-withdraw {
+        width: 100%;
+        text-align: center;
+    }
+}

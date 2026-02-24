@@ -82,6 +82,11 @@ namespace BookNote.Scripts.SelectBookReview {
                 FROM USERBLOCK BL
                 WHERE BL.TO_USER_ID = :loginUserId
                   AND BL.FOR_USER_ID = R.USER_ID
+            ))AND (:loginUserId IS NULL OR NOT EXISTS (
+                SELECT 1
+                FROM BookMute BM
+                WHERE BM.User_Id = :loginUserId
+                  AND BM.ISBN = R.ISBN
             ))";
 
         /// <summary>

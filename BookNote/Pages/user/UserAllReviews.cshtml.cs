@@ -85,7 +85,8 @@ namespace BookNote.Pages.Users {
                 UserPublicId = userId;
                 UserName = user.UserName;
                 IsHighRatedReviewsPublic = true; // 高評価リスト全体の公開設定
-                allReviewsData.AddRange(user.BookReviews);
+                if (user.BookReviews != null)
+                    allReviewsData.AddRange(user.BookReviews);
                 highRatedReviewsData.AddRange((await userGetter.GetUserGoodReviews(userId)).ToList());
 
                 IconImageData = await _userIconGetter.GetIconImageData(user.UserPublicId, UserIconGetter.IconSize.LARGE);

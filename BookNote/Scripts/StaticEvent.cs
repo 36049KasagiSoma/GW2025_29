@@ -1,7 +1,6 @@
 ﻿using SixLabors.ImageSharp.Formats.Png;
 using SixLabors.ImageSharp.Processing;
 using System.Drawing;
-using System.Drawing;
 using System.Drawing.Imaging;
 using System.Security.Cryptography;
 using System.Text;

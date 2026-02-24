@@ -42,7 +42,7 @@ namespace BookNote.Scripts.Login {
                           $"client_id={clientId}&" +
                           $"response_type=code&" +
                           $"scope=openid+email+profile&" +
-                          $"redirect_uri={Uri.EscapeDataString(callbackUrl)}&" +
+                          $"redirect_uri={Uri.EscapeDataString(callbackUrl??"")}&" +
                           $"state={Uri.EscapeDataString(state)}";
 
             ViewData["LoginUrl"] = loginUrl;
@@ -181,7 +181,7 @@ namespace BookNote.Scripts.Login {
 
             var cognitoLogoutUrl = $"https://{cognitoDomain}/logout?" +
                                   $"client_id={clientId}&" +
-                                  $"logout_uri={Uri.EscapeDataString(logoutUrl)}";
+                                  $"logout_uri={Uri.EscapeDataString(logoutUrl??"")}";
             if (AccountDataGetter.IsAuthenticated())
                 ActivityTracer.LogActivity(ActivityTrace.ActivityType.LOGOUT, AccountDataGetter.GetUserId());
             return Redirect(cognitoLogoutUrl);

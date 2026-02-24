@@ -5,9 +5,9 @@ namespace BookNote.Scripts.SelectBookReview {
     /// <summary>
     /// キーワード検索でレビューを取得します。
     /// </summary>
-    public class SearchBooks : SelectBookReviewBase {
+    public class SearchReviews : SelectBookReviewBase {
 
-        public SearchBooks(OracleConnection conn, string? myId) : base(conn, myId) { }
+        public SearchReviews(OracleConnection conn, string? myId) : base(conn, myId) { }
 
         public override async Task<List<BookReview>> GetReview() => await GetReview("", 20);
 

@@ -48,6 +48,7 @@ namespace BookNote.Scripts.Login {
         /// ユーザー名を取得(DB)
         /// </summary>
         public static async Task<string?> GetDbUserNameAsync() {
+            if (_configuration == null) return null;
             try {
                 var userId = GetUserId();
 
@@ -148,6 +149,7 @@ namespace BookNote.Scripts.Login {
         }
 
         public static async Task<string?> GetDbUserPublicIdAsync() {
+            if (_configuration == null) return null;
             try {
                 var userId = GetUserId();
 
