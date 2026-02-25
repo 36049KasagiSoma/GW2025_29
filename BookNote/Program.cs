@@ -79,6 +79,12 @@ namespace BookNote {
                 return new OracleConnection(conStr);
             });
 
+            // Amazon Cognito
+            builder.Services.AddSingleton<IAmazonCognitoIdentityProvider>(sp => {
+                var region = RegionEndpoint.APNortheast1;
+                return new AmazonCognitoIdentityProviderClient(region);
+            });
+
             // Razor Pages
             builder.Services.AddRazorPages().AddJsonOptions(options => {
                 options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;

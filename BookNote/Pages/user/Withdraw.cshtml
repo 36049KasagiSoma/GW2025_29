@@ -17,10 +17,11 @@
 <body class="mypage-page">
     <div class="main-content">
         <div class="page-header-row">
-            <a href="/user/MyPage" class="btn-back">← マイページへ戻る</a>
             <h1 class="page-title">退会</h1>
         </div>
-
+		<div class="page-header-row">
+            <a href="/user/MyPage" class="btn-back">← マイページへ戻る</a>
+        </div>
         @if (!string.IsNullOrEmpty(Model.ErrorMessage)) {
             <div class="alert alert-error">@Model.ErrorMessage</div>
         }
@@ -54,7 +55,7 @@
     <!-- 確認ダイアログ -->
     <div id="withdrawConfirmOverlay" class="withdraw-overlay" style="display:none;">
         <div class="withdraw-dialog">
-            <p class="withdraw-dialog-text">本当に退会します。この操作は取り消せません。<br>よろしいですか？</p>
+            <p class="withdraw-dialog-text">この操作は取り消せません。<br>よろしいですか？</p>
             <div class="withdraw-dialog-btns">
                 <button type="button" class="btn-secondary" onclick="closeConfirm()">いいえ</button>
                 <button type="button" class="btn-withdraw" id="withdrawFinalBtn" onclick="submitWithdraw()">はい、退会します</button>
