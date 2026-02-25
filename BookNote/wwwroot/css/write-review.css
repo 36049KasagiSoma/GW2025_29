@@ -1,6 +1,4 @@
-﻿/* レビュー記述ページ専用スタイル */
-
-.write-review-page .appbar {
+﻿.write-review-page .appbar {
     height: 60px;
 }
 
@@ -34,7 +32,7 @@
     margin-bottom: 40px;
 }
 
-/* アラートメッセージ */
+
 .alert-message {
     padding: 16px 20px;
     background: #E8F5E9;
@@ -45,14 +43,14 @@
     margin-bottom: 24px;
 }
 
-    /* エラーメッセージ */
+
     .alert-message.error-message {
         background: #FFEBEE;
         border-color: #EF5350;
         color: #C62828;
     }
 
-/* バリデーションエラー */
+
 .text-danger {
     display: block;
     color: #D32F2F;
@@ -60,7 +58,7 @@
     margin-top: 8px;
 }
 
-/* フォームセクション */
+
 .review-form {
     background: white;
     border-radius: 16px;
@@ -103,7 +101,7 @@
         box-shadow: 0 0 0 3px rgba(160, 130, 109, 0.1);
     }
 
-/* 書籍検索 */
+
 .book-search-container {
     display: flex;
     gap: 12px;
@@ -129,7 +127,7 @@
         box-shadow: 0 6px 16px rgba(139, 111, 71, 0.4);
     }
 
-/* 選択された書籍 */
+
 .selected-book {
     display: flex;
     align-items: center;
@@ -193,7 +191,7 @@
         transform: scale(1.1);
     }
 
-/* 評価星 */
+
 .rating-container {
     display: flex;
     gap: 8px;
@@ -213,7 +211,7 @@
         transform: scale(1.1);
     }
 
-/* Quillエディタカスタマイズ */
+
 #editor-container {
     height: 400px;
     background: white;
@@ -244,7 +242,7 @@
         font-style: normal;
     }
 
-/* ボタン群 */
+
 .form-actions {
     display: flex;
     gap: 16px;
@@ -285,7 +283,7 @@
         border-color: #A0826D;
     }
 
-/* プレビューセクション */
+
 .preview-section {
     margin-top: 40px;
     padding: 40px;
@@ -306,7 +304,7 @@
     line-height: 1.8;
 }
 
-/* 編集モード通知バナー */
+
 .alert-message.edit-mode-notice {
     display: flex;
     align-items: center;
@@ -323,14 +321,14 @@
     stroke: #1565C0;
 }
 
-/* 無効化セクション（評価星エリア） */
+
 .disabled-section {
     opacity: 0.5;
     pointer-events: none;
     cursor: not-allowed;
 }
 
-/* キャンセルボタン（リンク形式） */
+
 .btn-link-back {
     display: inline-flex;
     align-items: center;
@@ -338,7 +336,7 @@
     text-decoration: none;
 }
 
-/* レスポンシブ対応 */
+
 @media (max-width: 768px) {
     .write-review-page .main-content {
         padding: 80px 16px 40px;
@@ -394,7 +392,7 @@
     display: block;
 }
 
-/* フォーム要素の無効化状態 */
+
 .form-input:disabled {
     background: #F5F5F5;
     color: #999;
@@ -442,7 +440,7 @@ textarea:disabled {
     pointer-events: none;
 }
 
-/* Quillエディタの無効化状態 */
+
 .ql-toolbar.ql-disabled {
     opacity: 0.5;
     pointer-events: none;

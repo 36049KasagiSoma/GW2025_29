@@ -1,7 +1,4 @@
-﻿/* ユーザプロフィールページ専用スタイル */
-
-/* ロゴとアップバーの固定位置用 */
-.user-profile-page .appbar {
+﻿.user-profile-page .appbar {
     height: 60px;
 }
 
@@ -26,7 +23,7 @@
     padding-top: 100px;
 }
 
-/* スクロール時の変更を無効化 */
+
 .user-profile-page .appbar.scrolled {
     height: 60px;
 }
@@ -46,15 +43,15 @@
 }
 
 img {
-    user-select: none; /* 選択禁止 */
-    -webkit-user-drag: none; /* Webkitブラウザ（ChromeやSafari）向け */
+    user-select: none;
+    -webkit-user-drag: none;
     -webkit-user-select: none;
-    -moz-user-select: none; /* Firefox向け */
-    -ms-user-select: none; /* IE向け */
-    pointer-events: none; /* 右クリックや長押し禁止 */
+    -moz-user-select: none;
+    -ms-user-select: none;
+    pointer-events: none;
 }
 
-/* プロフィールヘッダー */
+
 .profile-header {
     display: flex;
     gap: 30px;
@@ -96,7 +93,7 @@ img {
     white-space: pre-wrap;
 }
 
-/* セクション */
+
 .profile-section {
     margin-bottom: 50px;
 }
@@ -132,14 +129,14 @@ img {
         color: #654321;
     }
 
-/* レビューグリッド */
+
 .reviews-grid {
     display: flex;
     flex-direction: column;
     gap: 20px;
 }
 
-/* レビューカード - ホバーアニメーション無効 */
+
 .user-profile-page .review-card-large {
     transition: none;
 }
@@ -149,7 +146,7 @@ img {
         box-shadow: 0 4px 12px rgba(101, 67, 33, 0.1);
     }
 
-/* タブ切り替え */
+
 .review-tabs {
     display: flex;
     gap: 8px;
@@ -187,7 +184,7 @@ img {
         display: block;
     }
 
-/* ページネーション */
+
 .pagination {
     display: flex;
     justify-content: center;
@@ -249,7 +246,7 @@ img {
         transform: translateY(0);
     }
 
-/* 空メッセージ */
+
 .empty-message {
     text-align: center;
     color: #A0826D;
@@ -303,7 +300,7 @@ img {
         opacity: 0.6;
     }
 
-/* ブロックボタン - 控えめなデザイン */
+
 .block-button {
     background-color: transparent;
     color: #888;
@@ -334,7 +331,7 @@ img {
         cursor: not-allowed;
     }
 
-/* ブロック確認モーダル */
+
 .block-confirm-modal {
     display: none;
     position: fixed;
@@ -405,7 +402,7 @@ img {
         background-color: #b71c1c;
     }
 
-/* レスポンシブ対応 */
+
 @media (max-width: 768px) {
     .profile-header {
         flex-direction: column;

@@ -1,19 +1,12 @@
-// ユーザー検索ページ JS
-
 document.addEventListener('DOMContentLoaded', function () {
-    // URLパラメータからタブを復元
     const urlParams = new URLSearchParams(window.location.search);
     const activeTab = urlParams.get('tab') || 'recommend';
-
     document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
     document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-
     const tabElement = document.querySelector(`.tab[data-tab="${activeTab}"]`);
     const contentElement = document.getElementById(`${activeTab}-content`);
     if (tabElement) tabElement.classList.add('active');
     if (contentElement) contentElement.classList.add('active');
-
-    // タブ切り替え
     document.querySelectorAll('.tab').forEach(tab => {
         tab.addEventListener('click', () => {
             document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
@@ -23,25 +16,17 @@ document.addEventListener('DOMContentLoaded', function () {
             document.getElementById(`${tabName}-content`).classList.add('active');
         });
     });
-
-    // ユーザーアイコン読み込み
     if (typeof loadUserIcons === 'function') {
         loadUserIcons('#recommend-users');
     }
-
-    // 検索ボタン
     document.getElementById('btnUserSearch')?.addEventListener('click', () => {
         performUserSearch();
     });
-
-    // Enterキー検索
     document.getElementById('userSearchKeyword')?.addEventListener('keypress', (e) => {
         if (e.key === 'Enter') {
             performUserSearch();
         }
     });
-
-    // 検索種別変更時にキーワードがあれば再検索
     document.getElementById('userSearchType')?.addEventListener('change', () => {
         const keyword = document.getElementById('userSearchKeyword')?.value.trim();
         if (keyword) {
@@ -49,41 +34,32 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 });
-
 function escapeHtml(text) {
     const div = document.createElement('div');
     div.textContent = text;
     return div.innerHTML;
 }
-
 async function performUserSearch() {
     const keyword = document.getElementById('userSearchKeyword')?.value.trim();
     const searchType = document.getElementById('userSearchType')?.value || 'name';
     const resultsContainer = document.getElementById('user-search-results');
-
     if (!keyword) {
         resultsContainer.innerHTML = '<p class="empty-message">検索キーワードを入力してください</p>';
         return;
     }
-
     resultsContainer.innerHTML = '<p class="empty-message">検索中...</p>';
-
     try {
         const response = await fetch(
             `/api/users/search?keyword=${encodeURIComponent(keyword)}&searchType=${encodeURIComponent(searchType)}`
         );
-
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
-
         const users = await response.json();
-
         if (users.length === 0) {
             resultsContainer.innerHTML = '<p class="empty-message">ユーザーが見つかりませんでした</p>';
             return;
         }
-
         resultsContainer.innerHTML = users.map(user => `
             <div class="user-card" onclick="location.href='/user/UserProfile/${escapeHtml(user.userPublicId)}'">
                 <div class="user-card-icon reviewer-icon" data-public-id="${escapeHtml(user.userPublicId)}"></div>
@@ -94,7 +70,6 @@ async function performUserSearch() {
                 </div>
             </div>
         `).join('');
-
         if (typeof loadUserIcons === 'function') {
             loadUserIcons('#user-search-results');
         }

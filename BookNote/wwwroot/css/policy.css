@@ -1,7 +1,4 @@
-﻿/* ポリシーページ専用スタイル */
-
-/* ページ全体の設定をオーバーライド */
-.policy-page .appbar {
+﻿.policy-page .appbar {
     height: 60px;
 }
 
@@ -22,7 +19,7 @@
     height: 35px;
 }
 
-/* スクロール時の変更を無効化 */
+
 .policy-page .appbar.scrolled {
     height: 60px;
 }
@@ -50,7 +47,7 @@
     padding-bottom: 60px;
 }
 
-/* タブ切り替え */
+
 .tab-container {
     display: flex;
     gap: 0;
@@ -91,15 +88,15 @@
         display: block;
     }
 
-/* ロゴ */
+
 .policy-main-logo {
     display: block;
     margin: 0 auto;
-    margin-block-end:70px;
-    max-height:150px;
+    margin-block-end: 70px;
+    max-height: 150px;
 }
 
-/* ページタイトル */
+
 .policy-header {
     text-align: center;
     margin-bottom: 50px;
@@ -121,7 +118,7 @@
 }
 
 
-/* セクションタイトル */
+
 .policy-section {
     margin-bottom: 50px;
 }
@@ -135,7 +132,7 @@
     border-bottom: 2px solid #E8D4C0;
 }
 
-/* サブセクションタイトル */
+
 .policy-subsection-title {
     font-size: 20px;
     font-weight: 600;
@@ -144,7 +141,7 @@
     margin-bottom: 16px;
 }
 
-/* 本文 */
+
 .policy-content {
     font-size: 15px;
     color: #5C4033;
@@ -155,7 +152,7 @@
         margin-bottom: 16px;
     }
 
-    /* リスト */
+
     .policy-content ul {
         margin: 16px 0;
         padding-left: 24px;
@@ -177,7 +174,7 @@
             line-height: 1.7;
         }
 
-/* 注意書き */
+
 .policy-note {
     background: #FFF3CD;
     border-left: 4px solid #FFC107;
@@ -192,7 +189,7 @@
         font-size: 14px;
     }
 
-/* お問い合わせセクション */
+
 .contact-section {
     background: #F5E6D3;
     padding: 30px;
@@ -217,7 +214,7 @@
         margin-bottom: 8px;
     }
 
-/* 制定日 */
+
 .policy-footer {
     text-align: right;
     margin-top: 50px;
@@ -227,7 +224,7 @@
     font-size: 14px;
 }
 
-/* 目次 */
+
 .policy-toc {
     background: white;
     border: 2px solid #E8D4C0;
@@ -264,7 +261,7 @@
         text-decoration: underline;
     }
 
-/* レスポンシブ対応 */
+
 @media (max-width: 768px) {
     .policy-page .main-content {
         padding-left: 20px;
@@ -294,5 +291,17 @@
 
     .contact-section {
         padding: 20px;
+    }
+
+    .tab-container {
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .tab-button {
+        flex-shrink: 0;
+        white-space: nowrap;
+        font-size: 13px;
     }
 }

@@ -39,7 +39,6 @@
                                 <img src="/image/warning.png" class="spoiler-warning-icon" alt="警告" />ネタバレ注意
                             </div>
 
-                            <!-- ネタバレ確認オーバーレイ -->
                             <div class="spoiler-overlay" id="spoiler-overlay">
                                 <div class="spoiler-overlay-content">
                                     <div class="spoiler-overlay-icon">
@@ -59,7 +58,6 @@
                                 </div>
                             </div>
 
-                            <!-- ネタバレ本文（初期は非表示） -->
                             <div class="review-text spoiler-content" id="review-body" style="display:none;">
                                 @Html.Raw(Model.ReviewHtml)
                             </div>
@@ -129,7 +127,6 @@
                     </div>
                 </div>
 
-                <!-- 削除確認ダイアログ -->
                 @if (isOwner) {
                     <div class="delete-modal-overlay" id="delete-modal-overlay" style="display:none;">
                         <div class="delete-modal">
@@ -156,7 +153,6 @@
                     </div>
                 }
 
-                <!-- コメントセクション -->
                 <div class="comments-section" id="comments-container">
                     <div class="comments-header">
                         <span>コメント (0)</span>
@@ -180,7 +176,7 @@
                     }
 
                     <div class="comments-list" id="comments-list">
-                        <!-- コメントがここに動的に追加されます -->
+                        <!-- コメント -->
                     </div>
 
                     <a href="#" id="view-all-comments" class="view-all-link" style="display: none;">
@@ -196,7 +192,6 @@
     <script type="text/javascript" src="~/js/load_image.js"></script>
     <script type="text/javascript" src="~/js/review_details.js"></script>
     <script>
-        // 削除ダイアログ制御
         const deleteBtn = document.getElementById('delete-review-btn');
         const deleteOverlay = document.getElementById('delete-modal-overlay');
         const deleteCancelBtn = document.getElementById('delete-cancel-btn');
@@ -204,19 +199,16 @@
         if (deleteBtn && deleteOverlay) {
             deleteBtn.addEventListener('click', function () {
                 deleteOverlay.style.display = 'flex';
-                // フォーカストラップ
                 setTimeout(() => deleteCancelBtn && deleteCancelBtn.focus(), 50);
             });
             deleteCancelBtn.addEventListener('click', function () {
                 deleteOverlay.style.display = 'none';
             });
-            // オーバーレイ背景クリックで閉じる
             deleteOverlay.addEventListener('click', function (e) {
                 if (e.target === deleteOverlay) {
                     deleteOverlay.style.display = 'none';
                 }
             });
-            // Escキーで閉じる
             document.addEventListener('keydown', function (e) {
                 if (e.key === 'Escape' && deleteOverlay.style.display === 'flex') {
                     deleteOverlay.style.display = 'none';
@@ -225,7 +217,6 @@
         }
     </script>
     <script>
-        // 文字数カウント
         const commentInput = document.getElementById('comment-input');
         const charCount = document.querySelector('.char-count');
         if (commentInput && charCount) {
@@ -234,20 +225,17 @@
             });
         }
 
-        // ネタバレ確認ボタン
         const spoilerConfirmBtn = document.getElementById('spoiler-confirm-btn');
         if (spoilerConfirmBtn) {
             spoilerConfirmBtn.addEventListener('click', function () {
                 const overlay = document.getElementById('spoiler-overlay');
                 const reviewBody = document.getElementById('review-body');
 
-                // オーバーレイをフェードアウト
                 overlay.classList.add('fade-out');
                 overlay.addEventListener('animationend', function () {
                     overlay.style.display = 'none';
                 }, { once: true });
 
-                // 本文をフェードイン表示
                 reviewBody.style.display = 'block';
                 reviewBody.classList.add('fade-in');
             });

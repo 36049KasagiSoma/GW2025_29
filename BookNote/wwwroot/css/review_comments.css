@@ -1,6 +1,3 @@
-/* コメント一覧ページ専用スタイル */
-
-/* ロゴとアップバーの固定位置用 */
 .review-comments-page .appbar {
     height: 60px;
 }
@@ -64,7 +61,7 @@
     color: #A0826D;
 }
 
-/* コメントリスト */
+
 .comments-list {
     display: flex;
     flex-direction: column;
@@ -155,7 +152,7 @@
     word-wrap: break-word;
 }
 
-/* ページネーション */
+
 .pagination {
     display: flex;
     justify-content: center;
@@ -185,7 +182,7 @@
         border-color: #654321;
     }
 
-/* 空メッセージ */
+
 .empty-message {
     text-align: center;
     color: #A0826D;
@@ -193,7 +190,7 @@
     padding: 60px 20px;
 }
 
-/* レスポンシブ */
+
 @media (max-width: 768px) {
     .review-comments-page .main-content {
         padding: 80px 16px 40px;

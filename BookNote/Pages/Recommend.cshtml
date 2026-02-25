@@ -26,7 +26,6 @@
             </div>
         </header>
 
-        <!-- ===== セクション1: 最近見たレビューから ===== -->
         <section class="recommend-section section-history" id="section-history">
             <div class="section-header">
                 <div class="section-meta">
@@ -37,7 +36,6 @@
                 <p class="section-desc">あなたが最近チェックしたレビューと似た内容のレビューをピックアップしました。</p>
             </div>
 
-            <!-- 横スクロール カルーセル形式 -->
             <div class="carousel-wrapper">
                 <div class="carousel-track" id="history-carousel">
 
@@ -70,14 +68,12 @@
             </div>
         </section>
 
-        <!-- 装飾セパレーター -->
         <div class="section-separator">
             <div class="sep-line"></div>
             <div class="sep-ornament">---</div>
             <div class="sep-line"></div>
         </div>
 
-        <!-- ===== セクション2: フォロー中のユーザーから ===== -->
         <section class="recommend-section section-follow" id="section-follow">
             <div class="section-layout-split">
                 <div class="section-header">
@@ -89,7 +85,6 @@
                     <p class="section-desc">フォロー中のユーザーのレビュー傾向をもとに、興味を持ちそうなレビューをご提案します。</p>
                 </div>
 
-                <!-- フィーチャード大カード + サイド小カードのグリッド -->
                 <div class="feature-grid" id="follow-grid">
 
                     @if (Model.FollowRecommends.Any()) {
@@ -139,14 +134,12 @@
             </div>
         </section>
 
-        <!-- 装飾セパレーター -->
         <div class="section-separator">
             <div class="sep-line"></div>
             <div class="sep-ornament">---</div>
             <div class="sep-line"></div>
         </div>
 
-        <!-- ===== セクション3: いいねの傾向から ===== -->
         <section class="recommend-section section-good" id="section-good">
             <div class="section-header section-header-center">
                 <div class="section-meta">
@@ -185,14 +178,12 @@
             }
         </section>
 
-        <!-- 装飾セパレーター -->
         <div class="section-separator">
             <div class="sep-line"></div>
             <div class="sep-ornament">---</div>
             <div class="sep-line"></div>
         </div>
 
-        <!-- ===== セクション4: 自分のレビューから ===== -->
         <section class="recommend-section section-myreview" id="section-myreview">
             <div class="section-header">
                 <div class="section-meta">
@@ -238,7 +229,7 @@
         <!-- フッター余白 -->
         <div style="height: 80px;"></div>
 
-    </div><!-- /.main-content -->
+    </div>
 
     <script type="text/javascript" src="~/js/site.js"></script>
     <script type="text/javascript" src="~/js/load_image.js"></script>

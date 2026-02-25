@@ -1,5 +1,3 @@
-/* マイページ専用スタイル */
-/* ロゴとアップバーの固定位置用 */
 .mypage-page .appbar {
     height: 60px;
 }
@@ -35,7 +33,7 @@
     text-align: left;
 }
 
-/* プロフィールカード */
+
 .profile-container {
     width: 100%;
 }
@@ -95,7 +93,7 @@
     margin: 0;
 }
 
-/* プロフィール本文 */
+
 .profile-body {
     padding: 32px;
 }
@@ -129,7 +127,7 @@
     font-style: italic;
 }
 
-/* 統計情報 */
+
 .stats-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
@@ -157,7 +155,7 @@
     color: #654321;
 }
 
-/* フッター */
+
 .profile-footer {
     padding: 24px 32px;
     background: #F9F6F2;
@@ -217,7 +215,7 @@
         pointer-events: none;
     }
 
-/* レスポンシブ対応 */
+
 @media (max-width: 768px) {
     .mypage-page .main-content {
         padding-top: 80px;
@@ -267,7 +265,7 @@
     }
 }
 
-/* === MyPage フッターボタングループ === */
+
 .profile-footer {
     display: flex;
     justify-content: space-between;

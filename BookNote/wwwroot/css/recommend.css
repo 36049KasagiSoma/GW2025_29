@@ -1,11 +1,3 @@
-/* ===================================================
-   recommend.css — あなたへのおすすめページ専用スタイル
-   既存の reviews.css / site.css を上書き・拡張する
-   =================================================== */
-
-
-
-/* --- フォント変数（recommend-pageスコープのみ。:rootに置かず共有部分に影響させない） --- */
 .recommend-page {
     --font-display: 'Cormorant Garamond', Georgia, serif;
     --font-body: inherit;
@@ -39,7 +31,7 @@
         padding: 100px 32px 0;
     }
 
-/* ===== ヒーローヘッダー ===== */
+
 .recommend-hero {
     text-align: center;
     padding: 48px 0 56px;
@@ -101,7 +93,7 @@
         font-size: 10px;
     }
 
-/* ===== セクション共通 ===== */
+
 .recommend-section {
     padding: 80px 0;
 }
@@ -172,7 +164,7 @@
     margin: 0 auto;
 }
 
-/* ===== セクション区切り ===== */
+
 .section-separator {
     display: flex;
     align-items: center;
@@ -193,9 +185,7 @@
     line-height: 1;
 }
 
-/* ===================================================
-   セクション1: カルーセル
-   =================================================== */
+
 .carousel-wrapper {
     position: relative;
     overflow: visible;
@@ -290,7 +280,7 @@
     flex-shrink: 0;
 }
 
-/* カルーセルボタン */
+
 .carousel-btn {
     position: absolute;
     top: 50%;
@@ -325,9 +315,7 @@
     right: -8px;
 }
 
-/* ===================================================
-   セクション2: フィーチャードグリッド
-   =================================================== */
+
 .section-layout-split {
     display: grid;
     grid-template-columns: minmax(300px, 380px) 1fr;
@@ -342,7 +330,7 @@
     gap: 16px;
 }
 
-/* featured-cardは2列span */
+
 .featured-card {
     grid-column: 1 / -1;
     display: flex;
@@ -437,7 +425,7 @@
     color: var(--clr-text-mute);
 }
 
-/* small-card */
+
 .small-card {
     background: var(--clr-surface);
     border-radius: var(--radius-md);
@@ -512,9 +500,7 @@
     flex-shrink: 0;
 }
 
-/* ===================================================
-   セクション3: マガジン段組グリッド
-   =================================================== */
+
 .masonry-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -539,19 +525,19 @@
         box-shadow: var(--shadow-md);
     }
 
-    /* large: 2列 3行 */
+
     .masonry-card[data-size="large"] {
         grid-column: span 2;
         grid-row: span 3;
     }
 
-    /* medium: 1列 2行 */
+
     .masonry-card[data-size="medium"] {
         grid-column: span 1;
         grid-row: span 2;
     }
 
-    /* small: 1列 1行 */
+
     .masonry-card[data-size="small"] {
         grid-column: span 1;
         grid-row: span 1;
@@ -572,7 +558,7 @@
         object-fit: cover;
     }
 
-/* small は書影非表示 */
+
 .masonry-card[data-size="small"] .masonry-cover {
     display: none;
 }
@@ -632,9 +618,7 @@
     flex-shrink: 0;
 }
 
-/* ===================================================
-   セクション4: ランキングリスト
-   =================================================== */
+
 .ranking-list {
     display: flex;
     flex-direction: column;
@@ -674,7 +658,7 @@
     letter-spacing: -0.04em;
 }
 
-/* 上位3件は色付き */
+
 .ranking-item:nth-child(1) .ranking-num {
     color: #C4884A;
 }
@@ -772,7 +756,7 @@
     color: var(--clr-text-mute);
 }
 
-/* ===== ページ入場アニメーション ===== */
+
 @keyframes fadeUp {
     from {
         opacity: 0;
@@ -806,7 +790,7 @@
         animation-delay: 0.4s;
     }
 
-/* ===== レスポンシブ ===== */
+
 @media (max-width: 900px) {
     .section-layout-split {
         grid-template-columns: 1fr;
@@ -865,7 +849,7 @@
     }
 }
 
-/* ===== 0件時の空状態表示 ===== */
+
 .empty-recommend {
     padding: 48px 24px;
     text-align: left;

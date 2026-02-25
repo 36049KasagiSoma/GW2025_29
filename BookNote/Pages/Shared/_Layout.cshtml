@@ -10,9 +10,9 @@
 	<link rel="icon" type="image/png" href="~/image/Site_icon.png" />
 </head>
 <body>
-	<!-- オーバーレイ -->
+
 	<div class="overlay" onclick="toggleDrawer()"></div>
-	<!-- ナビゲーションドロワー -->
+
 	<div class="drawer">
 		<div class="drawer-content">
 			<a href="~/review_create/SelectType" class="drawer-item">レビューを書く</a>
@@ -25,13 +25,13 @@
 			<a href="~/Policy" class="drawer-item">About・Policy</a>
 		</div>
 	</div>
-	<!-- ハンバーガーメニュー -->
+
 	<div class="hamburger" onclick="toggleDrawer()">
 		<span></span>
 		<span></span>
 		<span></span>
 	</div>
-	<!-- アップバー -->
+
 	<div class="appbar appbar-fixed">
 		<a href="/" class="logo-link logo-link-fixed">
 			<img src="~/image/Logo_home.png" alt="BookNote" class="logo logo-fixed">
@@ -48,7 +48,7 @@
 		}
 
 		@if (isSessionAuth || isCookieAuth) {
-			<!-- ログイン済みの場合 -->
+
 			<div class="auth-section" style="margin-left: auto;">
 				<a href="/user/MyPage" class="user-display-area">
 					<div class="user-icon-container">
@@ -59,7 +59,6 @@
 				<a href="/Logout" class="auth-button auth-button-logout">ログアウト</a>
 			</div>
 		} else {
-			<!-- 未ログインの場合 -->
 			<button class="auth-button" onclick="location.href='/Login'" style="margin-left: auto;">ログイン・新規登録</button>
 		}
 	</div>
@@ -68,11 +67,11 @@
 			@RenderBody()
 		</main>
 	</div>
-	@* <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2025 - BookNoteApp - <a asp-area="" asp-page="/Privacy">Privacy</a>
-        </div>
-    </footer> *@
+	<footer class="site-footer">
+		<div class="site-footer-inner">
+			&copy; @DateTime.Now.Year BookNote
+		</div>
+	</footer>
 	<script src="~/lib/jquery/dist/jquery.min.js"></script>
 	<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
 	<script src="~/js/site.js" asp-append-version="true"></script>

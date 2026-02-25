@@ -1,7 +1,4 @@
-﻿/* エラーページ専用スタイル */
-
-/* エラーページでのアップバー・ロゴのオーバーライド */
-.error-page .appbar {
+﻿.error-page .appbar {
     height: 60px;
 }
 
@@ -15,7 +12,7 @@
     height: 35px;
 }
 
-/* スクロール時の変更を無効化 */
+
 .error-page .appbar.scrolled {
     height: 60px;
 }
@@ -166,7 +163,7 @@
     overflow-y: auto;
 }
 
-/* レスポンシブ対応 */
+
 @media (max-width: 768px) {
     .error-container {
         padding: 40px 24px;

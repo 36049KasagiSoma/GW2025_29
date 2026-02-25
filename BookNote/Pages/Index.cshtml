@@ -16,12 +16,12 @@
 <body>
     <!-- メインコンテンツ -->
     <div class="main-content">
-        <!-- ロゴ画像（PC版のみ表示） -->
+        <!-- ロゴ画像 -->
         <div class="hero-logo">
             <img src="/image/Logo_big.png" alt="BookNote Logo" />
         </div>
 
-        <!-- あなたにオススメ（横スクロール） -->
+        <!-- あなたにオススメ -->
         <h2 class="section-title">人気のレビュー</h2>
         <div class="horizontal-scroll">
             @if (Model.PopularityReviews.Count > 0) {
@@ -54,7 +54,7 @@
             }
         </div>
 
-        <!-- あなたへのオススメ（大きいカード） -->
+        <!-- あなたへのオススメ -->
         <div class="large-section">
             <h2 class="section-title">あなたへのオススメ</h2>
             @if (Model.RecommentedReviews.Count > 0) {
@@ -87,7 +87,7 @@
         </div>
 
         <!-- バナー -->
-        <img class="banner" src="/image/advertisement.png" />
+        @* <img class="banner" src="/image/advertisement.png" /> *@
         <partial name="_BookSearchDialog" />
     </div>
     <script type="text/javascript" rel="script" src="~/js/site.js"></script>

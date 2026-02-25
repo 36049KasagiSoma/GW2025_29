@@ -1,14 +1,11 @@
 ﻿function showDraftModal() {
     document.getElementById('draftModal').classList.add('active');
 }
-
 function closeDraftModal() {
     document.getElementById('draftModal').classList.remove('active');
 }
-
 async function deleteDraft(draftId) {
     if (!confirm('この下書きを削除しますか?')) return;
-
     try {
         const response = await fetch(`/review_create/SelectType?handler=DeleteDraft&draftId=${draftId}`, {
             method: 'POST',
@@ -16,7 +13,6 @@ async function deleteDraft(draftId) {
                 'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
             }
         });
-
         if (response.ok) {
             location.reload();
         }
@@ -25,8 +21,6 @@ async function deleteDraft(draftId) {
         alert('下書きの削除に失敗しました');
     }
 }
-
-// モーダル外クリックで閉じる
 document.getElementById('draftModal')?.addEventListener('click', (e) => {
     if (e.target.id === 'draftModal') {
         closeDraftModal();

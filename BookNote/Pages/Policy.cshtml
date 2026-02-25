@@ -19,7 +19,6 @@
             <h1 class="policy-main-title">このサイトについて</h1>
         </div>
 
-        <!-- タブ切り替え -->
         <div class="tab-container">
             <button class="tab-button active" onclick="switchTab('about')">このサイトについて</button>
             <button class="tab-button" onclick="switchTab('guide')">ご利用ガイド</button>
@@ -215,7 +214,6 @@
                     <li><a href="#external">外部サービス・APIの利用について</a></li>
                     <li><a href="#commerce">特定商取引法に基づく表記</a></li>
                     <li><a href="#guideline">投稿ガイドライン</a></li>
-                    <li><a href="#contact">お問い合わせ窓口</a></li>
                 </ul>
             </div>
 
@@ -395,16 +393,6 @@
                 </div>
             </section>
 
-            <!-- お問い合わせ窓口 -->
-            <section id="contact" class="contact-section">
-                <h2 class="contact-title">お問い合わせ窓口</h2>
-                <div class="contact-info">
-                    <p>本ポリシーに関するお問い合わせは、以下までご連絡ください。</p>
-                    <p><strong>運営者：</strong>BookNote 運営者（個人）</p>
-                    <p><strong>連絡先：</strong>登録時に利用したメールアドレス宛</p>
-                </div>
-            </section>
-
             <div class="policy-footer">
                 制定日:2026年
             </div>
@@ -413,21 +401,17 @@
     <script type="text/javascript" src="~/js/site.js"></script>
     <script>
         function switchTab(tabName) {
-            // すべてのタブコンテンツを非表示
             document.querySelectorAll('.tab-content').forEach(content => {
                 content.classList.remove('active');
             });
 
-            // すべてのタブボタンを非アクティブ
             document.querySelectorAll('.tab-button').forEach(button => {
                 button.classList.remove('active');
             });
 
-            // 選択されたタブを表示
             document.getElementById(tabName + '-tab').classList.add('active');
             event.target.classList.add('active');
 
-            // ページタイトルを更新
             const titleElement = document.querySelector('.policy-main-title');
             if (tabName === 'about') {
                 titleElement.textContent = 'このサイトについて';

@@ -1,5 +1,4 @@
-﻿/* ヒーローロゴ（PC版のみ） */
-.hero-logo {
+﻿.hero-logo {
     text-align: center;
     margin-bottom: 40px;
 }
@@ -10,7 +9,7 @@
         filter: drop-shadow(2px 2px 8px rgba(101, 67, 33, 0.15));
     }
 
-/* .hamburger は site.css で定義 */
+
 .book-cover-small img {
     width: 100%;
     height: 100%;
@@ -32,7 +31,7 @@
     color: #A0826D;
 }
 
-/* レスポンシブ対応 */
+
 @media (max-width: 768px) {
     .hero-logo {
         display: none;

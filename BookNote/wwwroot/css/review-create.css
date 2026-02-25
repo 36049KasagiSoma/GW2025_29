@@ -1,7 +1,4 @@
-﻿/* レビュー作成選択ページ専用スタイル */
-
-/* ロゴとアップバーの固定位置用オーバーライド */
-.review-create-page .appbar {
+﻿.review-create-page .appbar {
     height: 60px;
 }
 
@@ -38,7 +35,7 @@
     text-align: center;
 }
 
-/* 新規作成セクション */
+
 .new-review-section {
     margin-bottom: 50px;
 }
@@ -84,7 +81,7 @@
     line-height: 1.6;
 }
 
-/* 下書きセクション */
+
 .drafts-section {
     margin-top: 50px;
 }
@@ -98,7 +95,7 @@
     border-bottom: 2px solid #E8D4C0;
 }
 
-/* 下書きリスト */
+
 .drafts-list {
     display: flex;
     flex-direction: column;

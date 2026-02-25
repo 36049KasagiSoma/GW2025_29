@@ -1,5 +1,4 @@
-﻿// ローディングGIFを挿入するヘルパー関数
-function insertLoadingGif(element) {
+﻿function insertLoadingGif(element) {
     element.style.display = 'flex';
     element.style.alignItems = 'center';
     element.style.justifyContent = 'center';
@@ -13,7 +12,6 @@ function insertLoadingGif(element) {
             object-fit:contain;
         "/>`;
 }
-
 function insertLoadingIconGif(element) {
     element.style.display = 'flex';
     element.style.alignItems = 'center';
@@ -28,16 +26,12 @@ function insertLoadingIconGif(element) {
             object-fit:contain;
         "/>`;
 }
-
-// 画像読み込み関数
 async function loadBookImages(containerSelector = '') {
     const selector = containerSelector
         ? `${containerSelector} .review-card-small, ${containerSelector} .review-card-large`
         : '.review-card-small, .review-card-large';
-
     const reviewCards = document.querySelectorAll(selector);
     const isbnMap = new Map();
-
     reviewCards.forEach(card => {
         const isbn = card.dataset.isbn;
         const bookCover =
@@ -49,14 +43,11 @@ async function loadBookImages(containerSelector = '') {
         }
         isbnMap.get(isbn).push(bookCover);
     });
-
-    // ローディングGIFを先に表示
     isbnMap.forEach((bookCovers) => {
         bookCovers.forEach(bookCover => {
             insertLoadingGif(bookCover);
         });
     });
-
     const fetchPromises = Array.from(isbnMap.entries()).map(async ([isbn, bookCovers]) => {
         try {
             const response = await fetch(`/?handler=Image&isbn=${isbn}`);
@@ -74,18 +65,14 @@ async function loadBookImages(containerSelector = '') {
             bookCovers.forEach(bookCover => { bookCover.innerHTML = ''; });
         }
     });
-
     await Promise.all(fetchPromises);
 }
-
-// ユーザーアイコン読み込み関数
 async function loadUserIcons(containerSelector = '') {
     const selector = containerSelector
         ? `${containerSelector} .reviewer-icon`
         : '.reviewer-icon';
     const reviewerIcons = document.querySelectorAll(selector);
     const publicIdMap = new Map();
-
     reviewerIcons.forEach(reviewerIcon => {
         if (reviewerIcon.querySelector('img:not(.loading-gif)')) return;
         const publicId = reviewerIcon.dataset.publicId;
@@ -95,14 +82,11 @@ async function loadUserIcons(containerSelector = '') {
         }
         publicIdMap.get(publicId).push(reviewerIcon);
     });
-
-    // ローディングGIFを先に表示
     publicIdMap.forEach((icons) => {
         icons.forEach(icon => {
             insertLoadingIconGif(icon);
         });
     });
-
     const fetchPromises = Array.from(publicIdMap.entries()).map(async ([publicId, reviewerIcons]) => {
         try {
             const response = await fetch(`/?handler=UserIcon&publicId=${publicId}`);
@@ -120,17 +104,14 @@ async function loadUserIcons(containerSelector = '') {
             reviewerIcons.forEach(icon => { icon.innerHTML = ''; });
         }
     });
-
     await Promise.all(fetchPromises);
 }
-
 async function loadUserLargeIcons(containerSelector = '') {
     const selector = containerSelector
         ? `${containerSelector} .profile-icon-large`
         : '.profile-icon-large';
     const reviewerIcons = document.querySelectorAll(selector);
     const publicIdMap = new Map();
-
     reviewerIcons.forEach(reviewerIcon => {
         if (reviewerIcon.querySelector('img:not(.loading-gif)')) return;
         const publicId = reviewerIcon.dataset.publicId;
@@ -140,14 +121,11 @@ async function loadUserLargeIcons(containerSelector = '') {
         }
         publicIdMap.get(publicId).push(reviewerIcon);
     });
-
-    // ローディングGIFを先に表示
     publicIdMap.forEach((icons) => {
         icons.forEach(icon => {
             insertLoadingGif(icon);
         });
     });
-
     const fetchPromises = Array.from(publicIdMap.entries()).map(async ([publicId, reviewerIcons]) => {
         try {
             const response = await fetch(`/?handler=UserLargeIcon&publicId=${publicId}`);
@@ -165,16 +143,12 @@ async function loadUserLargeIcons(containerSelector = '') {
             reviewerIcons.forEach(icon => { icon.innerHTML = ''; });
         }
     });
-
     await Promise.all(fetchPromises);
 }
-
-// カードクリックイベントを設定
 function setupCardClickEvents(containerSelector = '') {
     const selector = containerSelector
         ? `${containerSelector} .review-card-small, ${containerSelector} .review-card-large`
         : '.review-card-small, .review-card-large';
-
     const reviewCards = document.querySelectorAll(selector);
     reviewCards.forEach(card => {
         card.addEventListener('click', () => {
@@ -184,15 +158,12 @@ function setupCardClickEvents(containerSelector = '') {
         });
     });
 }
-
 document.addEventListener('DOMContentLoaded', async () => {
     await loadUserIcons();
 });
-
 document.addEventListener('DOMContentLoaded', async () => {
     await loadBookImages();
 });
-
 document.addEventListener('DOMContentLoaded', () => {
     setupCardClickEvents();
 });

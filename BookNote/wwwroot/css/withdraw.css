@@ -1,4 +1,3 @@
-/* 退会ページ */
 .withdraw-card {
     background: white;
     border-radius: 16px;
@@ -87,7 +86,7 @@
         transform: none;
     }
 
-/* 確認オーバーレイ */
+
 .withdraw-overlay {
     position: fixed;
     inset: 0;
@@ -141,9 +140,9 @@
         flex-direction: column;
     }
 
-    .withdraw-dialog-btns .btn-secondary,
-    .withdraw-dialog-btns .btn-withdraw {
-        width: 100%;
-        text-align: center;
-    }
+        .withdraw-dialog-btns .btn-secondary,
+        .withdraw-dialog-btns .btn-withdraw {
+            width: 100%;
+            text-align: center;
+        }
 }

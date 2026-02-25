@@ -1,7 +1,4 @@
-﻿/* レビュー詳細ページ専用スタイル */
-
-/* ロゴとアップバーの固定位置用 */
-.review-detail-page .appbar {
+﻿.review-detail-page .appbar {
     height: 60px;
 }
 
@@ -35,7 +32,7 @@
     display: inline-block;
 }
 
-/* スクロール時の変更を無効化 */
+
 .review-detail-page .appbar.scrolled {
     height: 60px;
 }
@@ -54,7 +51,7 @@
     top: 10px;
 }
 
-/* ページタイトル */
+
 .page-title {
     font-size: 36px;
     font-weight: 600;
@@ -63,14 +60,14 @@
     text-align: left;
 }
 
-/* レビューグリッド */
+
 .reviews-grid {
     display: flex;
     flex-direction: column;
     gap: 20px;
 }
 
-/* レビューカード - ホバーアニメーション無効 */
+
 .review-detail-page .review-card-large {
     transition: none;
 }
@@ -80,7 +77,7 @@
         box-shadow: 0 4px 12px rgba(101, 67, 33, 0.1);
     }
 
-/* 評価表示 */
+
 .rating {
     font-size: 16px;
     font-weight: 600;
@@ -88,7 +85,7 @@
     margin-bottom: 8px;
 }
 
-/* ネタバレ警告 */
+
 .spoiler-warning {
     display: inline-flex;
     align-items: center;
@@ -110,9 +107,7 @@
     flex-shrink: 0;
 }
 
-/* ===========================
-   ネタバレ確認オーバーレイ
-   =========================== */
+
 .spoiler-overlay {
     position: relative;
     display: flex;
@@ -129,7 +124,6 @@
     border-radius: 16px;
     padding: 36px 40px;
     text-align: center;
-    /*    max-width: 480px;*/
     width: 100%;
     box-shadow: 0 4px 20px rgba(255, 193, 7, 0.2);
 }
@@ -216,12 +210,12 @@
     font-size: 16px;
 }
 
-/* ネタバレ本文フェードイン */
+
 .spoiler-content.fade-in {
     animation: revealContent 0.5s ease forwards;
 }
 
-/* オーバーレイフェードアウト */
+
 .spoiler-overlay.fade-out {
     animation: overlayFadeOut 0.3s ease forwards;
 }
@@ -258,14 +252,14 @@
     }
 }
 
-/* レビュー本文 */
+
 .review-text {
     font-size: 15px;
     color: #5C4033;
     line-height: 1.8;
 }
 
-    /* マークダウンスタイル */
+
     .review-text h1,
     .review-text h2,
     .review-text h3 {
@@ -348,7 +342,7 @@
     border-radius: inherit;
 }
 
-/* 空メッセージ */
+
 .empty-message {
     text-align: center;
     color: #A0826D;
@@ -356,7 +350,7 @@
     padding: 60px 20px;
 }
 
-/* いいねボタン */
+
 .like-button {
     display: inline-flex;
     align-items: center;
@@ -417,7 +411,7 @@
     margin-bottom: 20px;
 }
 
-/* コメント投稿フォーム */
+
 .comment-form {
     background: #FFFFFF;
     border: 1px solid #E8D4C0;
@@ -477,7 +471,7 @@
         transform: translateY(0);
     }
 
-/* ログインプロンプト */
+
 .login-prompt {
     background: #F5E6D3;
     border: 1px solid #E8D4C0;
@@ -500,16 +494,14 @@
             color: #A0826D;
         }
 
-/* コメントリスト */
+
 .comments-list {
     display: flex;
     flex-direction: column;
     gap: 16px;
 }
 
-/* ===========================
-   コメントアイテム（通常）
-   =========================== */
+
 .comment-item {
     background: #FFFFFF;
     border: 1px solid #E8D4C0;
@@ -522,9 +514,7 @@
         box-shadow: 0 2px 8px rgba(101, 67, 33, 0.1);
     }
 
-    /* ===========================
-   レビュー投稿者のコメント装飾
-   =========================== */
+
     .comment-item.review-author-comment {
         background: linear-gradient(135deg, #fffdf7 0%, #fdf5e8 100%);
         border: 2px solid #D2A85A;
@@ -549,7 +539,7 @@
             box-shadow: 0 4px 16px rgba(210, 168, 90, 0.3);
         }
 
-/* 投稿者バッジ */
+
 .author-badge {
     display: inline-flex;
     align-items: center;
@@ -594,7 +584,7 @@
     flex-shrink: 0;
 }
 
-/* 投稿者アイコンに金枠 */
+
 .comment-item.review-author-comment .reviewer-icon {
     border: 2px solid #D2A85A;
     box-shadow: 0 0 0 2px rgba(210, 168, 90, 0.3);
@@ -649,7 +639,7 @@
     word-wrap: break-word;
 }
 
-/* すべて見るリンク */
+
 .view-all-link {
     display: block;
     text-align: center;
@@ -685,9 +675,7 @@
     flex-shrink: 0;
 }
 
-/* ===========================
-   オーナー操作ボタン
-   =========================== */
+
 .owner-actions {
     display: flex;
     gap: 10px;
@@ -742,9 +730,7 @@
     flex-shrink: 0;
 }
 
-/* ===========================
-   削除確認モーダル
-   =========================== */
+
 .delete-modal-overlay {
     position: fixed;
     inset: 0;
@@ -869,7 +855,7 @@
     .delete-modal-confirm:active {
         transform: translateY(0);
     }
-/* コメントエラーメッセージ */
+
 .comment-error-message {
     display: flex;
     align-items: center;
@@ -925,7 +911,7 @@
     stroke: #C62828;
 }
 
-/* レスポンシブ対応 */
+
 @media (max-width: 768px) {
     .page-title {
         font-size: 24px;
@@ -1012,9 +998,7 @@
     }
 }
 
-/* ===========================
-   戻るボタン
-   =========================== */
+
 .back-button {
     display: inline-flex;
     align-items: center;
