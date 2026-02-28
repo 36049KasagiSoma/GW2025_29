@@ -25,7 +25,7 @@ namespace BookNote.Controllers {
                     results = await new SearchReviews(connection, myid).GetReview(keyword, 20, sortOrder);
 
                     foreach (var review in results) {
-                        review.Review = StaticEvent.TrimReview(review.Review, 80);
+                        review.Review = StaticEvent.TrimReview(review.Review, 80, review.IsSpoilers == 1);
                     }
                 }
             } catch (Exception) {

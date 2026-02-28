@@ -73,7 +73,7 @@
                                         </div>
                                     }
                                     <div class="review-text">
-                                        @Scripts.StaticEvent.TrimReview(review.Review, 80)
+                                        @Scripts.StaticEvent.TrimReview(review.Review, 80,review.IsSpoilers == 1)
                                     </div>
                                     <div class="reviewer-info">
                                         <div class="reviewer-icon" data-public-id="@Model.UserPublicId"></div>
@@ -115,7 +115,7 @@
                                             </div>
                                         }
                                         <div class="review-text">
-                                            @Scripts.StaticEvent.TrimReview(review.Review, 80)
+                                            @Scripts.StaticEvent.TrimReview(review.Review, 80, review.IsSpoilers == 1)
                                         </div>
                                         <div class="reviewer-info">
                                             <div class="reviewer-icon" data-public-id="@review.User.UserPublicId"></div>

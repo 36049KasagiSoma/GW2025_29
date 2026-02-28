@@ -1,70 +1,70 @@
 @page
 @model BookNote.Pages.UsersModel
 @{
-    ViewData["Title"] = "ユーザー検索";
+	ViewData["Title"] = "ユーザー検索";
 }
 
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BookNote - @ViewData["Title"]</title>
-    <link type="text/css" rel="stylesheet" href="~/css/site.css">
-    <link type="text/css" rel="stylesheet" href="~/css/users.css">
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>BookNote - @ViewData["Title"]</title>
+	<link type="text/css" rel="stylesheet" href="~/css/site.css">
+	<link type="text/css" rel="stylesheet" href="~/css/users.css">
 </head>
 <body class="users-page">
-    <div class="main-content">
-        <h1 class="page-title">ユーザー検索</h1>
+	<div class="main-content">
+		<h1 class="page-title">ユーザー検索</h1>
 
-        <!-- タブナビゲーション -->
-        <div class="tab-container">
-            <div class="tab" data-tab="recommend">あなたへのおすすめ</div>
-            <div class="tab" data-tab="search">検索</div>
-        </div>
+		<!-- タブナビゲーション -->
+		<div class="tab-container">
+			<div class="tab" data-tab="recommend">あなたへのおすすめ</div>
+			<div class="tab" data-tab="search">検索</div>
+		</div>
 
-        <!-- おすすめタブコンテンツ -->
-        <div class="tab-content" id="recommend-content">
-            <div class="users-grid" id="recommend-users">
-                @if (Model.RecommendUsers.Any()) {
-                    @foreach (var user in Model.RecommendUsers) {
-                        <div class="user-card" onclick="location.href='/user/UserProfile/@user.UserPublicId'">
-                            <div class="user-card-icon reviewer-icon" data-public-id="@user.UserPublicId"></div>
-                            <div class="user-card-info">
-                                <div class="user-card-name">@user.UserName</div>
-                                <div class="user-card-id">@@user.UserPublicId</div>
-                                @if (!string.IsNullOrEmpty(user.UserProfile)) {
-                                    <div class="user-card-profile">@Scripts.StaticEvent.TrimReview(user.UserProfile, 60)</div>
-                                }
-                            </div>
-                        </div>
-                    }
-                } else {
-                    <p class="empty-message">おすすめユーザーがいません</p>
-                }
-            </div>
-        </div>
+		<!-- おすすめタブコンテンツ -->
+		<div class="tab-content" id="recommend-content">
+			<div class="users-grid" id="recommend-users">
+				@if (Model.RecommendUsers.Any()) {
+					@foreach (var user in Model.RecommendUsers) {
+						<div class="user-card" onclick="location.href='/user/UserProfile/@user.UserPublicId'">
+							<div class="user-card-icon reviewer-icon" data-public-id="@user.UserPublicId"></div>
+							<div class="user-card-info">
+								<div class="user-card-name">@user.UserName</div>
+								<div class="user-card-id">@@user.UserPublicId</div>
+								@if (!string.IsNullOrEmpty(user.UserProfile)) {
+									<div class="user-card-profile">@Scripts.StaticEvent.TrimReview(user.UserProfile, 60, false)</div>
+								}
+							</div>
+						</div>
+					}
+				} else {
+					<p class="empty-message">おすすめユーザーがいません</p>
+				}
+			</div>
+		</div>
 
-        <!-- 検索タブコンテンツ -->
-        <div class="tab-content" id="search-content">
-            <div class="search-container">
-                <input type="text" class="search-input" id="userSearchKeyword" placeholder="ユーザーを検索...">
-                <button class="search-button" id="btnUserSearch">検索</button>
-            </div>
-            <div class="filter-container">
-                <select class="filter-select" id="userSearchType">
-                    <option value="name">名前で検索</option>
-                    <option value="id">IDで検索</option>
-                </select>
-            </div>
-            <div class="users-grid" id="user-search-results">
-                <p class="empty-message">検索キーワードを入力してください</p>
-            </div>
-        </div>
-    </div>
+		<!-- 検索タブコンテンツ -->
+		<div class="tab-content" id="search-content">
+			<div class="search-container">
+				<input type="text" class="search-input" id="userSearchKeyword" placeholder="ユーザーを検索...">
+				<button class="search-button" id="btnUserSearch">検索</button>
+			</div>
+			<div class="filter-container">
+				<select class="filter-select" id="userSearchType">
+					<option value="name">名前で検索</option>
+					<option value="id">IDで検索</option>
+				</select>
+			</div>
+			<div class="users-grid" id="user-search-results">
+				<p class="empty-message">検索キーワードを入力してください</p>
+			</div>
+		</div>
+	</div>
 
-    <script type="text/javascript" src="~/js/site.js"></script>
-    <script type="text/javascript" src="~/js/load_image.js"></script>
-    <script type="text/javascript" src="~/js/users.js"></script>
+	<script type="text/javascript" src="~/js/site.js"></script>
+	<script type="text/javascript" src="~/js/load_image.js"></script>
+	<script type="text/javascript" src="~/js/users.js"></script>
 </body>
 </html>

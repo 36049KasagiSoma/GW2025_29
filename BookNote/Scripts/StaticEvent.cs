@@ -33,7 +33,7 @@ namespace BookNote.Scripts {
                 // 改行コードを統一
                 text = text.Replace("\r\n", "\n").Replace("\r", "\n");
             }
-                      // すべてのHTMLタグを削除
+            // すべてのHTMLタグを削除
             text = Regex.Replace(text, @"<[^>]+>", string.Empty);
 
             // HTMLエンティティをデコード
@@ -48,11 +48,21 @@ namespace BookNote.Scripts {
             return text.Trim();
         }
 
-        public static string TrimReview(string? text, int cnt) {
+        public static string TrimReview(string? text, int cnt, bool isSpoilers, string spoilersMessage = "【注意】この記事にはネタバレが含まれています。") {
+            if (isSpoilers) {
+                return spoilersMessage + GenerateSpaces(cnt - spoilersMessage.Length);
+            }
             if (text == null) return string.Empty;
             var pt = ToPlainText(text);
             pt = Regex.Replace(pt, @"[\p{Z}\p{C}]", "");
-            return TrimText(pt, cnt);
+            var t = TrimText(pt, cnt);
+            var s = GenerateSpaces(cnt - t.Length);
+            return t + s;
+        }
+
+        private static string GenerateSpaces(int count) {
+            if (count <= 0) return string.Empty;
+            return new string(' ', count);
         }
 
         public static string TrimText(string? text, int cnt) {

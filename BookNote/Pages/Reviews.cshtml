@@ -58,7 +58,7 @@
                             <div class="review-title">@review.Title</div>
                             <div class="book-title">@review.Book.Title</div>
                             <div class="review-text">
-                                @Scripts.StaticEvent.TrimReview(review.Review, 80)
+                                @Scripts.StaticEvent.TrimReview(review.Review, 80, review.IsSpoilers == 1)
                             </div>
                             <div class="reviewer-info">
                                 <div class="reviewer-icon" data-public-id="@review.User.UserPublicId"></div>
@@ -83,7 +83,7 @@
                             <div class="review-title">@review.Title</div>
                             <div class="book-title">@review.Book.Title</div>
                             <div class="review-text">
-                                @Scripts.StaticEvent.TrimReview(review.Review, 80)
+                                @Scripts.StaticEvent.TrimReview(review.Review, 80, review.IsSpoilers == 1)
                             </div>
                             <div class="reviewer-info">
                                 <div class="reviewer-icon" data-public-id="@review.User.UserPublicId"></div>
@@ -109,7 +109,7 @@
                                 <div class="review-title">@review.Title</div>
                                 <div class="book-title">@review.Book.Title</div>
                                 <div class="review-text">
-                                    @Scripts.StaticEvent.TrimReview(review.Review, 80)
+                                    @Scripts.StaticEvent.TrimReview(review.Review, 80, review.IsSpoilers == 1)
                                 </div>
                                 <div class="reviewer-info">
                                     <div class="reviewer-icon" data-public-id="@review.User.UserPublicId"></div>
@@ -136,7 +136,7 @@
                                 <div class="review-title">@review.Title</div>
                                 <div class="book-title">@review.Book.Title</div>
                                 <div class="review-text">
-                                    @Scripts.StaticEvent.TrimReview(review.Review, 80)
+                                    @Scripts.StaticEvent.TrimReview(review.Review, 80, review.IsSpoilers == 1)
                                 </div>
                                 <div class="reviewer-info">
                                     <div class="reviewer-icon" data-public-id="@review.User.UserPublicId"></div>

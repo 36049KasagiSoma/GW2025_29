@@ -98,7 +98,7 @@
                                     <div class="featured-body">
                                         <div class="featured-book-title">@review.Book.Title</div>
                                         <div class="featured-review-title">@review.Title</div>
-                                        <div class="featured-text">@Scripts.StaticEvent.TrimReview(review.Review, 80)</div>
+                                        <div class="featured-text">@Scripts.StaticEvent.TrimReview(review.Review, 80, review.IsSpoilers == 1)</div>
                                         <div class="featured-reviewer">
                                             <div class="featured-icon" data-public-id="@review.User.UserPublicId"></div>
                                             <span class="featured-reviewer-name">@review.User.UserName</span>
@@ -208,7 +208,7 @@
                             <div class="ranking-body">
                                 <div class="ranking-book-title">@review.Book.Title</div>
                                 <div class="ranking-review-title">@review.Title</div>
-                                <div class="ranking-text">@Scripts.StaticEvent.TrimReview(review.Review, 80)</div>
+                                <div class="ranking-text">@Scripts.StaticEvent.TrimReview(review.Review, 80, review.IsSpoilers == 1)</div>
                             </div>
                             <div class="ranking-reviewer">
                                 <div class="ranking-icon" data-public-id="@review.User.UserPublicId"></div>

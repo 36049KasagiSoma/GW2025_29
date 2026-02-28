@@ -48,7 +48,7 @@
                                     <div class="draft-book">@draft.Book.Title</div>
                                 }
                                 @if (!string.IsNullOrEmpty(draft.Review)) {
-                                    <div class="draft-preview">@Scripts.StaticEvent.TrimReview(draft.Review, 50)</div>
+                                    <div class="draft-preview">@Scripts.StaticEvent.TrimReview(draft.Review, 50, draft.IsSpoilers == 1)</div>
                                 }
                             </div>
                             <div class="draft-meta">
