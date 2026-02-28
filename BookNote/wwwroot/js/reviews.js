@@ -98,7 +98,7 @@ async function performSearch() {
                     <div class="review-text">${escapeHtml(review.review)}</div>
                     <div class="reviewer-info">
                         <div class="reviewer-icon" data-public-id="${escapeHtml(review.user.userPublicId)}"></div>
-                        <span class="reviewer-name">${escapeHtml(review.user.userName)}</span>
+                        <a href="/user/UserProfile/${escapeHtml(review.user.userPublicId)}" class="reviewer-name">${escapeHtml(review.user.userName)}</a>
                         <span class="post-time">${escapeHtml(review.formattedTime)}</span>
                     </div>
                 </div>

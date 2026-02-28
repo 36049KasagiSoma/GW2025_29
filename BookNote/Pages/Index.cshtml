@@ -21,7 +21,7 @@
             <img src="/image/Logo_big.png" alt="BookNote Logo" />
         </div>
 
-        <!-- あなたにオススメ -->
+        <!-- 人気のレビュー -->
         <h2 class="section-title">人気のレビュー</h2>
         <div class="horizontal-scroll">
             @if (Model.PopularityReviews.Count > 0) {
@@ -42,7 +42,8 @@
                             <div>
                                 <div class="reviewer-info">
                                     <div class="reviewer-icon" data-public-id="@review.User.UserPublicId"></div>
-                                    <span class="reviewer-name">@review.User.UserName</span>
+                                    @* <span class="reviewer-name">@review.User.UserName</span> *@
+                                    <a href="/user/UserProfile/@review.User.UserPublicId" class="reviewer-name">@review.User.UserName</a>
                                 </div>
                                 <div class="post-time">@Scripts.StaticEvent.FormatPostingTime(review.PostingTime)</div>
                             </div>
@@ -75,7 +76,8 @@
                             </div>
                             <div class="reviewer-info">
                                 <div class="reviewer-icon" data-public-id="@review.User.UserPublicId"></div>
-                                <span class="reviewer-name">@review.User.UserName</span>
+                                @* <span class="reviewer-name">@review.User.UserName</span> *@
+                                <a href="/user/UserProfile/@review.User.UserPublicId" class="reviewer-name">@review.User.UserName</a>
                                 <span class="post-time">@Scripts.StaticEvent.FormatPostingTime(review.PostingTime)</span>
                             </div>
                         </div>

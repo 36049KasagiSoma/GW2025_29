@@ -1,158 +1,162 @@
 ﻿@page
 @model ReviewsModel
 @{
-    ViewData["Title"] = "レビュー一覧";
+	ViewData["Title"] = "レビュー一覧";
 }
 
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BookNote - レビュー一覧</title>
-    <link type="text/css" rel="stylesheet" href="~/css/site.css">
-    <link type="text/css" rel="stylesheet" href="~/css/reviews.css">
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>BookNote - レビュー一覧</title>
+	<link type="text/css" rel="stylesheet" href="~/css/site.css">
+	<link type="text/css" rel="stylesheet" href="~/css/reviews.css">
 </head>
 <body class="reviews-page">
-    <div class="main-content">
-        <h1 class="page-title">レビュー一覧</h1>
-        <div class="tab-container">
-            <div class="tab" data-tab="popular" selected>人気</div>
-            <div class="tab" data-tab="latest">最新</div>
-            @if (Scripts.Login.AccountDataGetter.IsAuthenticated()) {
-                <div class="tab" data-tab="following">フォロー新着</div>
-                <div class="tab" data-tab="myreviews">マイレビュー</div>
-            }
-            <div class="tab" data-tab="search">検索</div>
-        </div>
+	<div class="main-content">
+		<h1 class="page-title">レビュー一覧</h1>
+		<div class="tab-container">
+			<div class="tab" data-tab="popular" selected>人気</div>
+			<div class="tab" data-tab="latest">最新</div>
+			@if (Scripts.Login.AccountDataGetter.IsAuthenticated()) {
+				<div class="tab" data-tab="following">フォロー新着</div>
+				<div class="tab" data-tab="myreviews">マイレビュー</div>
+			}
+			<div class="tab" data-tab="search">検索</div>
+		</div>
 
-        <!-- 検索タブコンテンツ -->
-        <div class="tab-content" id="search-content">
-            <div class="search-container">
-                <input type="text" class="search-input" id="searchKeyword" placeholder="書籍名、著者名、レビュータイトルで検索...">
-                <button class="search-button" id="btnSearch">検索</button>
-            </div>
-            <div class="filter-container">
-                <div class="filter-container">
-                    <select class="filter-select" id="searchSortOrder">
-                        <option value="match">関連度順</option>
-                        <option value="date">投稿日時</option>
-                        <option value="rating">評価順</option>
-                    </select>
-                </div>
-            </div>
-            <div class="reviews-grid" id="search-results">
-                <p class="empty-message">検索キーワードを入力してください</p>
-            </div>
-        </div>
+		<!-- 検索タブコンテンツ -->
+		<div class="tab-content" id="search-content">
+			<div class="search-container">
+				<input type="text" class="search-input" id="searchKeyword" placeholder="書籍名、著者名、レビュータイトルで検索...">
+				<button class="search-button" id="btnSearch">検索</button>
+			</div>
+			<div class="filter-container">
+				<div class="filter-container">
+					<select class="filter-select" id="searchSortOrder">
+						<option value="match">関連度順</option>
+						<option value="date">投稿日時</option>
+						<option value="rating">評価順</option>
+					</select>
+				</div>
+			</div>
+			<div class="reviews-grid" id="search-results">
+				<p class="empty-message">検索キーワードを入力してください</p>
+			</div>
+		</div>
 
-        <!-- 最新タブコンテンツ -->
-        <div class="tab-content" id="latest-content">
-            <div class="reviews-grid">
-                @foreach (var review in Model.LatestReviews) {
-                    <div class="review-card-large" data-review-id="@review.ReviewId" data-isbn="@review.Isbn">
-                        <div class="book-cover-large">
-                            <img src="/image/loadImage.gif" alt="読み込み中" class="loading-gif" draggable="false">
-                        </div>     
-                        <div class="review-content-large">
-                            <div class="review-title">@review.Title</div>
-                            <div class="book-title">@review.Book.Title</div>
-                            <div class="review-text">
-                                @Scripts.StaticEvent.TrimReview(review.Review, 80, review.IsSpoilers == 1)
-                            </div>
-                            <div class="reviewer-info">
-                                <div class="reviewer-icon" data-public-id="@review.User.UserPublicId"></div>
-                                <span class="reviewer-name">@review.User.UserName</span>
-                                <span class="post-time">@Scripts.StaticEvent.FormatPostingTime(review.PostingTime)</span>
-                            </div>
-                        </div>
-                    </div>
-                }
-            </div>
-        </div>
+		<!-- 最新タブコンテンツ -->
+		<div class="tab-content" id="latest-content">
+			<div class="reviews-grid">
+				@foreach (var review in Model.LatestReviews) {
+					<div class="review-card-large" data-review-id="@review.ReviewId" data-isbn="@review.Isbn">
+						<div class="book-cover-large">
+							<img src="/image/loadImage.gif" alt="読み込み中" class="loading-gif" draggable="false">
+						</div>
+						<div class="review-content-large">
+							<div class="review-title">@review.Title</div>
+							<div class="book-title">@review.Book.Title</div>
+							<div class="review-text">
+								@Scripts.StaticEvent.TrimReview(review.Review, 80, review.IsSpoilers == 1)
+							</div>
+							<div class="reviewer-info">
+								<div class="reviewer-icon" data-public-id="@review.User.UserPublicId"></div>
+								@* <span class="reviewer-name">@review.User.UserName</span> *@
+								<a href="/user/UserProfile/@review.User.UserPublicId" class="reviewer-name">@review.User.UserName</a>
+								<span class="post-time">@Scripts.StaticEvent.FormatPostingTime(review.PostingTime)</span>
+							</div>
+						</div>
+					</div>
+				}
+			</div>
+		</div>
 
-        <!-- 人気タブコンテンツ -->
-        <div class="tab-content" id="popular-content">
-            <div class="reviews-grid">
-                @foreach (var review in Model.PopularReviews) {
-                    <div class="review-card-large" data-review-id="@review.ReviewId" data-isbn="@review.Isbn">
-                        <div class="book-cover-large">
-                            <img src="/image/loadImage.gif" alt="読み込み中" class="loading-gif" draggable="false">
-                        </div>       
-                        <div class="review-content-large">
-                            <div class="review-title">@review.Title</div>
-                            <div class="book-title">@review.Book.Title</div>
-                            <div class="review-text">
-                                @Scripts.StaticEvent.TrimReview(review.Review, 80, review.IsSpoilers == 1)
-                            </div>
-                            <div class="reviewer-info">
-                                <div class="reviewer-icon" data-public-id="@review.User.UserPublicId"></div>
-                                <span class="reviewer-name">@review.User.UserName</span>
-                                <span class="post-time">@Scripts.StaticEvent.FormatPostingTime(review.PostingTime)</span>
-                            </div>
-                        </div>
-                    </div>
-                }
-            </div>
-        </div>
+		<!-- 人気タブコンテンツ -->
+		<div class="tab-content" id="popular-content">
+			<div class="reviews-grid">
+				@foreach (var review in Model.PopularReviews) {
+					<div class="review-card-large" data-review-id="@review.ReviewId" data-isbn="@review.Isbn">
+						<div class="book-cover-large">
+							<img src="/image/loadImage.gif" alt="読み込み中" class="loading-gif" draggable="false">
+						</div>
+						<div class="review-content-large">
+							<div class="review-title">@review.Title</div>
+							<div class="book-title">@review.Book.Title</div>
+							<div class="review-text">
+								@Scripts.StaticEvent.TrimReview(review.Review, 80, review.IsSpoilers == 1)
+							</div>
+							<div class="reviewer-info">
+								<div class="reviewer-icon" data-public-id="@review.User.UserPublicId"></div>
+								@* <span class="reviewer-name">@review.User.UserName</span> *@
+								<a href="/user/UserProfile/@review.User.UserPublicId" class="reviewer-name">@review.User.UserName</a>
+								<span class="post-time">@Scripts.StaticEvent.FormatPostingTime(review.PostingTime)</span>
+							</div>
+						</div>
+					</div>
+				}
+			</div>
+		</div>
 
-        <!-- フォロー新着タブコンテンツ -->
-        @if (Scripts.Login.AccountDataGetter.IsAuthenticated()) {
-            <div class="tab-content" id="following-content">
-                <div class="reviews-grid">
-                    @foreach (var review in Model.FollowingReviews) {
-                        <div class="review-card-large" data-review-id="@review.ReviewId" data-isbn="@review.Isbn">
-                            <div class="book-cover-large">
-                                <img src="/image/loadImage.gif" alt="読み込み中" class="loading-gif" draggable="false">
-                            </div>
-                            <div class="review-content-large">
-                                <div class="review-title">@review.Title</div>
-                                <div class="book-title">@review.Book.Title</div>
-                                <div class="review-text">
-                                    @Scripts.StaticEvent.TrimReview(review.Review, 80, review.IsSpoilers == 1)
-                                </div>
-                                <div class="reviewer-info">
-                                    <div class="reviewer-icon" data-public-id="@review.User.UserPublicId"></div>
-                                    <span class="reviewer-name">@review.User.UserName</span>
-                                    <span class="post-time">@Scripts.StaticEvent.FormatPostingTime(review.PostingTime)</span>
-                                </div>
-                            </div>
-                        </div>
-                    }
-                </div>
-            </div>
-        }
+		<!-- フォロー新着タブコンテンツ -->
+		@if (Scripts.Login.AccountDataGetter.IsAuthenticated()) {
+			<div class="tab-content" id="following-content">
+				<div class="reviews-grid">
+					@foreach (var review in Model.FollowingReviews) {
+						<div class="review-card-large" data-review-id="@review.ReviewId" data-isbn="@review.Isbn">
+							<div class="book-cover-large">
+								<img src="/image/loadImage.gif" alt="読み込み中" class="loading-gif" draggable="false">
+							</div>
+							<div class="review-content-large">
+								<div class="review-title">@review.Title</div>
+								<div class="book-title">@review.Book.Title</div>
+								<div class="review-text">
+									@Scripts.StaticEvent.TrimReview(review.Review, 80, review.IsSpoilers == 1)
+								</div>
+								<div class="reviewer-info">
+									<div class="reviewer-icon" data-public-id="@review.User.UserPublicId"></div>
+									@* <span class="reviewer-name">@review.User.UserName</span> *@
+									<a href="/user/UserProfile/@review.User.UserPublicId" class="reviewer-name">@review.User.UserName</a>
+									<span class="post-time">@Scripts.StaticEvent.FormatPostingTime(review.PostingTime)</span>
+								</div>
+							</div>
+						</div>
+					}
+				</div>
+			</div>
+		}
 
-        <!-- マイレビュータブコンテンツ -->
-        @if (Scripts.Login.AccountDataGetter.IsAuthenticated()) {
-            <div class="tab-content" id="myreviews-content">
-                <div class="reviews-grid">
-                    @foreach (var review in Model.MyReviews) {
-                        <div class="review-card-large" data-review-id="@review.ReviewId" data-isbn="@review.Isbn">
-                            <div class="book-cover-large">
-                                <img src="/image/loadImage.gif" alt="読み込み中" class="loading-gif" draggable="false">
-                            </div>
-                            <div class="review-content-large">
-                                <div class="review-title">@review.Title</div>
-                                <div class="book-title">@review.Book.Title</div>
-                                <div class="review-text">
-                                    @Scripts.StaticEvent.TrimReview(review.Review, 80, review.IsSpoilers == 1)
-                                </div>
-                                <div class="reviewer-info">
-                                    <div class="reviewer-icon" data-public-id="@review.User.UserPublicId"></div>
-                                    <span class="reviewer-name">@review.User.UserName</span>
-                                    <span class="post-time">@Scripts.StaticEvent.FormatPostingTime(review.PostingTime)</span>
-                                </div>
-                            </div>
-                        </div>
-                    }
-                </div>
-            </div>
-        }
-    </div>
+		<!-- マイレビュータブコンテンツ -->
+		@if (Scripts.Login.AccountDataGetter.IsAuthenticated()) {
+			<div class="tab-content" id="myreviews-content">
+				<div class="reviews-grid">
+					@foreach (var review in Model.MyReviews) {
+						<div class="review-card-large" data-review-id="@review.ReviewId" data-isbn="@review.Isbn">
+							<div class="book-cover-large">
+								<img src="/image/loadImage.gif" alt="読み込み中" class="loading-gif" draggable="false">
+							</div>
+							<div class="review-content-large">
+								<div class="review-title">@review.Title</div>
+								<div class="book-title">@review.Book.Title</div>
+								<div class="review-text">
+									@Scripts.StaticEvent.TrimReview(review.Review, 80, review.IsSpoilers == 1)
+								</div>
+								<div class="reviewer-info">
+									<div class="reviewer-icon" data-public-id="@review.User.UserPublicId"></div>
+									@* <span class="reviewer-name">@review.User.UserName</span> *@
+									<a href="/user/UserProfile/@review.User.UserPublicId" class="reviewer-name">@review.User.UserName</a>
+									<span class="post-time">@Scripts.StaticEvent.FormatPostingTime(review.PostingTime)</span>
+								</div>
+							</div>
+						</div>
+					}
+				</div>
+			</div>
+		}
+	</div>
 
-    <script type="text/javascript" rel="script" src="~/js/site.js"></script>
-    <script type="text/javascript" src="~/js/load_image.js"></script>
-    <script type="text/javascript" src="~/js/reviews.js"></script>
+	<script type="text/javascript" rel="script" src="~/js/site.js"></script>
+	<script type="text/javascript" src="~/js/load_image.js"></script>
+	<script type="text/javascript" src="~/js/reviews.js"></script>
 </body>
 </html>

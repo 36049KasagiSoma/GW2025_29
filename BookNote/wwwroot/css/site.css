@@ -412,8 +412,16 @@ a.drawer-item {
 .reviewer-name {
     font-size: 13px;
     color: #654321;
-    flex: 1;
+/*    flex: 1;*/
+    text-decoration: none;
 }
+    .reviewer-name:link,
+    .reviewer-name:visited,
+    .reviewer-name:hover,
+    .reviewer-name:active {
+        color: #422911;
+        text-decoration: none;
+    }
 
 .post-time {
     font-size: 12px;
